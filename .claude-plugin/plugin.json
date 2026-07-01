@@ -1,0 +1,21 @@
+{
+  "name": "test-as-contract-workflow",
+  "skills": [
+    "./skills/productivity/test-as-contract",
+    "./skills/productivity/bootstrap-workflow",
+    "./skills/productivity/demand-insight",
+    "./skills/productivity/to-prd",
+    "./skills/productivity/design-system",
+    "./skills/productivity/ux-explore",
+    "./skills/productivity/assertion-signoff",
+    "./skills/productivity/feel-signoff",
+    "./skills/productivity/design-handoff",
+    "./skills/productivity/design-import",
+    "./skills/productivity/reflect",
+    "./skills/maintenance/sync-refs",
+    "./skills/engineering/crystallize",
+    "./skills/engineering/test-author",
+    "./skills/engineering/implementer",
+    "./skills/engineering/qa-runner"
+  ]
+}

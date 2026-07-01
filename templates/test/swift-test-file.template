@@ -1,0 +1,30 @@
+// REQ-TRACE: REQ-{{PHASE}}-001, REQ-{{PHASE}}-002
+// REQ-VERSION: {{REQ_VERSION}}
+// TEST-AUTHOR: agent
+// ASSERTIONS-SIGNED: false
+
+import XCTest
+@testable import {{MODULE_NAME}}
+
+final class {{TEST_CLASS_NAME}}: XCTestCase {
+
+    // MARK: - REQ-{{PHASE}}-001
+
+    func test{{BehaviorName}}() {
+        // Given
+        let input = /* scaffold fills */
+
+        // When
+        let result = /* scaffold fills */
+
+        // Then
+        // TODO: HUMAN ASSERTION — replace with signed expected value
+        XCTAssertEqual(result, <#expected#>)
+    }
+
+    // MARK: - REQ-{{PHASE}}-002
+
+    func test{{EdgeCaseName}}() {
+        // TODO: HUMAN ASSERTION
+    }
+}

@@ -1,0 +1,68 @@
+## Test-as-Contract Workflow
+
+This project uses the `test-as-contract` workflow. Skills are installed under `.claude/skills/`.
+
+### Available skills
+
+| Skill | Purpose | Trigger |
+|---|---|---|
+| `/test-as-contract` | Start or continue a story | user |
+| `/bootstrap-workflow` | Initialize project-level workflow infrastructure | user |
+| `/demand-insight` | Adversarial demand interview | user |
+| `/to-prd` | Synthesize discussion into PRD | user |
+| `/design-system` | Build or verify project-level design system | user |
+| `/ux-explore` | High-fidelity UX exploration with HTML prototypes | user |
+| `/crystallize` | Convert PRD stable blocks into REQ-IDs | model |
+| `/test-author` | Generate test scaffold from REQ | model |
+| `/assertion-signoff` | Sign assertions before implementation | user |
+| `/implementer` | Implement code against signed tests | model |
+| `/qa-runner` | Run E2E, regression, collect evidence | model |
+| `/feel-signoff` | Verify feel against HTML reference | user |
+| `/reflect` | Capture lessons and update knowledge | user |
+
+### Artifact layout
+
+```
+.aiassist/
+├── stories/<story-id>/
+│   ├── prd.md                 # Narrative intent (soft)
+│   ├── requirements.md        # REQ with IDs (the contract)
+│   ├── requirements-v1.hash   # Version hash for stale-test detection
+│   ├── ux/                    # HTML UX references for feel-signoff
+│   ├── test-plan.md           # Test-author's plan
+│   ├── assertion-signoff.md       # Human assertion signoff
+│   ├── feel-signoff.md        # Human feel verification
+│   └── workflow-state.yaml    # Current phase / blockers
+└── global/
+    ├── engineering-lessons.md
+    ├── architecture.md
+    └── STANDARDS.md
+```
+
+### Core rules
+
+1. **Truth flows down**: PRD → REQ → tests → code.
+2. **Errors flow back up**: fix at the highest affected layer; never patch code directly because a test or spec is wrong.
+3. **Assertions belong to the human**: AI writes test scaffolding; human signs expected values.
+4. **Implementer is read-only on tests**: any diff touching test files invalidates the round.
+5. **`/assertion-signoff` blocks BUILD; `/feel-signoff` blocks merge**.
+6. **No test without a REQ-ID**: every test file must declare `// REQ-TRACE` and `// REQ-VERSION`.
+7. **Subjective judgments stay out of tests**: feel/aesthetics are verified at feel-signoff against HTML references.
+
+### Starting a new story
+
+```
+/test-as-contract
+# or
+/bootstrap-workflow
+```
+
+### Updating skills
+
+When the canonical skills in `<workflow-path>/skills/` change, reinstall them:
+
+```bash
+rm -rf .claude/skills/*
+cp -R <workflow-path>/skills/productivity/* .claude/skills/
+cp -R <workflow-path>/skills/engineering/* .claude/skills/
+```

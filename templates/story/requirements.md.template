@@ -1,0 +1,51 @@
+# {{STORY_NAME}} — Requirements
+
+> 故事 ID：`{{STORY_ID}}`
+> 版本：`v1`
+> 哈希：`{{REQUIREMENTS_HASH}}`
+> 最后更新：{{DATE}}
+
+---
+
+## 全局约束
+
+<!-- 从 PRD 继承的项目级约束，逐条复制。 -->
+
+-
+
+---
+
+## REQ 列表
+
+### REQ-{{PHASE}}-001: [简短描述]
+
+**Category:** [P0/P1/P2...]
+**Priority:** Must / Should / Could
+**UX Reference:** `ux/{{FLOW}}.html`（如有）
+
+#### Acceptance Criteria
+
+1. [具体、可机器验证的标准]
+2. [边界 case]
+3. [错误处理]
+
+#### Test Traceability
+
+- Tests: `[TestFile].[testName]`
+- Type: Unit / E2E / Manual
+- Scaffold: AI
+- Assertions: Human-signed
+
+---
+
+### REQ-{{PHASE}}-002: ...
+
+...
+
+---
+
+## 变更记录
+
+| 版本 | 哈希 | 日期 | 变更内容 | 触发重签的 REQ-ID |
+|---|---|---|---|---|
+| v1 | {{REQUIREMENTS_HASH}} | {{DATE}} | 初版 | ALL |

@@ -28,7 +28,7 @@ sources:
 
 - **Figma** → `.aiassist/design-refs/<name>/` 下的 JSX 组件 + CSS token + 素材
 - **GitHub** → `.aiassist/design-refs/<name>/` 下的稀疏导入文件
-- **HTML/CSS** → 提取的 token 写入 `tokens.css`，素材复制到 `.aiassist/design-refs/<name>/`
+- **HTML/CSS** → 提取的 token 写入 `.aiassist/design-refs/<name>/tokens.css`，素材复制到 `.aiassist/design-refs/<name>/`
 
 所有导入的设计上下文在 `.aiassist/design-refs/` 下统一管理。
 

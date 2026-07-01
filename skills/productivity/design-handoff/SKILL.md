@@ -23,7 +23,7 @@ sources:
 
 - `.aiassist/stories/<id>/ux/` 下的 HTML 原型文件
 - `.aiassist/stories/<id>/prd.md`（了解功能需求）
-- 项目 `tokens.css` 或 `DESIGN.md`（了解设计系统）
+- 项目 `.aiassist/global/tokens.css` 或 `.aiassist/global/DESIGN.md`（了解设计系统）
 
 ## 输出
 
@@ -162,7 +162,7 @@ sources:
 - 对尺寸、颜色、字体的描述要**极其精确**——开发人员依赖此文档实现。
 - README 必须一开始就声明：HTML 文件是**设计参照**，任务是在目标应用中重新创建设计。
 - README 应该**自给自足**——一个没参与设计对话的开发人员应该能从 README 独立实现。
-- 如果设计使用了项目设计系统的 token，引用 `tokens.css` 中的变量名而非硬编码值。
+- 如果设计使用了项目设计系统的 token，引用 `.aiassist/global/tokens.css` 中的变量名而非硬编码值。
 - 不包含未经确认的推测性内容。
 
 ## 产物路径

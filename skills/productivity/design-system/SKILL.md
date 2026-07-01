@@ -1,6 +1,6 @@
 ---
 name: design-system
-description: 检查并建设项目级设计系统。如果项目没有 DESIGN.md 或 STANDARDS.md，通过访谈/参考生成设计系统文档和可运行的 CSS token 文件。
+description: 检查并建设项目级设计系统。如果项目没有 .aiassist/global/DESIGN.md 或 .aiassist/global/STANDARDS.md，通过访谈/参考生成设计系统文档和可运行的 CSS token 文件。
 disable-model-invocation: true
 sources:
   - reference/gstack/design-consultation/SKILL.md
@@ -26,8 +26,8 @@ sources:
 
 ## 输出
 
-- 项目根目录 `DESIGN.md` 或 `.aiassist/global/STANDARDS.md`
-- 项目根目录 `tokens.css`（**可运行的 CSS 自定义属性**）
+- `.aiassist/global/DESIGN.md`（设计系统文档）
+- `.aiassist/global/tokens.css`（**可运行的 CSS 自定义属性**）
 - 设计系统包含：
   - 色彩系统（含 hex 值 → CSS 变量）
   - 字体系统（含 font-family → CSS 变量）
@@ -39,13 +39,13 @@ sources:
 ## 执行步骤
 
 1. **检查现有设计资料**：
-   - 是否存在 `DESIGN.md`？是否存在 `tokens.css`？
+   - 是否存在 `.aiassist/global/DESIGN.md`？是否存在 `.aiassist/global/tokens.css`？
    - 是否存在 `.aiassist/global/STANDARDS.md`？
    - 项目 CLAUDE.md 是否有设计相关约定？
    - 是否有品牌指南、Figma 链接、参考截图？
 2. **判断是否需要新建**：
-   - 如果已有完整设计系统（DESIGN.md + tokens.css）→ 告知用户并退出。
-   - 如果只有 DESIGN.md 无 tokens.css → 从 DESIGN.md 提取 token 生成 tokens.css。
+   - 如果已有完整设计系统（`.aiassist/global/DESIGN.md` + `.aiassist/global/tokens.css`）→ 告知用户并退出。
+   - 如果只有 `.aiassist/global/DESIGN.md` 无 `.aiassist/global/tokens.css` → 从 DESIGN.md 提取 token 生成 `.aiassist/global/tokens.css`。
    - 如果缺失或不全 → 进入建设流程。
 3. **访谈用户**（如需要新建）：
    - 产品调性是什么？（专业/活泼/高端/亲和等）
@@ -53,11 +53,11 @@ sources:
    - 有没有必须遵守的品牌色/字体？
    - 有没有竞品或参考应用？
    - 平台优先级？（iOS/web/Android 等）
-4. **生成设计系统文档**（`DESIGN.md`）：
+4. **生成设计系统文档**（`.aiassist/global/DESIGN.md`）：
    - 使用 markdown 格式。
    - 包含具体 token 值（hex 颜色、字体名、间距数值）。
    - 包含组件形态描述和示例。
-5. **生成 CSS Token 文件**（`tokens.css`）：
+5. **生成 CSS Token 文件**（`.aiassist/global/tokens.css`）：
    - 将所有设计 token 输出为 CSS 自定义属性。
    - 这是 `/ux-explore` 生成 HTML 原型时的**绑定视觉约束**——原型必须 `<link>` 此文件，不发明系统外颜色或样式。
    - 格式如下（按需调整）：
@@ -139,10 +139,9 @@ sources:
 ```
 
 6. **保存到项目**：
-   - `DESIGN.md` → 项目根目录。
-   - `tokens.css` → 项目根目录。
-   - 同步一份到 `.aiassist/global/STANDARDS.md` 和 `.aiassist/global/tokens.css`。
-7. **提示下一步**：设计系统已建立，可以开始 `/ux-explore`。在 HTML 原型中通过 `<link rel="stylesheet" href="../../tokens.css">` 引用。
+   - `DESIGN.md` → `.aiassist/global/DESIGN.md`。
+   - `tokens.css` → `.aiassist/global/tokens.css`。
+7. **提示下一步**：设计系统已建立，可以开始 `/ux-explore`。在 HTML 原型中通过 `<link rel="stylesheet" href="../../global/tokens.css">` 引用。
 
 ## 与 `/ux-explore` 的关系
 
@@ -156,4 +155,4 @@ sources:
 - 设计系统是**项目级资产**，不是某个 story 的产物。
 - 不要在一个 story 里推翻整个设计系统；如需调整，应回到 `/design-system` 或更新全局 STANDARDS。
 - 具体 story 的 HTML 原型可以基于设计系统做局部变体，但不能脱离设计系统乱飞。
-- `tokens.css` 和 `DESIGN.md` 必须保持一致——tokens.css 是 DESIGN.md 的可运行形式。
+- `tokens.css` 和 `.aiassist/global/DESIGN.md` 必须保持一致——tokens.css 是 DESIGN.md 的可运行形式。

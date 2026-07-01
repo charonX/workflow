@@ -34,6 +34,8 @@
 │   ├── feel-signoff.md        # 人验收观感
 │   └── workflow-state.yaml    # 当前阶段 / 阻塞项
 └── global/
+    ├── DESIGN.md              # 项目级设计系统文档
+    ├── tokens.css             # 可运行的 CSS token
     ├── engineering-lessons.md
     ├── architecture.md
     └── STANDARDS.md

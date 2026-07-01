@@ -41,7 +41,7 @@ ln -s /path/to/workflow/skills/* .claude/skills/
 |---|---|---|---|---|
 | 1 | **THINK** | `/demand-insight` | 用户 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
 | 2 | **PRD** | `/to-prd` | 用户 | 把讨论整理成结构化 PRD |
-| 3 | **设计系统** | `/design-system` | 用户 | 建立项目级 `DESIGN.md` + `tokens.css` |
+| 3 | **设计系统** | `/design-system` | 用户 | 建立项目级 `.aiassist/global/DESIGN.md` + `.aiassist/global/tokens.css` |
 | 4 | **UX 设计** | `/ux-explore` | 用户 | 迭代高保真 HTML 原型；行为决策进 REQ，视觉决策进 HTML |
 | 5 | **结晶** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
 | 6 | **测试** | `/test-author` | 模型 | 从 REQ 生成测试骨架，为人留出占位断言 |
@@ -132,6 +132,8 @@ npx skills@latest add <your-github-username>/test-as-contract-workflow
 │   ├── feel-signoff.md
 │   └── workflow-state.yaml
 └── global/
+    ├── DESIGN.md              # 项目级设计系统文档
+    ├── tokens.css             # 可运行的 CSS token
     ├── engineering-lessons.md
     ├── architecture.md
     └── STANDARDS.md

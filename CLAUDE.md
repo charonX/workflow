@@ -57,7 +57,7 @@
 |---|---|---|---|---|
 | 1 | THINK — 需求洞察 | `/demand-insight` | 用户 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
 | 2 | PRD 合成 | `/to-prd` | 用户 | 把访谈笔记整理成结构化 PRD |
-|   | 设计系统前置 | `/design-system` | 用户 | 在高保真 UX 前建立/校验项目级设计系统 + `tokens.css` |
+|   | 设计系统前置 | `/design-system` | 用户 | 在高保真 UX 前建立/校验项目级设计系统 + `.aiassist/global/tokens.css` |
 |   | 设计导入（可选） | `/design-import` | 用户 | 导入设计来源：Figma .fig、GitHub 仓库、现有 HTML/CSS |
 | 3 | DESIGN — UX 探索 | `/ux-explore` | 用户 | 用 React 迭代高保真 HTML UX 原型；行为决策 → REQ，视觉决策 → HTML |
 | 4 | Crystallize | `/crystallize` | 模型 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |

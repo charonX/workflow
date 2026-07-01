@@ -23,7 +23,7 @@ PRD 已生成，需要把抽象需求转成可视化的 HTML 原型时。如果 
 ## 输入
 
 - `.aiassist/stories/<id>/prd.md`
-- 项目设计系统（`DESIGN.md`、`tokens.css` 或 `.aiassist/global/STANDARDS.md`）
+- 项目设计系统（`.aiassist/global/DESIGN.md`、`.aiassist/global/tokens.css`）
 - 可选：竞品截图/参考、Figma .fig 文件、GitHub 仓库链接、已有 HTML/CSS
 
 ## 输出
@@ -33,10 +33,10 @@ PRD 已生成，需要把抽象需求转成可视化的 HTML 原型时。如果 
 
 ## 执行步骤
 
-1. **检查设计系统**：
-   - 查找项目根 `DESIGN.md`、`tokens.css` 或 `.aiassist/global/STANDARDS.md`。
+1. **检查设计系统**:
+   - 查找 `.aiassist/global/DESIGN.md`、`.aiassist/global/tokens.css` 或 `.aiassist/global/STANDARDS.md`。
    - 如果不存在，调用 `/design-system` 先建设设计系统。
-   - 如果存在 `tokens.css`，在 HTML 原型中通过 `<link>` 引用，作为**绑定视觉约束**——不发明系统外颜色或样式。
+   - 如果存在 `.aiassist/global/tokens.css`，在 HTML 原型中通过 `<link rel="stylesheet" href="../../global/tokens.css">` 引用，作为**绑定视觉约束**——不发明系统外颜色或样式。
 
 2. **收集设计上下文**（多源）：
    - 询问用户是否有截图、Figma .fig 文件、GitHub 仓库或已有 HTML/CSS 作为设计参考。
@@ -53,7 +53,7 @@ PRD 已生成，需要把抽象需求转成可视化的 HTML 原型时。如果 
    - 如果没有品牌系统约束，遵循**前端审美指引**（见下文）。
 
 5. **生成第一版 HTML 原型**：
-   - 使用项目设计系统的 token（`tokens.css` 或 `DESIGN.md` 中的颜色/字体/间距）。
+   - 使用项目设计系统的 token（`.aiassist/global/tokens.css` 或 `.aiassist/global/DESIGN.md` 中的颜色/字体/间距）。
    - **交互原型默认使用 React + Babel**：对于需要交互的流程（表单、多步骤、状态切换），使用 React useState/useEffect 构建真实可交互原型。
    - 对于多文件原型，拆分 JSX 组件：`data.jsx`（模拟数据）→ `icons.jsx` → `panes.jsx`（展示组件）→ `app.jsx`（App + state）。
    - 利用 **起始组件**（见下文）加速开发。

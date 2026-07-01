@@ -32,7 +32,7 @@ sources:
    - 必要的 import、`@testable import`、setUp/tearDown
    - mock/fixture（如 `MockHealthKitManager`、`TestContainer`）
    - 调用被测对象的代码
-4. **占位断言**：在需要人拍 expected 值的地方写 `// TODO: HUMAN ASSERTION`。
+4. **占位断言**：在需要人拍预期值的地方写 `// TODO: HUMAN ASSERTION`。
 5. **编译检查**：确保测试文件能编译（可能需要临时 stub 实现）。
 6. **输出 test-plan.md**：列出每个 REQ-ID 对应哪些测试方法。
 
@@ -48,13 +48,13 @@ sources:
 ## 纪律
 
 - **只写测试，不写实现代码**。
-- expected 值**不**从当前代码抄写；用占位符等人签。
-- 默认**禁用 snapshot 当 oracle**。
-- 能用单元测的，不进 E2E（bug 下沉原则）。
+- 预期值**不**从当前代码抄写；用占位符等人签。
+- 默认**禁用快照当判定依据**。
+- 能用单元测的，不进 E2E（缺陷下沉原则）。
 - 覆盖：正常路径 + 边界 + 错误路径。
 
 ## 与参考项目的差异
 
 - mattpocock `tdd`：给我们"红绿重构"和测试先行的纪律。
-- superpowers `test-driven-development`：给我们 Iron Law 和常见反模式清单。
+- superpowers `test-driven-development`：给我们铁律和常见反模式清单。
 - 核心差异：测试作者和实现者必须分离；断言归人。

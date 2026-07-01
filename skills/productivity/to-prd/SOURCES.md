@@ -1,4 +1,4 @@
-# Sources: to-prd
+# 参考来源：to-prd
 
 ## 借鉴的 reference 文件
 
@@ -8,8 +8,8 @@
 
 ## 主要改动
 
-- 不发布到 issue tracker，输出到 `.aiassist/stories/<id>/prd.md`。
-- 增加 `Stable Blocks` / `Moving Blocks` 字段，服务双挡模型。
+- 不发布到问题跟踪系统，输出到 `.aiassist/stories/<id>/prd.md`。
+- 增加 `稳定块` / `移动块` 字段，服务双挡模型。
 - 保留 mattpocock 的 PRD 模板字段和"提前想测试 seams"思想。
 
 ## 未来局部更新建议

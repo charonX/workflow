@@ -1,4 +1,4 @@
-# Sources: bootstrap-workflow
+# 参考来源：bootstrap-workflow
 
 ## 借鉴的 reference 文件
 

@@ -1,4 +1,4 @@
-# Sources: assertion-signoff
+# 参考来源：assertion-signoff
 
 ## 借鉴的 reference 文件
 
@@ -9,7 +9,7 @@
 
 - 把工程审查收窄为"断言签核门"。
 - 新增硬门规则：不签不能进 BUILD。
-- 增加 expected 来源审查。
+- 增加预期值来源审查。
 
 ## 未来局部更新建议
 

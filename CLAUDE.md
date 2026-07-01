@@ -1,271 +1,272 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+> **语言约定**：除非用户明确要求使用其他语言，否则所有回复默认使用中文。
 
-## Workspace purpose
+本文件为 Claude Code（claude.ai/code）在本仓库工作时的指导手册。
 
-This is a personal workflow sandbox for a one-person creator/operator. The `reference/` directory holds three popular open-source agent-skill projects for study and adaptation. The root workspace is where I curate and evolve my own Claude Code workflow.
+## 工作区定位
 
-From an OPC (one-person company) perspective, the high-leverage steps are:
+这是一个一人创作者/运营者的个人工作流沙盒。`reference/` 目录存放了几个流行的开源 agent-skill 项目，用于学习和借鉴。根工作区是我整理和演进自己 Claude Code 工作流的地方。
 
-1. **Demand insight** — make sure we're solving a real problem someone will pay for.
-2. **UI/UX design** — make the thing feel right before building it.
-3. **Development plan** — decide what to build and in what order.
-4. **End-to-end validation** — prove the shipped thing works for the user, not just that the code compiles.
+从 OPC（一人公司）视角看，高杠杆动作有四步：
 
-The actual typing of code is low-leverage. Let the agent handle implementation; my job is to hold the vision, validate the demand, approve the design, and verify the outcome.
+1. **需求洞察** —— 确保我们在解决一个真实存在、有人愿意付费的问题。
+2. **UI/UX 设计** —— 在写代码之前先把感觉做对。
+3. **开发计划** —— 决定做什么、按什么顺序做。
+4. **端到端验证** —— 证明交付物对真实用户有用，而不只是代码能跑通。
 
-## Our workflow: test-as-contract
+真正敲代码是低杠杆的。让 agent 负责实现；人的工作是把握愿景、验证需求、审批设计、验收结果。
 
-This workspace now contains our own Claude Code workflow: **test-as-contract** (`skills/`). It combines the best of the reference projects:
+## 我们的工作流：测试即契约
 
-- **mattpocock skills** — traditional software-engineering discipline (TDD, adversarial docs review, diagnosis).
-- **gstack** — CEO/founder-level demand insight, design decisions, shipping and QA gates.
-- **soflow** — process-driven artifact chain (PRD → REQ → tests → code → reflect).
-- **superpowers** — rigorous plans, subagent-driven batch execution, and review packages.
+本工作区现在包含我们自己的 Claude Code 工作流：**测试即契约**（`skills/`）。它融合了参考项目各自的优点：
 
-Core idea:
+- **mattpocock skills** —— 传统软件工程纪律（TDD、对抗式文档审查、诊断）。
+- **gstack** —— CEO/创始人级别的需求洞察、设计决策、发布与 QA 门禁。
+- **soflow** —— 流程驱动的产物链（PRD → REQ → tests → code → reflect）。
+- **superpowers** —— 严谨的计划、subagent 驱动的批量执行与审查包。
 
-> **Human holds the oracle (assertions); AI implements inside a test contract. The human does not edit implementation code directly — they edit requirements and assertions, and errors flow back up to the highest layer.**
+核心理念：
 
-Key mechanics:
+> **人持有裁决器（断言）；AI 在测试构成的契约内实现。人不直接修改实现代码 —— 他们修改需求和断言，错误逐层回流到最高层。**
 
-- **Two gears**: Gear 1 (exploration — PRD, HTML UX, no tests, free to overturn) → crossing line → Gear 2 (test-locked — REQ-ID → tests → code).
-- **Two hard signoffs**: `/assertion-signoff` = human signs assertions before implementation; `/feel-signoff` = human verifies feel against HTML reference.
-- **Three roles**: human (REQ/assertions/HTML), test-author agent (writes test scaffold), implementer agent (writes code, read-only on tests).
-- **REQ-ID traceability**: every test file must declare `// REQ-TRACE` and `// REQ-VERSION`.
+关键机制：
 
-Do not modify the reference repos unless explicitly asked. Treat them as read-only inspiration and copy/adapt individual skill patterns into `skills/`.
+- **两挡**：一挡（探索期 —— PRD、HTML 原型、无测试、可随意推翻）→ 跨越线 → 二挡（测试锁定 —— REQ-ID → tests → code）。
+- **两道硬签核**：`/assertion-signoff` = 人在实现前签核断言；`/feel-signoff` = 人依据 HTML 参照验收观感。
+- **三种角色**：人（REQ/断言/HTML）、test-author agent（编写测试骨架）、implementer agent（编写代码，对测试只读）。
+- **REQ-ID 可追溯**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
 
-| Path | Project | What to steal from it |
-|------|---------|----------------------|
-| `reference/gstack/` | Garry's gstack | CEO insight, shipping + validation: `/office-hours`, `/design-shotgun`, `/qa`, `/benchmark`, `/canary`, `/ship`, browser automation |
-| `reference/mattpocock/` | Matt Pocock's skills | Lightweight daily engineering skills: `/grill-me`, `/grill-with-docs`, `/tdd`, `/diagnose`, domain modeling |
-| `reference/superpowers/` | Jesse's Superpowers | Rigorous planning and execution: `writing-plans`, `subagent-driven-development`, `executing-plans` |
-| `reference/soflow/` | soflow | Process-driven artifact chain: `.aiassist/stories/<id>/`, PRD → REQ → stories, HTML UX prototypes |
-| `reference/baoyu-design/` | baoyu-design (Jim Liu) | Claude Design portable skill: HTML prototypes, design systems, Figma import, PPTX export, starter components |
+除非明确要求，否则不要修改参考仓库。把它们当作只读的灵感来源，把单个 skill 模式复制/适配到 `skills/` 中。
 
-## Our test-as-contract workflow
+| 路径 | 项目 | 借鉴重点 |
+|------|------|----------|
+| `reference/gstack/` | Garry's gstack | CEO 洞察、发布与验证：`/office-hours`、`/design-shotgun`、`/qa`、`/benchmark`、`/canary`、`/ship`、浏览器自动化 |
+| `reference/mattpocock/` | Matt Pocock's skills | 轻量日常工程技能：`/grill-me`、`/grill-with-docs`、`/tdd`、`/diagnose`、领域建模 |
+| `reference/superpowers/` | Jesse's Superpowers | 严谨计划与执行：`writing-plans`、`subagent-driven-development`、`executing-plans` |
+| `reference/soflow/` | soflow | 流程驱动的产物链：`.aiassist/stories/<id>/`、PRD → REQ → stories、HTML UX 原型 |
+| `reference/baoyu-design/` | baoyu-design（Jim Liu） | Claude Design 可移植 skill：HTML 原型、设计系统、Figma 导入、PPTX 导出、starter components |
 
-When working on a real feature, use the skills in `skills/` rather than the reference skills directly. The reference projects are for inspiration; `skills/` is the operational workflow.
+## 我们的测试即契约工作流
 
-### Phase overview
+在实现真实功能时，直接使用 `skills/` 中的 skill，而不是直接调用参考 skill。参考项目只供灵感，`skills/` 才是 operational 工作流。
 
-| # | Phase | Skill | Who triggers | Purpose |
+### 阶段总览
+
+| # | 阶段 | Skill | 触发者 | 目的 |
 |---|---|---|---|---|
-| 1 | THINK — demand insight | `/demand-insight` | user | Adversarial interview; surface hidden needs, boundaries, contradictions |
-| 2 | PRD synthesis | `/to-prd` | user | Turn interview notes into a structured PRD |
-|   | Design system prerequisite | `/design-system` | user | Build or verify project-level design system + `tokens.css` before high-fidelity UX |
-|   | Design import (optional) | `/design-import` | user | Import design sources: Figma .fig, GitHub repos, existing HTML/CSS |
-| 3 | DESIGN — UX exploration | `/ux-explore` | user | Iterate high-fidelity HTML UX prototypes with React; behavioral decisions → REQ, visual decisions → HTML |
-| 4 | Crystallize | `/crystallize` | model | Convert stable PRD blocks into REQ-IDs with acceptance criteria |
-| 5 | TEST — write target | `/test-author` | model | Generate test scaffold from REQ; placeholder assertions for human |
-| 6 | assertion-signoff | `/assertion-signoff` | user | Human signs all assertions before implementation begins |
-| 7 | BUILD | `/implementer` | model | Implement code against tests; read-only on tests; full suite every iteration |
-| 8 | REVIEW/QA | `/qa-runner` | model | E2E, regression, evidence collection |
-| 9 | feel-signoff | `/feel-signoff` | user | Human verifies feel against HTML reference; deviations flow back to REQ |
-|   | Developer handoff (optional) | `/design-handoff` | user | Generate structured dev handoff package from approved UX prototypes |
-| 10 | REFLECT | `/reflect` | user | Capture lessons, update `.aiassist/global/` knowledge |
+| 1 | THINK — 需求洞察 | `/demand-insight` | 用户 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
+| 2 | PRD 合成 | `/to-prd` | 用户 | 把访谈笔记整理成结构化 PRD |
+|   | 设计系统前置 | `/design-system` | 用户 | 在高保真 UX 前建立/校验项目级设计系统 + `tokens.css` |
+|   | 设计导入（可选） | `/design-import` | 用户 | 导入设计来源：Figma .fig、GitHub 仓库、现有 HTML/CSS |
+| 3 | DESIGN — UX 探索 | `/ux-explore` | 用户 | 用 React 迭代高保真 HTML UX 原型；行为决策 → REQ，视觉决策 → HTML |
+| 4 | Crystallize | `/crystallize` | 模型 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
+| 5 | TEST — 编写靶子 | `/test-author` | 模型 | 从 REQ 生成测试骨架；为人留出占位断言 |
+| 6 | assertion-signoff | `/assertion-signoff` | 用户 | 人在实现开始前签核所有断言 |
+| 7 | BUILD | `/implementer` | 模型 | 针对测试实现代码；对测试只读；每轮迭代跑全套测试 |
+| 8 | REVIEW/QA | `/qa-runner` | 模型 | E2E、回归、证据收集 |
+| 9 | feel-signoff | `/feel-signoff` | 用户 | 人依据 HTML 参照验收观感；偏差回流到 REQ |
+|   | 开发者交接（可选） | `/design-handoff` | 用户 | 从已批准的 UX 原型生成结构化开发交接包 |
+| 10 | REFLECT | `/reflect` | 用户 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
 
-### Getting started in a target project
+### 在目标项目里启动
 
-1. Make sure the target project has the workflow skills installed:
+1. 确保目标项目已安装本工作流 skill：
    ```bash
    mkdir -p .claude/skills
    cp -R /path/to/workflow/skills/productivity/* .claude/skills/
    cp -R /path/to/workflow/skills/engineering/* .claude/skills/
    cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
    ```
-2. Run `/bootstrap-workflow` in the target project to create `.aiassist/` project infrastructure.
-3. Run `/test-as-contract` to start the first story.
+2. 在目标项目里运行 `/bootstrap-workflow`，创建 `.aiassist/` 项目基础设施。
+3. 运行 `/test-as-contract`，开始第一个 story。
 
-### Installing skills
+### 安装 skill
 
-`README.md` has the full installation and update instructions.
+完整的安装与更新说明见 `README.md`。
 
-### Reference workflow (legacy)
+### 参考工作流（旧版）
 
-The detailed 5-step reference workflow below is still useful for understanding the high-leverage activities, but the operational path is now the test-as-contract skill set above.
+下面这份详细的五步参考工作流仍有助于理解高杠杆活动，但实际操作路径已经变成上面的测试即契约 skill 集合。
 
-### 1. Demand insight — are we building the right thing?
+### 1. 需求洞察 —— 我们在做对的事吗？
 
-Before design or code, validate that the problem is real and the solution is wanted.
+在设计和编码之前，先验证问题真实存在、解决方案有人想要。
 
-- Use `reference/superpowers/skills/brainstorming/SKILL.md` or `reference/gstack/office-hours/SKILL.md` to interrogate the idea.
-- Use `reference/skills/skills/productivity/grill-me/SKILL.md` or `reference/skills/skills/engineering/grill-with-docs/SKILL.md` to walk down every branch of the decision tree.
-- Questions to answer before moving on:
-  - Who exactly feels this pain?
-  - What are they doing today instead?
-  - Why will they switch to this?
-  - What's the narrowest wedge we can ship first?
-- Output: a short validated spec. If the answer is "I'm not sure," stop here and go talk to users or do research.
+- 使用 `reference/superpowers/skills/brainstorming/SKILL.md` 或 `reference/gstack/office-hours/SKILL.md` 盘问想法。
+- 使用 `reference/skills/skills/productivity/grill-me/SKILL.md` 或 `reference/skills/skills/engineering/grill-with-docs/SKILL.md` 沿决策树每条分支走到底。
+- 进入下一阶段前必须回答：
+  - 到底是谁在感受这个痛点？
+  - 他们今天是怎么做的？
+  - 为什么会切换到我们这里？
+  - 能最先发布的最窄切口是什么？
+- 输出：一份经过验证的简短 spec。如果答案是“我不确定”，就在这里停下来，去访谈用户或做调研。
 
-### 2. UI/UX design — what should it feel like?
+### 2. UI/UX 设计 —— 它应该是什么感觉？
 
-Design the user experience before writing implementation plans.
+在写实现计划之前先设计用户体验。
 
-- Use `reference/gstack/design-shotgun/SKILL.md` to generate multiple visual variants and compare them.
-- Use `reference/gstack/design-consultation/SKILL.md` if there's no existing design system.
-- Use `reference/gstack/plan-design-review/SKILL.md` to critique a plan's design dimensions before building.
-- For live sites, use `reference/gstack/design-review/SKILL.md` to find and fix visual/hierarchy issues.
-- Output: approved mockups or design direction, plus any design system decisions captured in the project docs.
+- 使用 `reference/gstack/design-shotgun/SKILL.md` 生成多个视觉变体并比较。
+- 如果没有现有设计系统，使用 `reference/gstack/design-consultation/SKILL.md`。
+- 使用 `reference/gstack/plan-design-review/SKILL.md` 在动手前从设计维度批判计划。
+- 对于线上站点，使用 `reference/gstack/design-review/SKILL.md` 发现并修复视觉/层级问题。
+- 输出：已批准的 mockup 或设计方向，以及记录在项目文档中的设计系统决策。
 
-### 3. Development plan — what do we build, in what order?
+### 3. 开发计划 —— 我们做什么、按什么顺序做？
 
-Once demand and design are clear, write the implementation plan. Do not skip this.
+需求和设计清晰后，写实现计划。不要跳过这一步。
 
-- Use `reference/superpowers/skills/writing-plans/SKILL.md` as the template.
-- Use `reference/gstack/plan-eng-review/SKILL.md` to lock in architecture, data flow, edge cases, and test coverage.
-- Save plan to `docs/plans/YYYY-MM-DD-<feature-name>.md`.
-- Each task should be a vertical slice that produces working, testable behavior.
-- Output: a plan the user approves, with exact file paths and verification steps.
+- 以 `reference/superpowers/skills/writing-plans/SKILL.md` 为模板。
+- 使用 `reference/gstack/plan-eng-review/SKILL.md` 锁定架构、数据流、边界情况和测试覆盖。
+- 保存计划到 `docs/plans/YYYY-MM-DD-<feature-name>.md`。
+- 每个任务都应是一个可产出可用、可测试行为的垂直切片。
+- 输出：用户批准的计划，包含精确文件路径和验证步骤。
 
-### 4. Implement — let the agent handle the code
+### 4. 实现 —— 让 agent 写代码
 
-With a validated plan, execute. The goal is not perfect code; it's working, testable software that matches the design.
+有了经过验证的计划，开始执行。目标不是完美代码，而是能跑、能测、符合设计的软件。
 
-- Use `reference/superpowers/skills/subagent-driven-development/SKILL.md` or `reference/superpowers/skills/executing-plans/SKILL.md` to work through the plan task-by-task.
-- The agent handles coding. I review at checkpoints and approve direction changes.
-- If a task involves UI, the agent should produce a runnable state I can look at, not just code.
-- Do not get stuck in refactoring loops. YAGNI. Ship the smallest version that validates the demand.
+- 使用 `reference/superpowers/skills/subagent-driven-development/SKILL.md` 或 `reference/superpowers/skills/executing-plans/SKILL.md` 按任务逐步推进。
+- agent 负责编码。我在检查点审查并批准方向变更。
+- 如果任务涉及 UI，agent 应产出可运行的状态，而不只是代码。
+- 不要陷入重构循环。YAGNI。发布能验证需求的最小版本。
 
-### 5. End-to-end validation — does it actually work?
+### 5. 端到端验证 —— 它真的有用吗？
 
-This is the highest-leverage step. Validate the real user experience, not just unit tests.
+这是最高杠杆的一步。验证真实用户体验，而不只是单元测试。
 
-- **Functional validation**: run the app/CLI/site and walk through the user flow. If it doesn't work for a real user, it doesn't ship.
-- **Automated testing**: run the project's test/lint/typecheck commands. Fix regressions before shipping.
-- **QA / dogfooding**: use `reference/gstack/qa/SKILL.md` or `reference/gstack/qa-only/SKILL.md` to systematically test flows and capture screenshots/evidence.
-- **Browser/site validation**: use `reference/gstack/browse/` to interact with the deployed or local site end-to-end.
-- **Performance**: use `reference/gstack/benchmark/SKILL.md` if load time or bundle size matters.
-- **Post-deploy**: use `reference/gstack/canary/SKILL.md` to watch production after shipping.
-- Output: a shipped thing with evidence that it works for the user.
+- **功能验证**：运行 app/CLI/站点，走一遍真实用户流程。如果对真实用户不可用，就不发布。
+- **自动化测试**：运行项目的测试/ lint / typecheck 命令。发布前修复回归。
+- **QA / 自测**：使用 `reference/gstack/qa/SKILL.md` 或 `reference/gstack/qa-only/SKILL.md` 系统化测试流程并截图/收集证据。
+- **浏览器/站点验证**：使用 `reference/gstack/browse/` 对部署或本地站点进行端到端交互。
+- **性能**：如果加载时间或包大小重要，使用 `reference/gstack/benchmark/SKILL.md`。
+- **发布后**：使用 `reference/gstack/canary/SKILL.md` 在发布后监控生产环境。
+- 输出：已发布的东西，以及证明它对用户有效的证据。
 
-## Skill quick-reference
+## Skill 速查
 
-### Our skills (`skills/`)
+### 我们自己的 skill（`skills/`）
 
-| I need to... | Reach for |
-|--------------|-----------|
-| Start a new feature with test-as-contract | `/test-as-contract` |
-| Initialize the workflow in a target project | `/bootstrap-workflow` |
-| Run an adversarial demand interview | `/demand-insight` |
-| Turn discussion into a PRD | `/to-prd` |
-| Explore UX with HTML prototypes | `/ux-explore` |
-| Build or update a design system | `/design-system` |
-| Import design sources (Figma/GitHub/HTML) | `/design-import` |
-| Convert PRD into REQ-IDs | `/crystallize` |
-| Generate test scaffold from REQ | `/test-author` |
-| Sign off assertions before implementation | `/assertion-signoff` |
-| Implement code against signed tests | `/implementer` |
-| Run QA / E2E / regression | `/qa-runner` |
-| Verify feel against HTML reference | `/feel-signoff` |
-| Generate developer handoff from UX | `/design-handoff` |
-| Capture lessons and update knowledge | `/reflect` |
-| Sync reference projects and absorb upstream changes | `/sync-refs` |
+| 我想…… | 使用 |
+|--------|------|
+| 用测试即契约启动新功能 | `/test-as-contract` |
+| 在目标项目初始化工作流 | `/bootstrap-workflow` |
+| 运行对抗式需求访谈 | `/demand-insight` |
+| 把讨论整理成 PRD | `/to-prd` |
+| 用 HTML 原型探索 UX | `/ux-explore` |
+| 建立或更新设计系统 | `/design-system` |
+| 导入设计来源（Figma/GitHub/HTML） | `/design-import` |
+| 把 PRD 转成 REQ-ID | `/crystallize` |
+| 从 REQ 生成测试骨架 | `/test-author` |
+| 在实现前签核断言 | `/assertion-signoff` |
+| 针对已签核测试实现代码 | `/implementer` |
+| 运行 QA / E2E / 回归 | `/qa-runner` |
+| 依据 HTML 参照验收观感 | `/feel-signoff` |
+| 从 UX 生成开发者交接包 | `/design-handoff` |
+| 捕获经验教训并更新知识 | `/reflect` |
+| 同步参考项目并吸收上游变更 | `/sync-refs` |
 
-### Reference skills (for inspiration only)
+### 参考 skill（仅作灵感）
 
-| I need to... | Reach for |
-|--------------|-----------|
-| Validate an idea or find the wedge | `reference/superpowers/skills/brainstorming/` or `reference/gstack/office-hours/` |
-| Grill me on a plan until it's sharp | `reference/mattpocock/skills/productivity/grill-me/` or `reference/mattpocock/skills/engineering/grill-with-docs/` |
-| Explore UI variants | `reference/gstack/design-shotgun/` |
-| Build a design system from scratch | `reference/gstack/design-consultation/` |
-| Review a plan's design before coding | `reference/gstack/plan-design-review/` |
-| Audit a live site's visual design | `reference/gstack/design-review/` |
-| Write a structured implementation plan | `reference/superpowers/skills/writing-plans/` |
-| Review architecture / edge cases | `reference/gstack/plan-eng-review/` |
-| Execute a plan with agent support | `reference/superpowers/skills/subagent-driven-development/` |
-| Debug a bug | `reference/skills/skills/engineering/diagnose/` or `reference/gstack/investigate/` |
-| Systematically QA a site | `reference/gstack/qa/` or `reference/gstack/qa-only/` |
-| Check performance | `reference/gstack/benchmark/` |
-| Monitor after deploy | `reference/gstack/canary/` |
-| Ship / open a PR | `reference/gstack/ship/` + `reference/gstack/review/` |
+| 我想…… | 参考 |
+|--------|------|
+| 验证想法或找到切口 | `reference/superpowers/skills/brainstorming/` 或 `reference/gstack/office-hours/` |
+| 把计划盘问到锋利 | `reference/mattpocock/skills/productivity/grill-me/` 或 `reference/mattpocock/skills/engineering/grill-with-docs/` |
+| 探索 UI 变体 | `reference/gstack/design-shotgun/` |
+| 从零建立设计系统 | `reference/gstack/design-consultation/` |
+| 在编码前审查计划的设计维度 | `reference/gstack/plan-design-review/` |
+| 审计线上站点视觉设计 | `reference/gstack/design-review/` |
+| 写结构化实现计划 | `reference/superpowers/skills/writing-plans/` |
+| 审查架构 / 边界情况 | `reference/gstack/plan-eng-review/` |
+| 在 agent 支持下执行计划 | `reference/superpowers/skills/subagent-driven-development/` |
+| 调试 bug | `reference/skills/skills/engineering/diagnose/` 或 `reference/gstack/investigate/` |
+| 系统化 QA 站点 | `reference/gstack/qa/` 或 `reference/gstack/qa-only/` |
+| 检查性能 | `reference/gstack/benchmark/` |
+| 发布后监控 | `reference/gstack/canary/` |
+| 发布 / 开 PR | `reference/gstack/ship/` + `reference/gstack/review/` |
 
-## Reference project commands
+## 参考项目命令
 
-Run these from inside the relevant `reference/` subdirectory, not from the workspace root.
+这些命令要在对应 `reference/` 子目录下运行，不要在工作区根目录运行。
 
-### gstack (`reference/gstack/`)
-- `bun install` — install deps
-- `bun test` — free tests
-- `bun run test:evals` — paid evals, diff-based
-- `bun run build` — gen docs + compile binaries
-- `bun run gen:skill-docs` — regenerate SKILL.md files from templates
-- `bun run slop` / `bun run slop:diff` — AI code-quality scan
+### gstack（`reference/gstack/`）
+- `bun install` —— 安装依赖
+- `bun test` —— 免费测试
+- `bun run test:evals` —— 付费 evals，基于 diff
+- `bun run build` —— 生成文档 + 编译二进制
+- `bun run gen:skill-docs` —— 从模板重新生成 SKILL.md
+- `bun run slop` / `bun run slop:diff` —— AI 代码质量扫描
 
-### superpowers (`reference/superpowers/`)
-- No root build. Read `skills/writing-skills/SKILL.md` before creating or editing skills.
+### superpowers（`reference/superpowers/`）
+- 没有根构建。在创建或编辑 skill 前，先阅读 `skills/writing-skills/SKILL.md`。
 
-### mattpocock skills (`reference/mattpocock/`)
-- `npx skills@latest add mattpocock/skills` — consumer install
-- Skills live at `skills/<bucket>/<skill-name>/SKILL.md`.
+### mattpocock skills（`reference/mattpocock/`）
+- `npx skills@latest add mattpocock/skills` —— 消费者安装
+- Skill 位于 `skills/<bucket>/<skill-name>/SKILL.md`。
 
-## Creating and updating our skills
+## 创建与更新我们的 skill
 
-`skills/` contains the canonical test-as-contract skill set, organized as a Claude Code plugin:
+`skills/` 是测试即契约 skill 的 canonical 集合，按 Claude Code 插件组织：
 
-- `skills/productivity/` — user-invoked workflow skills
-- `skills/engineering/` — model-invoked implementation skills
-- `skills/maintenance/` — workflow maintenance skills (sync refs, update config, ...)
+- `skills/productivity/` —— 用户触发的工作流 skill
+- `skills/engineering/` —— 模型触发的实现 skill
+- `skills/maintenance/` —— 工作流维护 skill（同步 refs、更新配置等）
 
-When adapting a reference skill pattern into our workflow:
+把参考 skill 模式适配到我们工作流时：
 
-1. Copy only the pattern you need into a new folder under `skills/<bucket>/<skill-name>/SKILL.md`.
-2. Add the skill path to `.claude-plugin/plugin.json`.
-3. Record reference sources in the skill's frontmatter `sources:` and in `skills/<bucket>/<skill-name>/SOURCES.md`.
-4. Strip out anything that does not fit our workflow.
-5. Edit the voice and examples to match our projects.
-6. Test the skill in a real Claude Code session before finalizing.
+1. 只把需要的模式复制到新文件夹 `skills/<bucket>/<skill-name>/SKILL.md`。
+2. 把 skill 路径加到 `.claude-plugin/plugin.json`。
+3. 在 skill 前言的 `sources:` 和 `skills/<bucket>/<skill-name>/SOURCES.md` 中记录参考来源。
+4. 删掉不适合我们工作流的内容。
+5. 调整语气和示例，使其符合我们的项目。
+6. 在真实 Claude Code 会话中测试该 skill，再定稿。
 
-Good skills are small and composable. One skill = one clear job.
+好的 skill 小而可组合。一个 skill = 一个清晰的职责。
 
-When a reference project updates, use the recorded `sources` to diff and update our skill locally, then reinstall it in target projects.
+当参考项目更新时，使用记录的 `sources` 在本地 diff 并更新我们的 skill，然后重新安装到目标项目。
 
-## Keeping skills in sync with reference projects
+## 与参考项目保持同步
 
-Our skills adapt patterns from reference projects (`reference/`). When those projects
-update, we need a structured way to decide what to absorb.
+我们的 skill 借鉴自参考项目（`reference/`）。当这些项目更新时，我们需要结构化地判断吸收哪些变更。
 
-### Quick sync
+### 快速同步
 
-Run `/sync-refs` (or `./scripts/sync-refs.sh`). It:
+运行 `/sync-refs`（或 `./scripts/sync-refs.sh`）。它会：
 
-1. `git pull` all reference repos
-2. Parse each skill's `SOURCES.md` to find which reference files it depends on
-3. `git log --since=<last sync>` for each dependency
-4. Generate `docs/sync-reports/YYYY-MM-DD.md` with changes grouped by skill
-5. Guide you through judging each change: absorb / skip / later
+1. 对所有参考仓库执行 `git pull`
+2. 解析每个 skill 的 `SOURCES.md`，找到它依赖的参考文件
+3. 对每个依赖执行 `git log --since=<last sync>`
+4. 生成 `docs/sync-reports/YYYY-MM-DD.md`，按 skill 分组列出变更
+5. 引导你逐个判断：吸收 / 跳过 / 延后
 
-### Manual sync
+### 手动同步
 
 ```bash
-# 1. Pull all refs
+# 1. 拉取所有参考仓库
 ./scripts/sync-refs.sh --pull-only
 
-# 2. Check what changed in a specific reference file
+# 2. 查看某个参考文件的变更
 git -C reference/baoyu-design log --since="2026-06-01" -- skills/baoyu-design/system-prompt.md
 
-# 3. Diff the changes
+# 3. Diff 变更
 git -C reference/baoyu-design diff <old-commit>..HEAD -- skills/baoyu-design/system-prompt.md
 
-# 4. If absorbing, update the skill and its SOURCES.md
+# 4. 如果吸收，更新 skill 及其 SOURCES.md
 ```
 
-### Update cadence
+### 更新节奏
 
-- **Monthly** (default): run `/sync-refs`, most reports will be clean
-- **On major releases**: when gstack/superpowers/baoyu-design ship a major version
-- **Before a big workflow change**: check if upstream has solved the same problem already
+- **每月**（默认）：运行 `/sync-refs`，大多数报告会是干净的
+- **大版本发布时**：gstack/superpowers/baoyu-design 发布主版本时
+- **重大工作流变更前**：检查上游是否已经解决了同样的问题
 
-### Decision framework
+### 决策框架
 
-| Reference change type | Action |
-|----------------------|--------|
-| New feature/skill we don't use | Skip |
-| Methodology improvement in something we adapted | Evaluate carefully, often worth absorbing |
-| Bug fix or format improvement | Absorb (low risk) |
-| Internal refactor | Skip (doesn't affect methodology) |
-| File moved/deleted upstream | Flag — check if our reference is broken |
-| Change conflicts with our adaptation | Analyze — keep our design decision unless upstream found a better way |
+| 参考变更类型 | 动作 |
+|-------------|------|
+| 我们不使用的新功能/skill | 跳过 |
+| 我们已借鉴部分的方法论改进 | 仔细评估，通常值得吸收 |
+| bug 修复或格式改进 | 吸收（低风险） |
+| 内部重构 | 跳过（不影响方法论） |
+| 上游文件移动/删除 | 标记 —— 检查我们的参考是否断裂 |
+| 与我们的改编冲突的变更 | 分析 —— 除非上游找到了更好的方案，否则保留我们的设计决策 |

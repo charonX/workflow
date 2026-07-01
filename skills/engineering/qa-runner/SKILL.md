@@ -31,17 +31,17 @@ BUILD 阶段全单元绿，进入 REVIEW/QA 慢外门时。或被 `/test-as-cont
 1. **跑单元测试**：确认仍全绿。
 2. **跑 E2E/UITests**：验证关键用户流程。
 3. **手动模拟器验证**：启动 app，走一遍核心流程。
-4. **记录 flaky**：绿红不定的测试单独标记，开 flake 单。
+4. **记录不稳定测试**：绿红不定的测试单独标记，开不稳定问题单。
 5. **输出 QA 报告**：
    - 哪些 REQ 被验证
    - 哪些失败
-   - flaky 列表
+   - 不稳定测试列表
    - 建议下一步（feel-signoff / 回 BUILD / 回 REQ）
 
 ## QA 报告模板
 
 ```markdown
-# QA Report — <story-id>
+# QA 报告 — <story-id>
 
 ## 单元测试
 - 结果：PASS / FAIL
@@ -56,10 +56,10 @@ BUILD 阶段全单元绿，进入 REVIEW/QA 慢外门时。或被 `/test-as-cont
 - 结果：...
 - 截图：...
 
-## Flaky 测试
+## 不稳定测试
 | 测试名 | 现象 | 处理 |
 |---|---|---|
-| ... | flip | 已开单，限时修 |
+| ... | 时绿时红 | 已开单，限时修 |
 
 ## 结论
 - [ ] 可进入 feel-signoff
@@ -70,10 +70,10 @@ BUILD 阶段全单元绿，进入 REVIEW/QA 慢外门时。或被 `/test-as-cont
 ## 纪律
 
 - 行为对错由测试判；观感好坏留给 feel-signoff 人判。
-- flaky 不掩盖：默认放行但开限时单；反复 flip 到阈值转阻断。
-- 不自动修 flaky E2E；疑似产品竞态则回 assertion-signoff/REQ。
+- 不稳定测试不掩盖：默认放行但开限时单；反复时绿时红到阈值转阻断。
+- 不自动修不稳定 E2E；疑似产品竞态则回 assertion-signoff/REQ。
 
 ## 与参考项目的差异
 
-- gstack `qa` 强调 health_score 和 diff-aware 测试；我们采用更轻量的报告模板。
-- superpowers 给我们 specialist subagent 审查模式，可扩展为并行 QA。
+- gstack `qa` 强调健康分和差异感知测试；我们采用更轻量的报告模板。
+- superpowers 给我们专家子代理审查模式，可扩展为并行 QA。

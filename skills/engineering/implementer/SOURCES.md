@@ -1,4 +1,4 @@
-# Sources: implementer
+# 参考来源：implementer
 
 ## 借鉴的 reference 文件
 
@@ -15,5 +15,5 @@
 
 ## 未来局部更新建议
 
-- superpowers subagent-driven-development / executing-plans 更新时，检查任务简报、review package、模型选择策略。
+- superpowers subagent-driven-development / executing-plans 更新时，检查任务简报、审查包、模型选择策略。
 - mattpocock implement 更新时，检查轻量实现模式。

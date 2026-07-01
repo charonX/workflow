@@ -1,4 +1,4 @@
-# Sources: test-author
+# 参考来源：test-author
 
 ## 借鉴的 reference 文件
 
@@ -10,7 +10,7 @@
 
 - 只写测试骨架，不写实现代码。
 - 断言占位等人签；测试头部强制 REQ-TRACE。
-- 默认禁用 snapshot 当 oracle。
+- 默认禁用快照当判定依据。
 
 ## 未来局部更新建议
 

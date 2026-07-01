@@ -1,6 +1,6 @@
 ---
 name: reflect
-description: 沉淀本次 story 的经验：更新 engineering-lessons、ADR、STANDARDS，并定义下一个 crossing-line。
+description: 沉淀本次 story 的经验：更新 engineering-lessons、ADR、STANDARDS，并定义下一个阶段切换线。
 disable-model-invocation: true
 sources:
   - reference/gstack/retro/SKILL.md
@@ -32,7 +32,7 @@ feel-signoff 通过，用户说"复盘"、"/reflect"时。
 ## 执行步骤
 
 1. **统计健康指标**：
-   - feel-signoff 发现的 bug 数 / req-change 数
+   - feel-signoff 发现的缺陷数 / 需求变更数
    - 每个阶段耗时/轮数
    - 哪些 REQ 验收标准在 feel-signoff 被发现遗漏
 2. **提炼经验**：
@@ -43,14 +43,14 @@ feel-signoff 通过，用户说"复盘"、"/reflect"时。
    - `engineering-lessons.md`
    - `architecture.md`
    - `STANDARDS.md`
-4. **定义下一个 crossing-line**：如果是多 phase 项目，明确 P2 进入二挡的条件。
+4. **定义下一个阶段切换线（crossing-line）**：如果是多 phase 项目，明确 P2 进入二挡的条件。
 
 ## 健康指标
 
 | 指标 | 本期值 | 目标 |
 |---|---|---|
-| feel-signoff bug 率 | N/M | 随时间下降 |
-| feel-signoff req-change 率 | N/M | 随时间下降 |
+| feel-signoff 缺陷率 | N/M | 随时间下降 |
+| feel-signoff 需求变更率 | N/M | 随时间下降 |
 | 实现者轮数 | N | ≤ 5 |
 | 单 REQ 平均测试数 | N | ≥ 1 |
 

@@ -35,7 +35,7 @@ disable-model-invocation: true
 脚本会：
 1. `git fetch` + `git merge --ff-only` 所有 reference 仓库
 2. 解析每个 skill 的 `SOURCES.md`，提取它依赖哪些 reference 文件
-3. 对每个依赖，`git log --since=<上次同步>` 检查是否有新 commit
+3. 对每个依赖，`git log --since=<上次同步>` 检查是否有新提交
 4. 生成 `docs/sync-reports/YYYY-MM-DD.md`
 
 ### 第二步：阅读报告
@@ -43,19 +43,19 @@ disable-model-invocation: true
 报告结构：
 
 ```
-# Sync Report — 2026-07-01 10:00
+# 同步报告 — 2026-07-01 10:00
 
-## Reference repo status        ← 每个 ref 仓库当前 HEAD
+## 参考仓库状态        ← 每个 ref 仓库当前 HEAD
 
-## Changes by skill              ← 按 skill 分组
+## 变更按 skill 分组              ← 按 skill 分组
 
 ### `ux-explore`                  ← skill 名称
-- 🔄 `reference/baoyu-design/...` ← 有变更（显示 commits）
-   a1b2c3d 2026-06-28 ...       ← 具体 commit
+- 🔄 `reference/baoyu-design/...` ← 有变更（显示提交记录）
+   a1b2c3d 2026-06-28 ...       ← 具体提交
 - ✅ `reference/gstack/...`       ← 无变更
 - ⚠️  `reference/gstack/design-system/SKILL.md`      ← 文件已不存在
 
-## Actions needed                 ← 处理指引
+## 待处理事项                 ← 处理指引
 ```
 
 ### 第三步：逐项判断
@@ -80,7 +80,7 @@ disable-model-invocation: true
 1. **打开对应 skill 文件**：`skills/<bucket>/<name>/SKILL.md`
 2. **阅读 reference diff**，理解改了什么
 3. **改编到我们的 skill**：
-   - 保持我们的 voice、结构、命名
+   - 保持我们的文风、结构、命名
    - 只吸收与我们 workflow 相关的部分
    - 不破坏已有的 test-as-contract 流程约束
 4. **更新 SOURCES.md** 的"改动记录"：
@@ -103,14 +103,14 @@ git commit -m "sync-refs: absorb upstream changes from <repo> — <summary>"
 |------|------|
 | Reference 新增了技能/功能，我们没借鉴过 | **跳过**，除非有明确需求 |
 | Reference 修改了我们借鉴过的方法论 | **仔细评估**，通常值得吸收 |
-| Reference 修复了 bug 或改进了格式 | **吸收**，低风险高收益 |
+| Reference 修复了缺陷或改进了格式 | **吸收**，低风险高收益 |
 | Reference 重构了内部实现 | **跳过**，不影响方法论 |
 | Reference 文件被删除/移动 | **标记**，检查是否影响我们的引用 |
 | 改动与我们的改编冲突 | **分析冲突**，优先保持我们的设计决策 |
 
 ## 首次运行
 
-首次运行时没有上次同步时间戳，脚本会将所有依赖标记为 🆕（首次检查）。这不意味着需要全部 review——只是建立基线。之后只会显示增量变更。
+首次运行时没有上次同步时间戳，脚本会将所有依赖标记为 🆕（首次检查）。这不意味着需要全部评审——只是建立基线。之后只会显示增量变更。
 
 ## 定期维护建议
 

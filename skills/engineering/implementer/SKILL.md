@@ -34,11 +34,11 @@ assertion-signoff 已通过，用户说"开始实现"、"/implementer"时。或�
    - 跑 **全套单元测试**（不是只跑当前测试）。
    - 如果回归失败，先修回归。
    - 重复直到全绿。
-3. **轮数上限**：超过 N 轮（默认 10 轮）仍未全绿，停止并 escalate。
-4. **Escalation 姿势**：
+3. **轮数上限**：超过 N 轮（默认 10 轮）仍未全绿，停止并升级。
+4. **升级策略**：
    - "我实现不出来，诊断如下" → 升级给人/更强模型。
    - "我怀疑断言 X 自相矛盾/不可满足，证据如下" → 回 assertion-signoff。
-5. **提交**：全绿后 commit。
+5. **提交**：全绿后提交。
 
 ## 内循环命令
 
@@ -46,7 +46,7 @@ assertion-signoff 已通过，用户说"开始实现"、"/implementer"时。或�
 cd /Users/zhanglei/charon/code/workspace/BanshanJourney
 xcodebuild -project BanshanJourney.xcodeproj -scheme BanshanJourneyTests -destination 'platform=iOS Simulator,name=iPhone 17' test 2>&1 | grep -E "(Test Suite|Executed|failures)"
 ```
-Expected: `Executed N tests, with 0 failures (0 unexpected)`
+预期输出：`Executed N tests, with 0 failures (0 unexpected)`
 
 ## 纪律
 
@@ -58,7 +58,7 @@ Expected: `Executed N tests, with 0 failures (0 unexpected)`
 
 ## 与参考项目的差异
 
-- superpowers `subagent-driven-development`：给我们 subagent 批量执行、任务简报、review package。
-- superpowers `executing-plans`：给我们 inline 批量执行。
+- superpowers `subagent-driven-development`：给我们子代理批量执行、任务简报、审查包。
+- superpowers `executing-plans`：给我们内联批量执行。
 - mattpocock `implement`：给我们"按已有上下文实现"的轻量模式。
 - 核心差异：测试只读 + 断言归人 + 轮数上限逃生口。

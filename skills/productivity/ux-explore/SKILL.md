@@ -36,18 +36,18 @@ PRD 已生成，需要把抽象需求转成可视化的 HTML 原型时。如果 
 1. **检查设计系统**：
    - 查找项目根 `DESIGN.md`、`tokens.css` 或 `.aiassist/global/STANDARDS.md`。
    - 如果不存在，调用 `/design-system` 先建设设计系统。
-   - 如果存在 `tokens.css`，在 HTML 原型中通过 `<link>` 引用，作为**绑定视觉约束**——不发明 off-system 颜色或样式。
+   - 如果存在 `tokens.css`，在 HTML 原型中通过 `<link>` 引用，作为**绑定视觉约束**——不发明系统外颜色或样式。
 
 2. **收集设计上下文**（多源）：
    - 询问用户是否有截图、Figma .fig 文件、GitHub 仓库或已有 HTML/CSS 作为设计参考。
    - 如果有 Figma .fig 文件，调用 `/design-import` 导入。
    - 如果有 GitHub 仓库作为设计源，用 `gh api` 浏览。
-   - 设计上下文是高质量设计的最大杠杆——**push for it**。
+   - 设计上下文是高质量设计的最大杠杆——**要极力争取**。
 
 3. **读取 PRD**，识别需要可视化的用户流程。
 
 4. **明确方向和变体**：
-   - 确认 scope：哪些 screen/flow 需要设计。
+   - 确认范围：哪些屏幕/流程需要设计。
    - 确认变体数量：要几个方案？探索什么维度（视觉风格/交互方式/布局）？
    - 确认是偏"遵循现有模式"还是偏"新颖大胆"。
    - 如果没有品牌系统约束，遵循**前端审美指引**（见下文）。
@@ -55,8 +55,8 @@ PRD 已生成，需要把抽象需求转成可视化的 HTML 原型时。如果 
 5. **生成第一版 HTML 原型**：
    - 使用项目设计系统的 token（`tokens.css` 或 `DESIGN.md` 中的颜色/字体/间距）。
    - **交互原型默认使用 React + Babel**：对于需要交互的流程（表单、多步骤、状态切换），使用 React useState/useEffect 构建真实可交互原型。
-   - 对于多文件原型，拆分 JSX 组件：`data.jsx`（mock 数据）→ `icons.jsx` → `panes.jsx`（展示组件）→ `app.jsx`（App + state）。
-   - 利用 **Starter Components**（见下文）加速开发。
+   - 对于多文件原型，拆分 JSX 组件：`data.jsx`（模拟数据）→ `icons.jsx` → `panes.jsx`（展示组件）→ `app.jsx`（App + state）。
+   - 利用 **起始组件**（见下文）加速开发。
    - 在 HTML 头部添加注释：关联的 REQ-ID、版本、日期。
 
 6. **呈现给用户**：
@@ -65,10 +65,10 @@ PRD 已生成，需要把抽象需求转成可视化的 HTML 原型时。如果 
 
 7. **迭代**：根据用户反馈修改 HTML，直到用户说"这就是我想要的感觉"。
    - 如需多个方案对比，使用 design-canvas 组件并排展示。
-   - 如需微调，可构建 in-page Tweaks 面板（颜色/字体/间距滑块）。
+   - 如需微调，可构建页内微调面板（颜色/字体/间距滑块）。
 
 8. **双轨收割**：
-   - **行为/结构决策** → 写成文字，更新 PRD 的 `Stable Blocks`，必要时重新 `/crystallize`。
+   - **行为/结构决策** → 写成文字，更新 PRD 的 `稳定块`，必要时重新 `/crystallize`。
    - **视觉/交互决策** → 保留在 HTML 中，作为 Gate 2 参照。
 
 9. **处理 PRD 回流**（同现有流程）。
@@ -97,12 +97,12 @@ PRD 已生成，需要把抽象需求转成可视化的 HTML 原型时。如果 
 
 | 文件 | 内容 | 职责 |
 |------|------|------|
-| `data.jsx` | Mock 数据、内容、helper 函数 | 纯数据 |
+| `data.jsx` | 模拟数据、内容、辅助函数 | 纯数据 |
 | `icons.jsx` | SVG 图标组件 | 纯展示 |
-| `panes.jsx` | 侧栏、列表、阅读器等展示组件 | props in, callbacks out |
+| `panes.jsx` | 侧栏、列表、阅读器等展示组件 | props 传入，回调传出 |
 | `app.jsx` | App 顶层 + state + 弹窗/选择 | 状态持有者 |
 
-## Starter Components
+## 起始组件
 
 `starter-components/` 目录提供开箱即用的脚手架，复制到项目后使用：
 
@@ -112,11 +112,11 @@ PRD 已生成，需要把抽象需求转成可视化的 HTML 原型时。如果 
 | Android 设备框架 | `android-frame.jsx` | Android 状态栏 + 导航栏 + 键盘 |
 | macOS 窗口 | `macos-window.jsx` | macOS 窗口 chrome + 红绿灯 |
 | 浏览器窗口 | `browser-window.jsx` | 浏览器 chrome + 标签页 + URL 栏 |
-| 设计画布 | `design-canvas.jsx` | Pan/zoom 画布，多方案并排对比 |
-| 动画引擎 | `animations.jsx` | Timeline 动画（Stage, Sprite, easing） |
+| 设计画布 | `design-canvas.jsx` | 平移/缩放画布，多方案并排对比 |
+| 动画引擎 | `animations.jsx` | Timeline 动画（舞台、精灵、缓动） |
 | 幻灯片舞台 | `deck-stage.js` | 幻灯片缩放/导航/缩略图 |
 | 图片占位槽 | `image-slot.js` | 用户拖放图片的占位区域 |
-| 微调面板 | `tweaks-panel.jsx` | In-page 颜色/字体/间距控件 |
+| 微调面板 | `tweaks-panel.jsx` | 页内颜色/字体/间距控件 |
 
 **使用方式**：`cp starter-components/<file> .aiassist/stories/<id>/ux/` 然后通过 `<script>` 引用。
 
@@ -131,7 +131,7 @@ PRD 已生成，需要把抽象需求转成可视化的 HTML 原型时。如果 
 - **空间**：不对称、重叠、对角线流动、大量留白或受控密度
 - **背景**：渐变网格、噪点纹理、几何图案、叠层透明
 
-### 避免 AI Slop
+### 避免 AI 俗套
 - 不滥用渐变背景、emoji、圆角卡片+左边框强调色
 - 不用 Inter/Roboto/Arial/Fraunces 等过度使用的字体
 - 不用 SVG 手绘替代图片——用占位符并请用户提供真实素材
@@ -152,11 +152,11 @@ PRD 已生成，需要把抽象需求转成可视化的 HTML 原型时。如果 
 - 主观判断（"好看""舒服"）留在 HTML 里，由 Gate 2 人判。
 - **新功能必须回流 PRD**，不能直接从 HTML 跳进代码。
 - **优先从设计上下文出发**——截图、Figma 文件、代码库优于从零设计。
-- **设计系统 token 是绑定的**——不发明 off-system 颜色或样式。
+- **设计系统 token 是绑定的**——不发明系统外颜色或样式。
 
 ## 与参考项目的差异
 
 - gstack `design-shotgun`：强调多方案对比；我们用 design-canvas 组件实现并排对比
 - soflow `design-ui`：生成完整 UI；我们聚焦关键流程的交互原型
-- baoyu-design：完整设计引擎；我们吸收其 HTML 原型方法论、Starter Components、前端审美指引
+- baoyu-design：完整设计引擎；我们吸收其 HTML 原型方法论、起始组件、前端审美指引
 - 核心差异：基于项目设计系统、双轨收割、PRD 回流机制、React 交互原型

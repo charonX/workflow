@@ -1,4 +1,4 @@
-# Sources: crystallize
+# 参考来源：crystallize
 
 ## 借鉴的 reference 文件
 
@@ -15,7 +15,7 @@
 ## 未来局部更新建议
 
 - mattpocock grill-with-docs 更新时，检查验收标准清晰度要求。
-- gstack plan-eng-review 更新时，检查 edge case 挖掘清单。
+- gstack plan-eng-review 更新时，检查边界情况挖掘清单。
 
 ## 改动记录
 

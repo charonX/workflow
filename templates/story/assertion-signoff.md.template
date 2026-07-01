@@ -1,4 +1,4 @@
-# Assertion Signoff — {{STORY_NAME}}
+# 断言签核 — {{STORY_NAME}}
 
 > 故事 ID：`{{STORY_ID}}`
 > 日期：{{DATE}}
@@ -29,13 +29,13 @@
 - [ ] 每个测试文件都有 `// REQ-TRACE` 和 `// REQ-VERSION`。
 - [ ] 无 `// TODO: HUMAN ASSERTION` 占位。
 - [ ] expected 值来源清晰（人手算 / 已签标准 / 真实 JSON）。
-- [ ] 无 snapshot 当 oracle。
-- [ ] 边界/错误 case 已覆盖。
+- [ ] 无 snapshot 当测试预言。
+- [ ] 边界/错误场景已覆盖。
 
 ---
 
 ## 放行
 
-⏸ **BUILD 阶段在 assertion-signoff 通过前不得开始。**
+⏸ **BUILD 阶段在断言签核通过前不得开始。**
 
 签名：________________ 日期：________________

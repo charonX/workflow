@@ -11,14 +11,14 @@ final class {{TEST_CLASS_NAME}}: XCTestCase {
     // MARK: - REQ-{{PHASE}}-001
 
     func test{{BehaviorName}}() {
-        // Given
-        let input = /* scaffold fills */
+        // 给定
+        let input = /* 脚手架填充 */
 
-        // When
-        let result = /* scaffold fills */
+        // 当
+        let result = /* 脚手架填充 */
 
-        // Then
-        // TODO: HUMAN ASSERTION — replace with signed expected value
+        // 则
+        // TODO: HUMAN ASSERTION — 替换为已签核的 expected 值
         XCTAssertEqual(result, <#expected#>)
     }
 

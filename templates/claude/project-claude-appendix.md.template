@@ -1,65 +1,65 @@
-## Test-as-Contract Workflow
+## 测试即契约工作流
 
-This project uses the `test-as-contract` workflow. Skills are installed under `.claude/skills/`.
+本项目使用 `test-as-contract` 工作流。Skill 安装在 `.claude/skills/` 下。
 
-### Available skills
+### 可用 skill
 
-| Skill | Purpose | Trigger |
+| Skill | 用途 | 触发者 |
 |---|---|---|
-| `/test-as-contract` | Start or continue a story | user |
-| `/bootstrap-workflow` | Initialize project-level workflow infrastructure | user |
-| `/demand-insight` | Adversarial demand interview | user |
-| `/to-prd` | Synthesize discussion into PRD | user |
-| `/design-system` | Build or verify project-level design system | user |
-| `/ux-explore` | High-fidelity UX exploration with HTML prototypes | user |
-| `/crystallize` | Convert PRD stable blocks into REQ-IDs | model |
-| `/test-author` | Generate test scaffold from REQ | model |
-| `/assertion-signoff` | Sign assertions before implementation | user |
-| `/implementer` | Implement code against signed tests | model |
-| `/qa-runner` | Run E2E, regression, collect evidence | model |
-| `/feel-signoff` | Verify feel against HTML reference | user |
-| `/reflect` | Capture lessons and update knowledge | user |
+| `/test-as-contract` | 开始或继续 story | 用户 |
+| `/bootstrap-workflow` | 初始化项目级工作流基础设施 | 用户 |
+| `/demand-insight` | 对抗式需求访谈 | 用户 |
+| `/to-prd` | 把讨论整理成 PRD | 用户 |
+| `/design-system` | 建立或校验项目级设计系统 | 用户 |
+| `/ux-explore` | 用 HTML 原型进行高保真 UX 探索 | 用户 |
+| `/crystallize` | 把 PRD 稳定块转成 REQ-ID | 模型 |
+| `/test-author` | 从 REQ 生成测试骨架 | 模型 |
+| `/assertion-signoff` | 在实现前签核断言 | 用户 |
+| `/implementer` | 针对已签核测试实现代码 | 模型 |
+| `/qa-runner` | 运行 E2E、回归、收集证据 | 模型 |
+| `/feel-signoff` | 依据 HTML 参照验收观感 | 用户 |
+| `/reflect` | 捕获经验教训并更新知识 | 用户 |
 
-### Artifact layout
+### 产物目录
 
 ```
 .aiassist/
 ├── stories/<story-id>/
-│   ├── prd.md                 # Narrative intent (soft)
-│   ├── requirements.md        # REQ with IDs (the contract)
-│   ├── requirements-v1.hash   # Version hash for stale-test detection
-│   ├── ux/                    # HTML UX references for feel-signoff
-│   ├── test-plan.md           # Test-author's plan
-│   ├── assertion-signoff.md       # Human assertion signoff
-│   ├── feel-signoff.md        # Human feel verification
-│   └── workflow-state.yaml    # Current phase / blockers
+│   ├── prd.md                 # 叙事意图（软）
+│   ├── requirements.md        # 带 ID 的 REQ（契约）
+│   ├── requirements-v1.hash   # 版本哈希，用于检测过时测试
+│   ├── ux/                    # 用于 feel-signoff 的 HTML UX 参照
+│   ├── test-plan.md           # 测试作者的计划
+│   ├── assertion-signoff.md   # 人签核断言
+│   ├── feel-signoff.md        # 人验收观感
+│   └── workflow-state.yaml    # 当前阶段 / 阻塞项
 └── global/
     ├── engineering-lessons.md
     ├── architecture.md
     └── STANDARDS.md
 ```
 
-### Core rules
+### 核心规则
 
-1. **Truth flows down**: PRD → REQ → tests → code.
-2. **Errors flow back up**: fix at the highest affected layer; never patch code directly because a test or spec is wrong.
-3. **Assertions belong to the human**: AI writes test scaffolding; human signs expected values.
-4. **Implementer is read-only on tests**: any diff touching test files invalidates the round.
-5. **`/assertion-signoff` blocks BUILD; `/feel-signoff` blocks merge**.
-6. **No test without a REQ-ID**: every test file must declare `// REQ-TRACE` and `// REQ-VERSION`.
-7. **Subjective judgments stay out of tests**: feel/aesthetics are verified at feel-signoff against HTML references.
+1. **真理向下流**：PRD → REQ → 测试 → 代码。
+2. **错误向上回**：在受影响的最高层修复；永远不要因为测试或规格错了就直接改代码。
+3. **断言归人**：AI 写测试脚手架；人签 expected 值。
+4. **实现者对测试只读**：任何触及测试文件的代码差异都会让本轮作废。
+5. **`/assertion-signoff` 阻塞 BUILD；`/feel-signoff` 阻塞合并**。
+6. **没有 REQ-ID 就没有测试**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
+7. **主观判断不进测试**：观感/美学在 feel-signoff 环节依据 HTML 参照验收。
 
-### Starting a new story
+### 开始新 story
 
 ```
 /test-as-contract
-# or
+# 或
 /bootstrap-workflow
 ```
 
-### Updating skills
+### 更新 skill
 
-When the canonical skills in `<workflow-path>/skills/` change, reinstall them:
+当 `<workflow-path>/skills/` 中的 canonical skill 变更时，重新安装：
 
 ```bash
 rm -rf .claude/skills/*

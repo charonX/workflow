@@ -1,6 +1,6 @@
 ---
 name: feel-signoff
-description: 观感签核门：人对照 HTML UX 参照验证观感，判 bug / 需求变更，禁止手改代码。
+description: 观感签核门：人对照 HTML UX 参照验证观感，判缺陷 / 需求变更，禁止手改代码。
 disable-model-invocation: true
 sources:
   - reference/gstack/design-review/SKILL.md
@@ -30,8 +30,8 @@ QA 通过，用户说"验观感"、`/feel-signoff` 时。
 1. **展示 HTML 参照** 和 **当前实现** 给用户。
 2. **逐项检查**：颜色、排版、间距、动效、交互反馈、错误/降级状态表达。
 3. **记录偏差**：对每个偏差，让用户分类：
-   - **Bug**：实现偏离已签 REQ → 补标准增量 → test → implement。
-   - **Req-change**：REQ 没写或写错 → 改 REQ → 重签 assertion-signoff → test → implement。
+   - **缺陷**：实现偏离已签 REQ → 补标准增量 → 测试 → 实现。
+   - **需求变更**：REQ 没写或写错 → 改 REQ → 重签 assertion-signoff → 测试 → 实现。
 4. **生成 feel-signoff.md**。
 5. **更新 workflow-state**：标记 feel-signoff 通过或退回。
 

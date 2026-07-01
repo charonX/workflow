@@ -1,4 +1,4 @@
-# SOURCES
+# 参考来源
 
 这个 skill 是 workflow 维护工具，不借鉴 reference 项目，而是服务于"检查 reference 变更 → 吸收到 workflow"的维护流程。
 

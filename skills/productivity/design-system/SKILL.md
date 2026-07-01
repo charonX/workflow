@@ -51,7 +51,7 @@ sources:
    - 产品调性是什么？（专业/活泼/高端/亲和等）
    - 目标用户是谁？
    - 有没有必须遵守的品牌色/字体？
-   - 有没有竞品或参考 App？
+   - 有没有竞品或参考应用？
    - 平台优先级？（iOS/web/Android 等）
 4. **生成设计系统文档**（`DESIGN.md`）：
    - 使用 markdown 格式。
@@ -59,7 +59,7 @@ sources:
    - 包含组件形态描述和示例。
 5. **生成 CSS Token 文件**（`tokens.css`）：
    - 将所有设计 token 输出为 CSS 自定义属性。
-   - 这是 `/ux-explore` 生成 HTML 原型时的**绑定视觉约束**——原型必须 `<link>` 此文件，不发明 off-system 颜色或样式。
+   - 这是 `/ux-explore` 生成 HTML 原型时的**绑定视觉约束**——原型必须 `<link>` 此文件，不发明系统外颜色或样式。
    - 格式如下（按需调整）：
 
 ```css
@@ -149,7 +149,7 @@ sources:
 - `/design-system` 是项目级、一次性的。
 - `/ux-explore` 基于 `/design-system` 的输出，为每个 story 生成高保真 HTML。
 - `tokens.css` 是 `/ux-explore` 的**绑定视觉约束**——HTML 原型通过 `<link>` 引用，CSS 变量名即为 token 名。
-- HTML 原型中不发明 off-system 颜色或样式；如需新 token，回 `/design-system` 更新。
+- HTML 原型中不发明系统外颜色或样式；如需新 token，回 `/design-system` 更新。
 
 ## 纪律
 

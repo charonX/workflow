@@ -1,4 +1,4 @@
-# Sources: demand-insight
+# 参考来源：demand-insight
 
 ## 借鉴的 reference 文件
 

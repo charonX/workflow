@@ -6,7 +6,7 @@
 
 | Skill | 用途 | 触发者 |
 |---|---|---|
-| `/test-as-contract` | 开始或继续 story | 用户 |
+| `/story` | 开始/继续 story;执行回流(归档重做/删 story) | 用户 |
 | `/bootstrap-workflow` | 初始化项目级工作流基础设施 | 用户 |
 | `/demand-insight` | 对抗式需求访谈 | 用户 |
 | `/to-prd` | 把讨论整理成 PRD | 用户 |
@@ -32,7 +32,8 @@
 │   ├── test-plan.md           # 测试作者的计划
 │   ├── assertion-signoff.md   # 人签核断言
 │   ├── feel-signoff.md        # 人验收观感
-│   └── workflow-state.yaml    # 当前阶段 / 阻塞项
+│   ├── workflow-state.yaml    # 当前阶段 / 阻塞项 / 归档历史
+│   └── archive/               # 归档重做时,被推翻的承诺层产物 + reason.md
 └── global/
     ├── DESIGN.md              # 项目级设计系统文档
     ├── tokens.css             # 可运行的 CSS token
@@ -50,11 +51,12 @@
 5. **`/assertion-signoff` 阻塞 BUILD；`/feel-signoff` 阻塞合并**。
 6. **没有 REQ-ID 就没有测试**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
 7. **主观判断不进测试**：观感/美学在 feel-signoff 环节依据 HTML 参照验收。
+8. **story = 初衷**：初衷(痛点)不变 → 归档重做;初衷错 → 删 story。回流前先做根因诊断。详见 `/story`。
 
 ### 开始新 story
 
 ```
-/test-as-contract
+/story
 # 或
 /bootstrap-workflow
 ```

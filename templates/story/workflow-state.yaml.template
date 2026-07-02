@@ -1,0 +1,24 @@
+# Test-as-Contract workflow state
+# 由 /story 创建和维护。本文件是状态机,不归档(回流时更新,不搬进 archive/)。
+
+story_id: {{STORY_ID}}
+intention: >-
+  {{INTENTION}}   # 一句话痛点,非方案。这是 story 的初衷,方案会变,痛点不会。
+
+phase: THINK      # THINK / PRD / DESIGN / CRYSTALLIZE / TEST / ASSERTION-SIGNOFF / BUILD / QA / FEEL-SIGNOFF / REFLECT
+attempt: 1        # 第几次尝试。归档重做时 +1。
+created: {{DATE}}
+
+# 阶段流转历史。正常前进和回流都记一条。
+history:
+  - {at: {{DATE}}, from: -, to: THINK, note: "创建 story"}
+
+# 归档记录。每次"归档重做"追加一条;删 story 不记(整个目录删除)。
+archive: []
+#  - {attempt: 1, date: 2026-07-03, reason_file: archive/attempt-1/reason.md, root_layer: PRD}
+#    root_layer 取值:THINK / PRD / DESIGN —— 表示这次回流判定根因活在哪一层。
+
+# 块状态(一挡内按块回流时维护)。
+blocks: {}
+#  stable: [块A, 块B]      # 已稳定,可结晶为 REQ
+#  moving: [块C]           # 还在动,暂不入 REQ(被推翻的块降级回这里)

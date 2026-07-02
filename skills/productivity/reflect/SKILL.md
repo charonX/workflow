@@ -35,6 +35,7 @@ feel-signoff 通过，用户说"复盘"、"/reflect"时。
    - feel-signoff 发现的缺陷数 / 需求变更数
    - 每个阶段耗时/轮数
    - 哪些 REQ 验收标准在 feel-signoff 被发现遗漏
+   - 本 story 是否发生过归档重做(`workflow-state.yaml` 的 `archive` 记录),根因活在哪一层
 2. **提炼经验**：
    - 下次应该在哪个阶段多问什么问题
    - 哪些测试模式好用/不好用
@@ -53,6 +54,8 @@ feel-signoff 通过，用户说"复盘"、"/reflect"时。
 | feel-signoff 需求变更率 | N/M | 随时间下降 |
 | 实现者轮数 | N | ≤ 5 |
 | 单 REQ 平均测试数 | N | ≥ 1 |
+| 归档重做次数 | N | 0;>0 说明需求洞察投入不够 |
+| 归档根因层 | THINK/PRD/DESIGN | 越靠前越说明一挡体检不够 |
 
 ## 与参考项目的差异
 

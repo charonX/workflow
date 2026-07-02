@@ -12,7 +12,7 @@ sources:
 
 ## 何时调用
 
-`requirements.md` 已确认，用户说"写测试骨架"、"/test-author"时。或被 `/test-as-contract` 总入口调用。
+`requirements.md` 已确认，用户说"写测试骨架"、"/test-author"时。或被 `/story` 总入口调用。
 
 ## 输入
 

@@ -8,7 +8,7 @@
 
 - 把 `.aiassist/` 做成可显式初始化的项目级基础设施。
 - 职责收窄：只创建 `.aiassist/global/` 和更新 `CLAUDE.md`，不创建具体 story，不复制 skills。
-- story 创建移到 `/test-as-contract`。
+- story 创建移到 `/story`。
 
 ## 未来局部更新建议
 

@@ -1,7 +1,7 @@
 {
   "name": "test-as-contract-workflow",
   "skills": [
-    "./skills/productivity/test-as-contract",
+    "./skills/productivity/story",
     "./skills/productivity/bootstrap-workflow",
     "./skills/productivity/demand-insight",
     "./skills/productivity/to-prd",

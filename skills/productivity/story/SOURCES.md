@@ -8,6 +8,10 @@
 
 ## 改动记录
 
+- 2026-07-02：重命名为 `/story`(原 `/test-as-contract`),补全路由逻辑与回流机制
+  - story = 初衷;实现路径错 → 归档重做;初衷错 → 删 story
+  - 根因诊断优先;UX 不归档;按块回流不建 attempt
+  - 新增 `workflow-state.yaml` 状态机(phase/attempt/history/archive)
 - 2026-07-01：更新阶段引导表
   - DESIGN 阶段新增 `/design-import`(可选) 引导
   - REVIEW 阶段新增 `/design-handoff`(可选) 引导

@@ -12,7 +12,7 @@ sources:
 
 ## 何时调用
 
-BUILD 阶段全单元绿，进入 REVIEW/QA 慢外门时。或被 `/test-as-contract` 总入口调用。
+BUILD 阶段全单元绿，进入 REVIEW/QA 慢外门时。或被 `/story` 总入口调用。
 
 ## 输入
 

@@ -13,7 +13,7 @@ sources:
 
 ## 何时调用
 
-assertion-signoff 已通过，用户说"开始实现"、"/implementer"时。或被 `/test-as-contract` 总入口调用。
+assertion-signoff 已通过，用户说"开始实现"、"/implementer"时。或被 `/story` 总入口调用。
 
 ## 输入
 

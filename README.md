@@ -69,13 +69,32 @@ ln -s /path/to/workflow/skills/* .claude/skills/
 
 这样任何失败的测试都能回溯到它所代表的需求。
 
+## 回流机制
+
+工作流承认一挡会推翻。`/story` 内置回流分支,把"推倒重来"做成显式、留证据、可学习的动作。
+
+**核心:story = 初衷。** 初衷指向用户痛点,不是具体方案。
+
+| 情况 | 动作 |
+|---|---|
+| 初衷不变,实现路径错了(一挡/二挡都算) | 同 story 下 `archive/` 归档本次尝试,同 story 重做 |
+| 初衷本身错了/痛点不成立 | 不归档,直接删 story |
+
+**归档范围:**
+- 归档:PRD、requirements、断言签核、代码等承诺层产物,加 `reason.md`(根因 + 推翻理由)
+- 不归档:UX 原型(一挡思考工具,直接改)、访谈笔记(软的)
+
+**根因诊断优先:** 任何回流前先判"初衷在不在"。模型提议,人拍板。初衷在 → 归档重做;初衷错 → 删 story。
+
+**不算回流的情况**(走局部纠错,不动 story 结构):REQ 漏 case → `/crystallize` 补验收标准;断言自相矛盾 → 门 1 重审;一挡内单块推翻 → 该块降级回"移动块"。
+
 ## 使用
 
 在目标项目中：
 
 ```
 /bootstrap-workflow    # 初始化项目级工作流基础设施
-/test-as-contract      # 开始或继续一个 story
+/story                 # 开始或继续一个 story
 ```
 
 ### 快速上手
@@ -88,7 +107,7 @@ npx skills@latest add <your-github-username>/test-as-contract-workflow
 /bootstrap-workflow
 
 # 3. 从需求洞察开始一个新 story
-/test-as-contract
+/story
 
 # 4. 按提示走完 PRD → 设计 → REQ → 测试 → 签核 → 实现
 ```
@@ -99,7 +118,7 @@ npx skills@latest add <your-github-username>/test-as-contract-workflow
 
 | Skill | 阶段 | 用途 |
 |---|---|---|
-| `/test-as-contract` | 路由 | 开始/继续 story；强制签核 |
+| `/story` | 路由 | 开始/继续 story；执行回流(归档重做/删 story) |
 | `/bootstrap-workflow` | 初始化 | 创建 `.aiassist/` 项目基础设施 |
 | `/demand-insight` | THINK | 对抗式需求访谈 |
 | `/to-prd` | PRD | 把讨论整理成 PRD |
@@ -130,7 +149,8 @@ npx skills@latest add <your-github-username>/test-as-contract-workflow
 │   ├── test-plan.md
 │   ├── assertion-signoff.md
 │   ├── feel-signoff.md
-│   └── workflow-state.yaml
+│   ├── workflow-state.yaml
+│   └── archive/                # 归档重做时,被推翻的承诺层产物 + reason.md
 └── global/
     ├── DESIGN.md              # 项目级设计系统文档
     ├── tokens.css             # 可运行的 CSS token
@@ -141,7 +161,7 @@ npx skills@latest add <your-github-username>/test-as-contract-workflow
 
 ## 模板
 
-模板放在 `templates/`，由 `/test-as-contract` 创建新 story 时复制使用。
+模板放在 `templates/`，由 `/story` 创建新 story 时复制使用。
 
 ## 参考来源
 

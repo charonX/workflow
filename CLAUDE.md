@@ -32,7 +32,7 @@
 关键机制：
 
 - **两挡**：一挡（探索期 —— PRD、HTML 原型、无测试、可随意推翻）→ 跨越线 → 二挡（测试锁定 —— REQ-ID → tests → code）。
-- **两道硬签核**：`/assertion-signoff` = 人在实现前签核断言；`/feel-signoff` = 人依据 HTML 参照验收观感。
+- **两道硬签核**：`/tac-assertion-signoff` = 人在实现前签核断言；`/tac-feel-signoff` = 人依据 HTML 参照验收观感。
 - **三种角色**：人（REQ/断言/HTML）、test-author agent（编写测试骨架）、implementer agent（编写代码，对测试只读）。
 - **REQ-ID 可追溯**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
 
@@ -53,25 +53,25 @@
 
 | # | 阶段 | Skill | 触发者 | 目的 |
 |---|---|---|---|---|
-| 1 | THINK — 需求洞察 | `/demand-insight` | 用户 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
-| 2 | PRD 合成 | `/to-prd` | 用户 | 把访谈笔记整理成结构化 PRD |
-|   | 设计系统前置 | `/design-system` | 用户 | 在高保真 UX 前建立/校验项目级设计系统 + `.aiassist/global/tokens.css` |
-|   | 设计导入（可选） | `/design-import` | 用户 | 导入设计来源：Figma .fig、GitHub 仓库、现有 HTML/CSS |
-| 3 | DESIGN — UX 探索 | `/ux-explore` | 用户 | 用 React 迭代高保真 HTML UX 原型；行为决策 → REQ，视觉决策 → HTML |
-| 4 | Crystallize | `/crystallize` | 模型 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
-| 5 | TEST — 编写靶子 | `/test-author` | 模型 | 从 REQ 生成测试骨架；为人留出占位断言 |
-| 6 | assertion-signoff | `/assertion-signoff` | 用户 | 人在实现开始前签核所有断言 |
-| 7 | BUILD | `/implementer` | 模型 | 针对测试实现代码；对测试只读；每轮迭代跑全套测试 |
-| 8 | REVIEW/QA | `/qa-runner` | 模型 | E2E、回归、证据收集 |
-| 9 | feel-signoff | `/feel-signoff` | 用户 | 人依据 HTML 参照验收观感；偏差回流到 REQ |
-|   | 开发者交接（可选） | `/design-handoff` | 用户 | 从已批准的 UX 原型生成结构化开发交接包 |
-| 10 | REFLECT | `/reflect` | 用户 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
+| 1 | THINK — 需求洞察 | `/tac-demand-insight` | 用户 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
+| 2 | PRD 合成 | `/tac-to-prd` | 用户 | 把访谈笔记整理成结构化 PRD |
+|   | 设计系统前置 | `/tac-design-system` | 用户 | 在高保真 UX 前建立/校验项目级设计系统 + `.aiassist/global/tokens.css` |
+|   | 设计导入（可选） | `/tac-design-import` | 用户 | 导入设计来源：Figma .fig、GitHub 仓库、现有 HTML/CSS |
+| 3 | DESIGN — UX 探索 | `/tac-ux-explore` | 用户 | 用 React 迭代高保真 HTML UX 原型；行为决策 → REQ，视觉决策 → HTML |
+| 4 | Crystallize | `/tac-crystallize` | 模型 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
+| 5 | TEST — 编写靶子 | `/tac-test-author` | 模型 | 从 REQ 生成测试骨架；为人留出占位断言 |
+| 6 | assertion-signoff | `/tac-assertion-signoff` | 用户 | 人在实现开始前签核所有断言 |
+| 7 | BUILD | `/tac-implementer` | 模型 | 针对测试实现代码；对测试只读；每轮迭代跑全套测试 |
+| 8 | REVIEW/QA | `/tac-qa-runner` | 模型 | E2E、回归、证据收集 |
+| 9 | feel-signoff | `/tac-feel-signoff` | 用户 | 人依据 HTML 参照验收观感；偏差回流到 REQ |
+|   | 开发者交接（可选） | `/tac-design-handoff` | 用户 | 从已批准的 UX 原型生成结构化开发交接包 |
+| 10 | REFLECT | `/tac-reflect` | 用户 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
 
 ### 回流机制
 
-工作流承认一挡会推翻。`/story` 内置回流分支,把"推倒重来"做成显式、留证据、可学习的动作。
+工作流承认一挡会推翻。`/tac-story` 内置回流分支,把"推倒重来"做成显式、留证据、可学习的动作。
 
-**核心：story = 初衷。** 初衷指向用户痛点，不是具体方案（`/to-prd` 强制把问题陈述写成痛点形态）。
+**核心：story = 初衷。** 初衷指向用户痛点，不是具体方案（`/tac-to-prd` 强制把问题陈述写成痛点形态）。
 
 | 情况 | 动作 |
 |---|---|
@@ -80,8 +80,8 @@
 
 - **归档范围**：PRD、requirements、断言签核、代码等承诺层产物 + `reason.md`（根因+推翻理由）。UX 原型不归档（一挡思考工具，直接改）。
 - **根因诊断优先**：回流前先判"初衷在不在"。模型提议，人拍板。
-- **不算回流的情况**（走局部纠错）：REQ 漏 case → `/crystallize` 补验收标准；断言自相矛盾 → 门 1 重审；一挡内单块推翻 → 该块降级回"移动块"。
-- **健康指标**：`/reflect` 统计归档重做次数和根因层；频繁归档说明一挡的完整性体检投入不够。
+- **不算回流的情况**（走局部纠错）：REQ 漏 case → `/tac-crystallize` 补验收标准；断言自相矛盾 → 门 1 重审；一挡内单块推翻 → 该块降级回"移动块"。
+- **健康指标**：`/tac-reflect` 统计归档重做次数和根因层；频繁归档说明一挡的完整性体检投入不够。
 
 ### 在目标项目里启动
 
@@ -92,8 +92,8 @@
    cp -R /path/to/workflow/skills/engineering/* .claude/skills/
    cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
    ```
-2. 在目标项目里运行 `/bootstrap-workflow`，创建 `.aiassist/` 项目基础设施。
-3. 运行 `/story`，开始第一个 story。
+2. 在目标项目里运行 `/tac-bootstrap-workflow`，创建 `.aiassist/` 项目基础设施。
+3. 运行 `/tac-story`，开始第一个 story。
 
 ### 安装 skill
 
@@ -163,23 +163,23 @@
 
 | 我想…… | 使用 |
 |--------|------|
-| 用测试即契约启动新功能 / 继续一个 story | `/story` |
-| 发现根本问题,要回流(归档重做/删 story) | `/story`(回流分支) |
-| 在目标项目初始化工作流 | `/bootstrap-workflow` |
-| 运行对抗式需求访谈 | `/demand-insight` |
-| 把讨论整理成 PRD | `/to-prd` |
-| 用 HTML 原型探索 UX | `/ux-explore` |
-| 建立或更新设计系统 | `/design-system` |
-| 导入设计来源（Figma/GitHub/HTML） | `/design-import` |
-| 把 PRD 转成 REQ-ID | `/crystallize` |
-| 从 REQ 生成测试骨架 | `/test-author` |
-| 在实现前签核断言 | `/assertion-signoff` |
-| 针对已签核测试实现代码 | `/implementer` |
-| 运行 QA / E2E / 回归 | `/qa-runner` |
-| 依据 HTML 参照验收观感 | `/feel-signoff` |
-| 从 UX 生成开发者交接包 | `/design-handoff` |
-| 捕获经验教训并更新知识 | `/reflect` |
-| 同步参考项目并吸收上游变更 | `/sync-refs` |
+| 用测试即契约启动新功能 / 继续一个 story | `/tac-story` |
+| 发现根本问题,要回流(归档重做/删 story) | `/tac-story`(回流分支) |
+| 在目标项目初始化工作流 | `/tac-bootstrap-workflow` |
+| 运行对抗式需求访谈 | `/tac-demand-insight` |
+| 把讨论整理成 PRD | `/tac-to-prd` |
+| 用 HTML 原型探索 UX | `/tac-ux-explore` |
+| 建立或更新设计系统 | `/tac-design-system` |
+| 导入设计来源（Figma/GitHub/HTML） | `/tac-design-import` |
+| 把 PRD 转成 REQ-ID | `/tac-crystallize` |
+| 从 REQ 生成测试骨架 | `/tac-test-author` |
+| 在实现前签核断言 | `/tac-assertion-signoff` |
+| 针对已签核测试实现代码 | `/tac-implementer` |
+| 运行 QA / E2E / 回归 | `/tac-qa-runner` |
+| 依据 HTML 参照验收观感 | `/tac-feel-signoff` |
+| 从 UX 生成开发者交接包 | `/tac-design-handoff` |
+| 捕获经验教训并更新知识 | `/tac-reflect` |
+| 同步参考项目并吸收上游变更 | `/tac-sync-refs` |
 
 ### 参考 skill（仅作灵感）
 
@@ -246,7 +246,7 @@
 
 ### 快速同步
 
-运行 `/sync-refs`（或 `./scripts/sync-refs.sh`）。它会：
+运行 `/tac-sync-refs`（或 `./scripts/tac-sync-refs.sh`）。它会：
 
 1. 对所有参考仓库执行 `git pull`
 2. 解析每个 skill 的 `SOURCES.md`，找到它依赖的参考文件
@@ -258,7 +258,7 @@
 
 ```bash
 # 1. 拉取所有参考仓库
-./scripts/sync-refs.sh --pull-only
+./scripts/tac-sync-refs.sh --pull-only
 
 # 2. 查看某个参考文件的变更
 git -C reference/baoyu-design log --since="2026-06-01" -- skills/baoyu-design/system-prompt.md
@@ -271,7 +271,7 @@ git -C reference/baoyu-design diff <old-commit>..HEAD -- skills/baoyu-design/sys
 
 ### 更新节奏
 
-- **每月**（默认）：运行 `/sync-refs`，大多数报告会是干净的
+- **每月**（默认）：运行 `/tac-sync-refs`，大多数报告会是干净的
 - **大版本发布时**：gstack/superpowers/baoyu-design 发布主版本时
 - **重大工作流变更前**：检查上游是否已经解决了同样的问题
 

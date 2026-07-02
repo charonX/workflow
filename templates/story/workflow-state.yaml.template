@@ -1,5 +1,5 @@
 # Test-as-Contract workflow state
-# 由 /story 创建和维护。本文件是状态机,不归档(回流时更新,不搬进 archive/)。
+# 由 /tac-story 创建和维护。本文件是状态机,不归档(回流时更新,不搬进 archive/)。
 
 story_id: {{STORY_ID}}
 intention: >-

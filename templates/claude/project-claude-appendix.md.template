@@ -6,19 +6,19 @@
 
 | Skill | 用途 | 触发者 |
 |---|---|---|
-| `/story` | 开始/继续 story;执行回流(归档重做/删 story) | 用户 |
-| `/bootstrap-workflow` | 初始化项目级工作流基础设施 | 用户 |
-| `/demand-insight` | 对抗式需求访谈 | 用户 |
-| `/to-prd` | 把讨论整理成 PRD | 用户 |
-| `/design-system` | 建立或校验项目级设计系统 | 用户 |
-| `/ux-explore` | 用 HTML 原型进行高保真 UX 探索 | 用户 |
-| `/crystallize` | 把 PRD 稳定块转成 REQ-ID | 模型 |
-| `/test-author` | 从 REQ 生成测试骨架 | 模型 |
-| `/assertion-signoff` | 在实现前签核断言 | 用户 |
-| `/implementer` | 针对已签核测试实现代码 | 模型 |
-| `/qa-runner` | 运行 E2E、回归、收集证据 | 模型 |
-| `/feel-signoff` | 依据 HTML 参照验收观感 | 用户 |
-| `/reflect` | 捕获经验教训并更新知识 | 用户 |
+| `/tac-story` | 开始/继续 story;执行回流(归档重做/删 story) | 用户 |
+| `/tac-bootstrap-workflow` | 初始化项目级工作流基础设施 | 用户 |
+| `/tac-demand-insight` | 对抗式需求访谈 | 用户 |
+| `/tac-to-prd` | 把讨论整理成 PRD | 用户 |
+| `/tac-design-system` | 建立或校验项目级设计系统 | 用户 |
+| `/tac-ux-explore` | 用 HTML 原型进行高保真 UX 探索 | 用户 |
+| `/tac-crystallize` | 把 PRD 稳定块转成 REQ-ID | 模型 |
+| `/tac-test-author` | 从 REQ 生成测试骨架 | 模型 |
+| `/tac-assertion-signoff` | 在实现前签核断言 | 用户 |
+| `/tac-implementer` | 针对已签核测试实现代码 | 模型 |
+| `/tac-qa-runner` | 运行 E2E、回归、收集证据 | 模型 |
+| `/tac-feel-signoff` | 依据 HTML 参照验收观感 | 用户 |
+| `/tac-reflect` | 捕获经验教训并更新知识 | 用户 |
 
 ### 产物目录
 
@@ -48,17 +48,17 @@
 2. **错误向上回**：在受影响的最高层修复；永远不要因为测试或规格错了就直接改代码。
 3. **断言归人**：AI 写测试脚手架；人签 expected 值。
 4. **实现者对测试只读**：任何触及测试文件的代码差异都会让本轮作废。
-5. **`/assertion-signoff` 阻塞 BUILD；`/feel-signoff` 阻塞合并**。
+5. **`/tac-assertion-signoff` 阻塞 BUILD；`/tac-feel-signoff` 阻塞合并**。
 6. **没有 REQ-ID 就没有测试**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
 7. **主观判断不进测试**：观感/美学在 feel-signoff 环节依据 HTML 参照验收。
-8. **story = 初衷**：初衷(痛点)不变 → 归档重做;初衷错 → 删 story。回流前先做根因诊断。详见 `/story`。
+8. **story = 初衷**：初衷(痛点)不变 → 归档重做;初衷错 → 删 story。回流前先做根因诊断。详见 `/tac-story`。
 
 ### 开始新 story
 
 ```
-/story
+/tac-story
 # 或
-/bootstrap-workflow
+/tac-bootstrap-workflow
 ```
 
 ### 更新 skill

@@ -1,0 +1,144 @@
+---
+name: tac-story
+description: "测试即契约" 工作流总入口。管理 story 生命周期:创建/选择 story,读取 workflow-state 路由到当前阶段,并在发现根本问题时执行回流(归档重做或删 story)。
+disable-model-invocation: true
+sources:
+  - workflow/design/workflow-framework.md
+  - workflow/design/test-as-contract-workflow.md
+  - reference/gstack/CLAUDE.md
+  - reference/superpowers/skills/subagent-driven-development/SKILL.md
+---
+
+# story
+
+本 skill 是工作流总入口,承担两件事:
+
+1. **路由**:读 `workflow-state.yaml`,把用户送进当前 story 所处的阶段。
+2. **回流**:当用户发现"根本问题"时,执行归档重做或删 story。
+
+## 何时调用
+
+- 用户说"开始一个新功能"、"继续上次的 story"、"/tac-story"时 → 路由分支。
+- 用户说"这个方向错了"、"要推倒重来"、"回到需求"时 → 回流分支。
+- 被其它 skill 在完成本阶段后调回,继续下一阶段时 → 路由分支。
+
+## 核心概念:story = 初衷
+
+一个 story 对应一个**初衷**——用户痛点,不是具体方案。
+
+- 初衷在,story 就在。实现路径错了(无论一挡二挡),换实现,story 不换 → **归档重做**。
+- 初衷本身错了/痛点不成立,story 没存在意义 → **删 story**,不归档。
+
+初衷的锚点是 PRD 的"问题陈述"——`/tac-to-prd` 强制把它写成痛点形态。
+
+## 输入
+
+- `.aiassist/stories/<id>/workflow-state.yaml`(已存在 story)
+- 用户的当前意图(新建 / 继续 / 回流)
+
+## 路由:开始或继续一个 story
+
+### A. 新建 story
+
+1. 与用户确认初衷(一句话痛点,不是方案)。
+2. 生成 story-id(日期+短描述,如 `2026-07-02-mood-tracking`)。
+3. 从模板创建:
+   - `templates/tac-story/workflow-state.yaml.template` → `.aiassist/stories/<id>/workflow-state.yaml`
+4. 把 phase 设为 `THINK`,attempt 记为 1。
+5. 调用 `/tac-demand-insight` 进入需求洞察。
+
+### B. 继续 story
+
+1. 读 `workflow-state.yaml`。
+2. 按 `phase` 路由:
+
+| 当前 phase | 路由到 |
+|---|---|
+| THINK | `/tac-demand-insight` |
+| PRD | `/tac-to-prd` |
+| DESIGN | `/tac-ux-explore`(若无设计系统,先 `/tac-design-system`) |
+| CRYSTALLIZE | `/tac-crystallize` |
+| TEST | `/tac-test-author` |
+| ASSERTION-SIGNOFF | `/tac-assertion-signoff` |
+| BUILD | `/tac-implementer` |
+| QA | `/tac-qa-runner` |
+| FEEL-SIGNOFF | `/tac-feel-signoff` |
+| REFLECT | `/tac-reflect` |
+
+3. 若 `archive` 下已有历史 attempt,提示用户:"本 story 已尝试过 N 次,最新归档原因见 `archive/attempt-N/reason.md`,这次别踩同样的坑。"
+
+## 回流:发现根本问题时
+
+### 第一步:根因诊断(必做,不跳过)
+
+任何回流前,先和用户一起判定**错误假设活在哪一层**。模型提议,人拍板。
+
+- 错误在用户需求/痛点本身 → 走"删 story"。
+- 错误在实现路径(方案/REQ/UX 方向) → 走"归档重做"。
+- 错误只是 REQ 漏了个 case / 断言自相矛盾 → **不算回流**,走局部纠错(`/tac-crystallize` 补验收标准,或门 1 重审,或逃生口)。见下文"不算回流的情况"。
+
+判定标准:初衷(问题陈述里的痛点)还成立吗?
+- 成立 → 归档重做。
+- 不成立 → 删 story。
+
+### 第二步:执行
+
+#### 归档重做(初衷不变,实现路径错了)
+
+1. **归档本次 attempt**:
+   - 创建 `.aiassist/stories/<id>/archive/attempt-<N>/`。
+   - 移入**承诺层产物**:`prd.md`、`requirements.md`、`requirements-*.hash`、`assertion-signoff.md`、`feel-signoff.md`、`qa-report.md`、相关代码。
+   - **不归档**:`ux/`(一挡思考工具,直接改)、`interview-notes.md`(软的)、`workflow-state.yaml`(状态机本身,要更新不是归档)。
+2. **写归档原因**:`archive/attempt-<N>/reason.md`,记录根因(错误假设活在哪一层)+ 推翻理由 + 下次该避开什么。这是下次 `/tac-demand-insight` 的关键输入。
+3. **更新 workflow-state**:
+   - `attempt` +1。
+   - `phase` 回到根因层对应阶段:根因在需求层 → `THINK`;在方案层 → `PRD`;在 UX 暴露的约束层 → `DESIGN`。
+   - `history` 追加一条:`{from, to, reason, date}`。
+4. **同 story 重做**:从回退后的 phase 起跑。UX 原型留在 `ux/` 直接改,不搬。
+
+#### 删 story(初衷本身错了)
+
+1. 与用户确认:痛点不成立,不是"换个实现能救"的。
+2. 整个 `.aiassist/stories/<id>/` 删除,**不归档**——没有初衷可参考,留证据无意义。
+3. 从 `.aiassist/stories/` 索引(如有)移除。
+
+### 不算回流的情况(走局部纠错,不动 story 结构)
+
+| 情况 | 机制 | 动作 |
+|---|---|---|
+| REQ 漏了一个 case | feel-signoff 已有 | 回 `/tac-crystallize` 补验收标准增量 |
+| 断言自相矛盾/不可满足 | 逃生口 | 回门 1 重审断言 |
+| 实现者烧完轮数不绿 | 逃生口 | 上报,换模型或回门 1 |
+| 一挡内某块被推翻 | 按块回流 | 该块降级回"移动块",其它块不动,UX 直接改 |
+
+按块回流(一挡内)不创建 `archive/attempt-N/`,只在 PRD 里把该块从"稳定块"挪回"移动块"。归档是 **story 级**动作,只在整个实现路径错了时用。
+
+## workflow-state.yaml 结构
+
+```yaml
+story_id: 2026-07-02-mood-tracking
+intention: <一句话痛点,非方案>
+phase: THINK              # THINK/PRD/DESIGN/CRYSTALLIZE/TEST/ASSERTION-SIGNOFF/BUILD/QA/FEEL-SIGNOFF/REFLECT
+attempt: 1
+created: 2026-07-02
+history:
+  - {at: 2026-07-02, from: THINK, to: PRD, note: "完成需求洞察"}
+  - {at: 2026-07-03, from: BUILD, to: PRD, note: "方案层假设错,归档 attempt-1,见 archive/attempt-1/reason.md"}
+archive:
+  - {attempt: 1, date: 2026-07-03, reason_file: archive/attempt-1/reason.md}
+```
+
+## 纪律
+
+- **初衷锚定痛点**:`intention` 字段和 PRD 问题陈述必须是用户痛点,不是方案。方案会变,痛点不会。
+- **根因诊断优先**:回流前必判"初衷在不在"。模型提议,人拍板。不跳过。
+- **归档不删,删不归档**:初衷在 → 归档(留证据);初衷错 → 删(不留)。
+- **UX 不归档**:一挡思考工具,直接改。
+- **按块回流不建 attempt**:一挡内单块推翻,只挪 PRD 的稳定/移动块标记。
+- **回流是人触发的重大判断**:模型可提议,但不自动执行归档或删除。
+
+## 与参考项目的差异
+
+- gstack 的 `/ship` 等只管前进;我们显式管理回流和 story 生命周期。
+- superpowers 的 executing-plans 假设计划稳定;我们承认一挡会推翻,把推翻做成结构化动作。
+- 核心:把"推倒重来"从隐性的失败,变成显式的、留证据的、可学习的动作。

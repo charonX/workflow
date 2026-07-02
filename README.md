@@ -46,17 +46,17 @@
 
 | # | 阶段 | Skill | 触发者 | 做什么 |
 |---|---|---|---|---|
-| 1 | **THINK** | `/demand-insight` | 用户 | 对抗式访谈,暴露隐性需求、边界与矛盾 |
-| 2 | **PRD** | `/to-prd` | 用户 | 把讨论整理成结构化 PRD(问题陈述锚定痛点) |
-| 3 | **设计系统** | `/design-system` | 用户 | 建立项目级 `.aiassist/global/DESIGN.md` + `tokens.css` |
-| 4 | **UX 设计** | `/ux-explore` | 用户 | 迭代高保真 HTML 原型;行为决策进 REQ,视觉决策进 HTML |
-| 5 | **结晶** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
-| 6 | **测试** | `/test-author` | 模型 | 从 REQ 生成测试骨架,为人留出占位断言 |
-| 7 | **断言签核** | `/assertion-signoff` | 用户 | 人在实现前签核所有断言(门 1) |
-| 8 | **实现** | `/implementer` | 模型 | 针对测试实现代码,对测试只读,每轮跑全套测试 |
-| 9 | **QA** | `/qa-runner` | 模型 | E2E、回归、证据收集 |
-| 10 | **观感签核** | `/feel-signoff` | 用户 | 人依据 HTML 参照验收观感,偏差回流 REQ(门 2) |
-| — | **反思** | `/reflect` | 用户 | 捕获经验教训,更新全局知识 |
+| 1 | **THINK** | `/tac-demand-insight` | 用户 | 对抗式访谈,暴露隐性需求、边界与矛盾 |
+| 2 | **PRD** | `/tac-to-prd` | 用户 | 把讨论整理成结构化 PRD(问题陈述锚定痛点) |
+| 3 | **设计系统** | `/tac-design-system` | 用户 | 建立项目级 `.aiassist/global/DESIGN.md` + `tokens.css` |
+| 4 | **UX 设计** | `/tac-ux-explore` | 用户 | 迭代高保真 HTML 原型;行为决策进 REQ,视觉决策进 HTML |
+| 5 | **结晶** | `/tac-crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
+| 6 | **测试** | `/tac-test-author` | 模型 | 从 REQ 生成测试骨架,为人留出占位断言 |
+| 7 | **断言签核** | `/tac-assertion-signoff` | 用户 | 人在实现前签核所有断言(门 1) |
+| 8 | **实现** | `/tac-implementer` | 模型 | 针对测试实现代码,对测试只读,每轮跑全套测试 |
+| 9 | **QA** | `/tac-qa-runner` | 模型 | E2E、回归、证据收集 |
+| 10 | **观感签核** | `/tac-feel-signoff` | 用户 | 人依据 HTML 参照验收观感,偏差回流 REQ(门 2) |
+| — | **反思** | `/tac-reflect` | 用户 | 捕获经验教训,更新全局知识 |
 
 ### 三种角色(权限互斥)
 
@@ -70,8 +70,8 @@
 
 ### 两道硬性签核
 
-1. **门 1 — `/assertion-signoff`**:人确认测试准确捕捉了需求。不签不准实现。
-2. **门 2 — `/feel-signoff`**:人确认实现后的 UI 观感与批准的 HTML 参照一致。不签不准合并。
+1. **门 1 — `/tac-assertion-signoff`**:人确认测试准确捕捉了需求。不签不准实现。
+2. **门 2 — `/tac-feel-signoff`**:人确认实现后的 UI 观感与批准的 HTML 参照一致。不签不准合并。
 
 人在边界使劲(门 1 签断言、门 2 验观感),中段全自主;失败走逃生口(实现者轮数上限→上报,不许自己改测试)。
 
@@ -88,7 +88,7 @@ REQ 变 → 挂它的测试标记"过时待重生"。任何失败测试都能回
 
 ### 回流机制
 
-工作流承认一挡会推翻,把"推倒重来"做成显式、留证据、可学习的动作。`/story` 内置回流分支。
+工作流承认一挡会推翻,把"推倒重来"做成显式、留证据、可学习的动作。`/tac-story` 内置回流分支。
 
 **核心:story = 初衷。** 初衷指向用户痛点,不是具体方案(方案会变,痛点不会)。
 
@@ -99,7 +99,7 @@ REQ 变 → 挂它的测试标记"过时待重生"。任何失败测试都能回
 
 - **归档范围**:PRD、requirements、断言签核、代码等承诺层产物 + `reason.md`(根因+推翻理由)。UX 原型不归档(一挡思考工具,直接改)。
 - **根因诊断优先**:回流前先判"初衷在不在"。模型提议,人拍板。
-- **不算回流的情况**(走局部纠错):REQ 漏 case → `/crystallize` 补验收标准;断言自相矛盾 → 门 1 重审;一挡内单块推翻 → 该块降级回"移动块"。
+- **不算回流的情况**(走局部纠错):REQ 漏 case → `/tac-crystallize` 补验收标准;断言自相矛盾 → 门 1 重审;一挡内单块推翻 → 该块降级回"移动块"。
 
 ## 安装
 
@@ -122,8 +122,8 @@ ln -s /path/to/workflow/skills/* .claude/skills/
 在目标项目中:
 
 ```
-/bootstrap-workflow    # 初始化项目级工作流基础设施
-/story                 # 开始或继续一个 story
+/tac-bootstrap-workflow    # 初始化项目级工作流基础设施
+/tac-story                 # 开始或继续一个 story
 ```
 
 ### 快速上手
@@ -133,10 +133,10 @@ ln -s /path/to/workflow/skills/* .claude/skills/
 npx skills@latest add <your-github-username>/test-as-contract-workflow
 
 # 2. 初始化项目基础设施
-/bootstrap-workflow
+/tac-bootstrap-workflow
 
 # 3. 从需求洞察开始一个新 story
-/story
+/tac-story
 
 # 4. 按提示走完 PRD → 设计 → REQ → 测试 → 签核 → 实现
 ```
@@ -147,26 +147,26 @@ npx skills@latest add <your-github-username>/test-as-contract-workflow
 
 | Skill | 阶段 | 用途 |
 |---|---|---|
-| `/story` | 路由 | 开始/继续 story;执行回流(归档重做/删 story) |
-| `/bootstrap-workflow` | 初始化 | 创建 `.aiassist/` 项目基础设施 |
-| `/demand-insight` | THINK | 对抗式需求访谈 |
-| `/to-prd` | PRD | 把讨论整理成 PRD |
-| `/design-system` | DESIGN | 建立项目级设计系统 |
-| `/design-import` | DESIGN | 导入设计来源(Figma/GitHub/HTML) |
-| `/ux-explore` | DESIGN | 迭代高保真 HTML UX 原型 |
-| `/assertion-signoff` | 签核 | 在实现前签核断言 |
-| `/feel-signoff` | 签核 | 依据 HTML 参照验收观感 |
-| `/design-handoff` | 交接 | 从已批准 UX 生成开发交接包 |
-| `/reflect` | REFLECT | 捕获经验教训 |
+| `/tac-story` | 路由 | 开始/继续 story;执行回流(归档重做/删 story) |
+| `/tac-bootstrap-workflow` | 初始化 | 创建 `.aiassist/` 项目基础设施 |
+| `/tac-demand-insight` | THINK | 对抗式需求访谈 |
+| `/tac-to-prd` | PRD | 把讨论整理成 PRD |
+| `/tac-design-system` | DESIGN | 建立项目级设计系统 |
+| `/tac-design-import` | DESIGN | 导入设计来源(Figma/GitHub/HTML) |
+| `/tac-ux-explore` | DESIGN | 迭代高保真 HTML UX 原型 |
+| `/tac-assertion-signoff` | 签核 | 在实现前签核断言 |
+| `/tac-feel-signoff` | 签核 | 依据 HTML 参照验收观感 |
+| `/tac-design-handoff` | 交接 | 从已批准 UX 生成开发交接包 |
+| `/tac-reflect` | REFLECT | 捕获经验教训 |
 
 ### 模型触发
 
 | Skill | 阶段 | 用途 |
 |---|---|---|
-| `/crystallize` | 结晶 | 把 PRD 转成 REQ-ID |
-| `/test-author` | TEST | 生成测试骨架 |
-| `/implementer` | BUILD | 针对测试实现代码 |
-| `/qa-runner` | QA | 运行 E2E/回归 |
+| `/tac-crystallize` | 结晶 | 把 PRD 转成 REQ-ID |
+| `/tac-test-author` | TEST | 生成测试骨架 |
+| `/tac-implementer` | BUILD | 针对测试实现代码 |
+| `/tac-qa-runner` | QA | 运行 E2E/回归 |
 
 ## 产物目录
 
@@ -190,7 +190,7 @@ npx skills@latest add <your-github-username>/test-as-contract-workflow
     └── STANDARDS.md
 ```
 
-模板放在 `templates/`,由 `/story` 创建新 story 时复制使用。
+模板放在 `templates/`,由 `/tac-story` 创建新 story 时复制使用。
 
 ## 参考项目
 

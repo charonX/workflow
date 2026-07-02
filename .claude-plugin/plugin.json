@@ -1,21 +1,21 @@
 {
   "name": "test-as-contract-workflow",
   "skills": [
-    "./skills/productivity/story",
-    "./skills/productivity/bootstrap-workflow",
-    "./skills/productivity/demand-insight",
-    "./skills/productivity/to-prd",
-    "./skills/productivity/design-system",
-    "./skills/productivity/ux-explore",
-    "./skills/productivity/assertion-signoff",
-    "./skills/productivity/feel-signoff",
-    "./skills/productivity/design-handoff",
-    "./skills/productivity/design-import",
-    "./skills/productivity/reflect",
-    "./skills/maintenance/sync-refs",
-    "./skills/engineering/crystallize",
-    "./skills/engineering/test-author",
-    "./skills/engineering/implementer",
-    "./skills/engineering/qa-runner"
+    "./skills/productivity/tac-story",
+    "./skills/productivity/tac-bootstrap-workflow",
+    "./skills/productivity/tac-demand-insight",
+    "./skills/productivity/tac-to-prd",
+    "./skills/productivity/tac-design-system",
+    "./skills/productivity/tac-ux-explore",
+    "./skills/productivity/tac-assertion-signoff",
+    "./skills/productivity/tac-feel-signoff",
+    "./skills/productivity/tac-design-handoff",
+    "./skills/productivity/tac-design-import",
+    "./skills/productivity/tac-reflect",
+    "./skills/maintenance/tac-sync-refs",
+    "./skills/engineering/tac-crystallize",
+    "./skills/engineering/tac-test-author",
+    "./skills/engineering/tac-implementer",
+    "./skills/engineering/tac-qa-runner"
   ]
 }

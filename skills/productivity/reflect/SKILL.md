@@ -60,5 +60,4 @@ feel-signoff 通过，用户说"复盘"、"/reflect"时。
 ## 与参考项目的差异
 
 - gstack `retro` 强调团队复盘；我们简化为个人/OPC 经验沉淀。
-- soflow 强调两阶段加载知识；我们把它落地为全局 markdown 文档。
 - superpowers 的 plan 结构给我们的 ADR 格式。

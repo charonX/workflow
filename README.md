@@ -199,14 +199,13 @@ npx skills@latest add <your-github-username>/test-as-contract-workflow
 | 项目 | 借鉴了什么 | 我们的差异 |
 |---|---|---|
 | [mattpocock/skills](https://github.com/mattpocock/skills) | 工程纪律:红绿重构、对抗式文档审查、诊断 | 加上"断言归人、REQ 是测试唯一出生地"的纯粹派纪律 |
-| [gstack](https://github.com/garrytan/gstack) | CEO/创始人级需求洞察、设计决策、发布与 QA 门禁、浏览器自动化 | 把"office-hours/qa/ship"的前进式流程,补上显式的回流与 story 生命周期管理 |
-| [soflow](https://github.com/geekplus/soflow) | 流程驱动的产物链:`.aiassist/stories/<id>/`、PRD → REQ → stories、HTML UX 原型 | soflow 把 oracle 交给文档+AI 判断;我们把 oracle 锚定在人持有、抗作弊的断言上 |
+| [gstack](https://github.com/garrytan/gstack) | CEO/创始人级需求洞察、设计决策、发布与 QA 门禁、浏览器自动化、流程编排与产物链 | 把"office-hours/qa/ship"的前进式流程,补上显式的回流与 story 生命周期管理 |
 | [superpowers](https://github.com/obra/superpowers) | 严谨计划、subagent 驱动的批量执行、审查包 | 计划稳定性假设换成"一挡会推翻",把推翻做成结构化动作 |
 | [baoyu-design](https://github.com/JimLiu/baoyu-design) | Claude Design 可移植 skill:HTML 原型方法论、设计系统、Figma 导入、起始组件 | 吸收其 HTML 原型与设计系统能力,绑定到我们的 `tokens.css` 视觉约束 |
 
 ### 我们补的是"测试信任层"
 
-这些参考项目不是没有测试——soflow 的测试内容相当多(TDD、QA 健康分、两轴审查,甚至明确知道测试理论里的 "Oracle Problem")。它们缺的是:**把"什么算对"这个 oracle 锚定在"人持有、且 AI 无法作弊"的断言上。**
+这些参考项目不是没有测试——它们各有 TDD、QA、审查机制。它们缺的是:**把"什么算对"这个 oracle 锚定在"人持有、且 AI 无法作弊"的断言上。**
 
 | 维度 | 参考项目 | 我们 |
 |---|---|---|
@@ -216,7 +215,7 @@ npx skills@latest add <your-github-username>/test-as-contract-workflow
 | 代价 | 放弃部分信任换吞吐 | 牺牲部分吞吐(人签断言)换"不读代码也敢信" |
 | 适配 | 有 QA/能抽查的团队 | 单人/OPC——读不完,信任是真瓶颈 |
 
-我们的研究贡献:不是"soflow + 更好的测试",而是给这个领域补上它整体缺失的一层——**AI 自主下,如何把测试 oracle 锚定在人持有、抗作弊的断言上**。
+我们的研究贡献:不是"参考项目 + 更好的测试",而是给这个领域补上它整体缺失的一层——**AI 自主下,如何把测试 oracle 锚定在人持有、抗作弊的断言上**。
 
 > 理念的逐条推导见 [`design/test-as-contract-workflow.md`](./design/test-as-contract-workflow.md),端到端流程总装图见 [`design/workflow-framework.md`](./design/workflow-framework.md)。
 

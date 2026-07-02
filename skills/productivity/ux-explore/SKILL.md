@@ -157,6 +157,5 @@ PRD 已生成，需要把抽象需求转成可视化的 HTML 原型时。如果 
 ## 与参考项目的差异
 
 - gstack `design-shotgun`：强调多方案对比；我们用 design-canvas 组件实现并排对比
-- soflow `design-ui`：生成完整 UI；我们聚焦关键流程的交互原型
 - baoyu-design：完整设计引擎；我们吸收其 HTML 原型方法论、起始组件、前端审美指引
 - 核心差异：基于项目设计系统、双轨收割、PRD 回流机制、React 交互原型

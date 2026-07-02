@@ -3,6 +3,7 @@
 > 状态：框架草案（2026-06-22，对标 `ref/soflow` + `ref/gstack` 后成形）
 > 定位：本框架 = 我们的**认知纪律内核**（"测试即契约"）装在一套 **soflow 式的操作骨架**上。
 > 内核的逐条推导见 [`test-as-contract-workflow.md`](./test-as-contract-workflow.md)，本文是把它放进端到端流程的总装图。
+> 注：soflow 已于 2026-07-02 从参考项目中移除。本文保留以 soflow 为历史对标对象的论述（操作骨架、oracle 对比等），因其论证逻辑仍有效；实际操作骨架现主要借鉴 gstack。
 
 ---
 

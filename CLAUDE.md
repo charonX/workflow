@@ -22,8 +22,7 @@
 本工作区现在包含我们自己的 Claude Code 工作流：**测试即契约**（`skills/`）。它融合了参考项目各自的优点：
 
 - **mattpocock skills** —— 传统软件工程纪律（TDD、对抗式文档审查、诊断）。
-- **gstack** —— CEO/创始人级别的需求洞察、设计决策、发布与 QA 门禁。
-- **soflow** —— 流程驱动的产物链（PRD → REQ → tests → code → reflect）。
+- **gstack** —— CEO/创始人级别的需求洞察、设计决策、发布与 QA 门禁、流程编排与产物链。
 - **superpowers** —— 严谨的计划、subagent 驱动的批量执行与审查包。
 
 核心理念：
@@ -44,7 +43,6 @@
 | `reference/gstack/` | Garry's gstack | CEO 洞察、发布与验证：`/office-hours`、`/design-shotgun`、`/qa`、`/benchmark`、`/canary`、`/ship`、浏览器自动化 |
 | `reference/mattpocock/` | Matt Pocock's skills | 轻量日常工程技能：`/grill-me`、`/grill-with-docs`、`/tdd`、`/diagnose`、领域建模 |
 | `reference/superpowers/` | Jesse's Superpowers | 严谨计划与执行：`writing-plans`、`subagent-driven-development`、`executing-plans` |
-| `reference/soflow/` | soflow | 流程驱动的产物链：`.aiassist/stories/<id>/`、PRD → REQ → stories、HTML UX 原型 |
 | `reference/baoyu-design/` | baoyu-design（Jim Liu） | Claude Design 可移植 skill：HTML 原型、设计系统、Figma 导入、PPTX 导出、starter components |
 
 ## 我们的测试即契约工作流

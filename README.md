@@ -1,5 +1,7 @@
 # 测试即契约工作流
 
+[![GitHub](https://img.shields.io/badge/GitHub-charonX%2Fworkflow-blue?logo=github)](https://github.com/charonX/workflow)
+
 一个 Claude Code 插件,用于人机协作开发。核心命题:**AI 自主写代码时,人凭什么敢信它对了?**
 
 答案是把人的纠错接口从"改代码/命令 AI"换成"测试"。人只负责裁定"什么算对",把它编译成机器可验证的契约,AI 在契约内自主迭代。
@@ -103,19 +105,54 @@ REQ 变 → 挂它的测试标记"过时待重生"。任何失败测试都能回
 
 ## 安装
 
+### 方式一：通过 Claude Code 插件市场安装（推荐）
+
 ```bash
-npx skills@latest add <your-github-username>/test-as-contract-workflow
+npx skills@latest add charonX/workflow
 ```
 
-或者把 `skills/` 目录复制/软链到目标项目的 `.claude/skills/`:
+### 方式二：手动复制或软链
+
+如果你本地有本仓库的克隆，可以把 `skills/` 目录复制或软链到目标项目的 `.claude/skills/`：
 
 ```bash
-# 复制
-cp -R /path/to/workflow/skills/* .claude/skills/
+# 1. 克隆本仓库（如尚未克隆）
+git clone https://github.com/charonX/workflow.git
+
+# 2. 复制到目标项目
+cd /path/to/your-project
+rm -rf .claude/skills/*
+cp -R /path/to/workflow/skills/productivity/* .claude/skills/
+cp -R /path/to/workflow/skills/engineering/* .claude/skills/
+cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 
 # 或软链(仅本地开发)
-ln -s /path/to/workflow/skills/* .claude/skills/
+ln -s /path/to/workflow/skills/productivity/tac-* .claude/skills/
+ln -s /path/to/workflow/skills/engineering/tac-* .claude/skills/
+ln -s /path/to/workflow/skills/maintenance/tac-* .claude/skills/
 ```
+
+### 方式三：安装到 workflow 仓库自身的开发环境
+
+如果你正在修改本仓库的 skill，可以软链到本地测试项目：
+
+```bash
+cd /path/to/test-project
+rm -rf .claude/skills/*
+ln -s /Users/zhanglei/charon/code/workspace/workflow/skills/productivity/tac-* .claude/skills/
+ln -s /Users/zhanglei/charon/code/workspace/workflow/skills/engineering/tac-* .claude/skills/
+ln -s /Users/zhanglei/charon/code/workspace/workflow/skills/maintenance/tac-* .claude/skills/
+```
+
+## 保持同步
+
+当本仓库的 skill 更新后，重新安装到目标项目即可：
+
+```bash
+npx skills@latest add charonX/workflow
+```
+
+如果你使用本地软链开发，更新会自动生效，无需重新安装。
 
 ## 使用
 
@@ -129,8 +166,8 @@ ln -s /path/to/workflow/skills/* .claude/skills/
 ### 快速上手
 
 ```bash
-# 1. 把 skill 安装到目标项目
-npx skills@latest add <your-github-username>/test-as-contract-workflow
+# 1. 安装 skill 到目标项目
+npx skills@latest add charonX/workflow
 
 # 2. 初始化项目基础设施
 /tac-bootstrap-workflow

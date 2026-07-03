@@ -18,6 +18,7 @@ PRD 中已有明确稳定块，用户说"生成需求"、"/tac-crystallize"时�
 ## 输入
 
 - `.aiassist/stories/<id>/prd.md`
+- `.aiassist/stories/<id>/tech-design.md`
 - `.aiassist/stories/<id>/workflow-state.yaml`
 - 项目设计系统（`.aiassist/global/DESIGN.md`、`.aiassist/global/tokens.css`）
 
@@ -28,8 +29,9 @@ PRD 中已有明确稳定块，用户说"生成需求"、"/tac-crystallize"时�
 
 ## 执行步骤
 
-1. **读取 PRD**：提取所有标注为"稳定"的块，以及对应的测试 seams、模块边界。
-2. **为每个稳定块分配 REQ-ID**：
+1. **读取 PRD 与 tech-design.md**：提取所有标注为"稳定"的块，以及对应的测试 seams、模块边界、接口契约。
+2. **技术可行性预演**：对每个稳定块，确认实现路径是否明确、是否有可测试的 seam、是否引入新的基础设施依赖。不清晰则降级回 PRD/TECH-DESIGN。
+3. **为每个稳定块分配 REQ-ID**：
    - 格式：`REQ-<PHASE>-NNN`
    - `<PHASE>` 取自当前 story phase（如 BUILD、DESIGN、TEST 等）
    - 编号从 001 开始递增

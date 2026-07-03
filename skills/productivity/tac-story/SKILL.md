@@ -57,6 +57,7 @@ sources:
 | THINK | `/tac-demand-insight` |
 | PRD | `/tac-to-prd` |
 | DESIGN | `/tac-ux-explore`(若无设计系统,先 `/tac-design-system`) |
+| TECH-DESIGN | `/tac-tech-design` |
 | CRYSTALLIZE | `/tac-crystallize` |
 | TEST | `/tac-test-author` |
 | ASSERTION-SIGNOFF | `/tac-assertion-signoff` |
@@ -87,12 +88,12 @@ sources:
 
 1. **归档本次 attempt**:
    - 创建 `.aiassist/stories/<id>/archive/attempt-<N>/`。
-   - 移入**承诺层产物**:`prd.md`、`requirements.md`、`requirements-*.hash`、`assertion-signoff.md`、`feel-signoff.md`、`qa-report.md`、相关代码。
+   - 移入**承诺层产物**:`prd.md`、`tech-design.md`、`requirements.md`、`requirements-*.hash`、`assertion-signoff.md`、`feel-signoff.md`、`qa-report.md`、相关代码。
    - **不归档**:`ux/`(一挡思考工具,直接改)、`interview-notes.md`(软的)、`workflow-state.yaml`(状态机本身,要更新不是归档)。
 2. **写归档原因**:`archive/attempt-<N>/reason.md`,记录根因(错误假设活在哪一层)+ 推翻理由 + 下次该避开什么。这是下次 `/tac-demand-insight` 的关键输入。
 3. **更新 workflow-state**:
    - `attempt` +1。
-   - `phase` 回到根因层对应阶段:根因在需求层 → `THINK`;在方案层 → `PRD`;在 UX 暴露的约束层 → `DESIGN`。
+   - `phase` 回到根因层对应阶段:根因在需求层 → `THINK`;在方案层 → `PRD`;在技术方案层 → `TECH-DESIGN`;在 UX 暴露的约束层 → `DESIGN`。
    - `history` 追加一条:`{from, to, reason, date}`。
 4. **同 story 重做**:从回退后的 phase 起跑。UX 原型留在 `ux/` 直接改,不搬。
 
@@ -118,7 +119,7 @@ sources:
 ```yaml
 story_id: 2026-07-02-mood-tracking
 intention: <一句话痛点,非方案>
-phase: THINK              # THINK/PRD/DESIGN/CRYSTALLIZE/TEST/ASSERTION-SIGNOFF/BUILD/QA/FEEL-SIGNOFF/REFLECT
+phase: THINK              # THINK/PRD/DESIGN/TECH-DESIGN/CRYSTALLIZE/TEST/ASSERTION-SIGNOFF/BUILD/QA/FEEL-SIGNOFF/REFLECT
 attempt: 1
 created: 2026-07-02
 history:

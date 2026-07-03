@@ -5,7 +5,7 @@ story_id: {{STORY_ID}}
 intention: >-
   {{INTENTION}}   # 一句话痛点,非方案。这是 story 的初衷,方案会变,痛点不会。
 
-phase: THINK      # THINK / PRD / DESIGN / CRYSTALLIZE / TEST / ASSERTION-SIGNOFF / BUILD / QA / FEEL-SIGNOFF / REFLECT
+phase: THINK      # THINK / PRD / DESIGN / TECH-DESIGN / CRYSTALLIZE / TEST / ASSERTION-SIGNOFF / BUILD / QA / FEEL-SIGNOFF / REFLECT
 attempt: 1        # 第几次尝试。归档重做时 +1。
 created: {{DATE}}
 
@@ -16,7 +16,7 @@ history:
 # 归档记录。每次"归档重做"追加一条;删 story 不记(整个目录删除)。
 archive: []
 #  - {attempt: 1, date: 2026-07-03, reason_file: archive/attempt-1/reason.md, root_layer: PRD}
-#    root_layer 取值:THINK / PRD / DESIGN —— 表示这次回流判定根因活在哪一层。
+#    root_layer 取值:THINK / PRD / DESIGN / TECH-DESIGN —— 表示这次回流判定根因活在哪一层。
 
 # 块状态(一挡内按块回流时维护)。
 blocks: {}

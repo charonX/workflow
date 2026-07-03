@@ -18,6 +18,7 @@ sources:
 
 - `.aiassist/stories/<id>/requirements.md`
 - `.aiassist/stories/<id>/requirements-v1.hash`
+- `.aiassist/stories/<id>/tech-design.md`
 
 ## 输出
 
@@ -26,7 +27,7 @@ sources:
 
 ## 执行步骤
 
-1. **逐条读取 REQ**，为每条验收标准设计至少一个测试方法。
+1. **逐条读取 REQ 与 tech-design.md**：按 tech-design 中定义的 seams，为每条验收标准设计至少一个测试方法。
 2. **写测试文件头部**：必须包含 `REQ-TRACE`、`REQ-VERSION`、`TEST-AUTHOR`、`ASSERTIONS-SIGNED`。
 3. **搭建脚手架**：
    - 必要的 import、`@testable import`、setUp/tearDown

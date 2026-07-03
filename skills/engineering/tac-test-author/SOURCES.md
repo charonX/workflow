@@ -16,3 +16,7 @@
 
 - mattpocock tdd / superpowers test-driven-development 更新时，检查红绿纪律和反模式清单。
 - 若项目新增测试框架，同步"输出"路径和模板。
+
+## 改动记录
+
+- 2026-07-03：增加 `tech-design.md` 作为输入；测试设计必须基于 tech-design 中定义的 seams。

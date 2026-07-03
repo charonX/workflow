@@ -8,6 +8,7 @@
 
 ## 改动记录
 
+- 2026-07-03：增加 `TECH-DESIGN` 阶段路由；归档范围增加 `tech-design.md`；阶段列表同步更新。
 - 2026-07-02：重命名为 `/tac-story`(原 `/test-as-contract`),补全路由逻辑与回流机制
   - story = 初衷;实现路径错 → 归档重做;初衷错 → 删 story
   - 根因诊断优先;UX 不归档;按块回流不建 attempt

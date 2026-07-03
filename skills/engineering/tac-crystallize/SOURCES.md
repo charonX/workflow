@@ -19,5 +19,5 @@
 
 ## 改动记录
 
-- 2026-07-03：补全 SKILL.md 执行步骤；增加模块边界属性（scope/modules/interface_contract）和 REQ 分类维度，强调跨模块 REQ 必须显式接口契约。
+- 2026-07-03：补全 SKILL.md 执行步骤；增加模块边界属性（scope/modules/interface_contract）和 REQ 分类维度，强调跨模块 REQ 必须显式接口契约；增加 `tech-design.md` 作为输入，增加技术可行性预演步骤。
 - 2026-07-01：整理参考来源，明确借鉴的 reference 文件。

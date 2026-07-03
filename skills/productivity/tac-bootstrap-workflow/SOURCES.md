@@ -17,3 +17,4 @@
 ## 改动记录
 
 - 2026-07-01：整理参考来源，明确借鉴的 reference 文件。
+- 2026-07-03：补全 SKILL.md 初始化流程；新增 `.aiassist/hooks/pre-commit` 与 `commit-msg`，强制实现 commit 与测试 commit 分离；新增多技术栈 CI/CD 模板（Node.js/Python/Swift/Go/Generic），bootstrap 时自动检测或询问用户选择；在 `project-claude-appendix.md.template` 中加入 commit 标签约定。

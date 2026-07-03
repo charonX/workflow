@@ -23,6 +23,7 @@
   - 新增多源设计上下文收集（Figma .fig、GitHub、HTML/CSS）
   - 新增 tokens.css 绑定视觉约束
   - 更新 sources 字段记录 baoyu-design 参考来源
+- 2026-07-03：增加模块/服务边界检查点，在生成 HTML 前识别 UI 流程可能引入的跨模块耦合，并回流 PRD。
 - 2026-06-25：基于设计文档（`workflow/design/`）重新实现
   - 明确"双轨收割"：行为进 PRD/REQ，观感进 HTML
   - 新增 PRD 回流机制

@@ -17,3 +17,7 @@
 
 - superpowers subagent-driven-development / executing-plans 更新时，检查任务简报、审查包、模型选择策略。
 - mattpocock implement 更新时，检查轻量实现模式。
+
+## 改动记录
+
+- 2026-07-03：明确提交时使用 `[tac-build]` 标签，一个 commit 只包含实现代码，不能包含测试文件。

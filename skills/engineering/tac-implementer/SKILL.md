@@ -19,7 +19,7 @@ assertion-signoff 已通过，用户说"开始实现"、"/tac-implementer"时。
 
 - `.aiassist/stories/<id>/requirements.md`
 - `BanshanJourneyTests/**/*.swift`
-- `.aiassist/stories/<id>/tac-assertion-signoff.md`
+- `.aiassist/stories/<id>/assertion-signoff.md`
 
 ## 输出
 
@@ -38,7 +38,7 @@ assertion-signoff 已通过，用户说"开始实现"、"/tac-implementer"时。
 4. **升级策略**：
    - "我实现不出来，诊断如下" → 升级给人/更强模型。
    - "我怀疑断言 X 自相矛盾/不可满足，证据如下" → 回 assertion-signoff。
-5. **提交**：全绿后提交。
+5. **提交**：全绿后提交，commit 消息使用 `[tac-build]` 标签。一个 commit 只包含实现代码，不能包含测试文件。
 
 ## 内循环命令
 

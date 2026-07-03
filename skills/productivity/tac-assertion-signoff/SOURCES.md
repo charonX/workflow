@@ -15,3 +15,7 @@
 
 - gstack plan-eng-review 更新时，检查审查维度和清单。
 - mattpocock tdd 更新时，检查测试先行契约精神。
+
+## 改动记录
+
+- 2026-07-03：去掉手写签名和日期，改为 Git commit 签核。`[tac-test] assertion-signoff for <story-id>` commit 即视为签核证据。

@@ -18,7 +18,7 @@ feel-signoff 通过，用户说"复盘"、"/tac-reflect"时。
 
 - `.aiassist/stories/<id>/prd.md`
 - `.aiassist/stories/<id>/requirements.md`
-- `.aiassist/stories/<id>/tac-assertion-signoff.md`
+- `.aiassist/stories/<id>/assertion-signoff.md`
 - `.aiassist/stories/<id>/tac-feel-signoff.md`
 - `.aiassist/stories/<id>/qa-report.md`
 
@@ -40,6 +40,7 @@ feel-signoff 通过，用户说"复盘"、"/tac-reflect"时。
    - 下次应该在哪个阶段多问什么问题
    - 哪些测试模式好用/不好用
    - 哪些架构决策需要记录为 ADR
+   - **是否产生了可复用的 design pattern**：错误处理、状态管理、API 客户端封装、跨模块调用模式等。如果有，写入 `STANDARDS.md` 或 `engineering-lessons.md`。
 3. **更新全局文档**：
    - `engineering-lessons.md`
    - `architecture.md`

@@ -61,6 +61,21 @@
 /tac-bootstrap-workflow
 ```
 
+### commit 约定
+
+为了保护"实现者对测试只读"的契约，所有 story 相关 commit 应带标签：
+
+| 标签 | 用途 | 可改文件 |
+|---|---|---|
+| `[tac-test]` | 编写/修改测试、签核断言 | `test/`、`*.{test,spec}.*`、`e2e/` 等 |
+| `[tac-build]` | 编写实现代码 | `src/`、`app/`、`lib/` 等 |
+| `[tac-docs]` | PRD/REQ 文档更新 | `.aiassist/stories/*/prd.md`、`requirements.md` 等 |
+| `[tac-ux]` | UX 原型/设计系统更新 | `.aiassist/stories/*/ux/`、`global/DESIGN.md` 等 |
+| `[tac-bootstrap]` | 工作流基础设施 | `.aiassist/`、`CLAUDE.md`、hooks 等 |
+
+**核心纪律：一个 commit 不能同时包含实现代码和测试文件。**
+仓库已配置 `.aiassist/hooks/pre-commit` 和 `commit-msg` 进行拦截。
+
 ### 更新 skill
 
 当 `<workflow-path>/skills/` 中的 canonical skill 变更时，重新安装：

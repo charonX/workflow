@@ -15,3 +15,7 @@
 
 - gstack qa 更新时，同步健康分、差异感知 QA、WTF 自调节规则。
 - superpowers 更新时，可扩展专家子代理并行 QA。
+
+## 改动记录
+
+- 2026-07-03：增加 coverage 报告收集步骤，QA 报告模板新增 Coverage 章节，低于阈值时 QA 不通过。

@@ -1,6 +1,6 @@
 ---
 name: tac-story
-description: "测试即契约" 工作流总入口。管理 story 生命周期:创建/选择 story,读取 workflow-state 路由到当前阶段,并在发现根本问题时执行回流(归档重做或删 story)。
+description: "\"测试即契约\" 工作流总入口。管理 story 生命周期:创建/选择 story,读取 workflow-state 路由到当前阶段,并在发现根本问题时执行回流(归档重做或删 story)。"
 disable-model-invocation: true
 sources:
   - workflow/design/workflow-framework.md

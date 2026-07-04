@@ -44,7 +44,7 @@
 
 跨越线 = "某块不再推翻/即将被依赖"。一挡可无限循环;二挡的回报是单人开发最缺的**回归安全网**——你越高频改,网越值钱。
 
-### 十一个阶段
+### 十三个阶段
 
 | # | 阶段 | Skill | 触发者 | 做什么 |
 |---|---|---|---|---|
@@ -53,12 +53,14 @@
 | 3 | **设计系统** | `/tac-design-system` | 用户 | 建立项目级 `.aiassist/global/DESIGN.md` + `tokens.css` |
 | 4 | **UX 设计** | `/tac-ux-explore` | 用户 | 迭代高保真 HTML 原型;行为决策进 REQ,视觉决策进 HTML |
 | 5 | **技术方案** | `/tac-tech-design` | 用户 | 对抗式设计模块、数据流、接口契约与测试 seams |
-| 6 | **结晶** | `/tac-crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
-| 7 | **测试** | `/tac-test-author` | 模型 | 从 REQ + tech-design 生成测试骨架,为人留出占位断言 |
-| 8 | **断言签核** | `/tac-assertion-signoff` | 用户 | 人在实现前签核所有断言(门 1) |
-| 9 | **实现** | `/tac-implementer` | 模型 | 针对测试实现代码,对测试只读,每轮跑全套测试 |
-| 10 | **QA** | `/tac-qa-runner` | 模型 | E2E、回归、证据收集 |
-| 11 | **观感签核** | `/tac-feel-signoff` | 用户 | 人依据 HTML 参照验收观感,偏差回流 REQ(门 2) |
+| 6 | **技术方案审查** | `/tac-review --stage=tech` | 用户（手动） | 新会话视角审查技术方案（可选但建议） |
+| 7 | **结晶** | `/tac-crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
+| 8 | **测试** | `/tac-test-author` | 模型 | 从 REQ + tech-design 生成测试骨架,为人留出占位断言 |
+| 9 | **断言签核** | `/tac-assertion-signoff` | 用户 | 人在实现前签核所有断言(门 1) |
+| 10 | **实现** | `/tac-implementer` | 模型 | 针对测试实现代码,对测试只读,每轮跑全套测试 |
+| 11 | **代码审查** | `/tac-review --stage=code` | 用户（手动） | 新会话视角审查实现 diff（可选但建议） |
+| 12 | **QA** | `/tac-qa-runner` | 模型 | E2E、回归、证据收集 |
+| 13 | **观感签核** | `/tac-feel-signoff` | 用户 | 人依据 HTML 参照验收观感,偏差回流 REQ(门 2) |
 | — | **反思** | `/tac-reflect` | 用户 | 捕获经验教训,更新全局知识 |
 
 ### 三种角色(权限互斥)
@@ -190,6 +192,7 @@ npx skills@latest add charonX/workflow
 | `/tac-demand-insight` | THINK | 对抗式需求访谈 |
 | `/tac-to-prd` | PRD | 把讨论整理成 PRD |
 | `/tac-tech-design` | TECH-DESIGN | 对抗式技术方案设计 |
+| `/tac-review` | REVIEW | 手动审查 PRD/技术方案/代码（建议新会话） |
 | `/tac-design-system` | DESIGN | 建立项目级设计系统 |
 | `/tac-design-import` | DESIGN | 导入设计来源(Figma/GitHub/HTML) |
 | `/tac-ux-explore` | DESIGN | 迭代高保真 HTML UX 原型 |

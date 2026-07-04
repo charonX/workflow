@@ -68,6 +68,18 @@ sources:
 
 3. 若 `archive` 下已有历史 attempt,提示用户:"本 story 已尝试过 N 次,最新归档原因见 `archive/attempt-N/reason.md`,这次别踩同样的坑。"
 
+### C. 手动审查（可选但建议）
+
+以下关键转换点，建议人手动触发 `/tac-review`，最好在新会话中执行：
+
+| 审查时机 | stage | 审查产物 | 通过后可进入 |
+|---|---|---|---|
+| PRD 完成后 | `prd` | `prd.md` | TECH-DESIGN |
+| 技术方案完成后 | `tech` | `prd.md` + `tech-design.md` | CRYSTALLIZE |
+| BUILD 完成后 | `code` | diff + 全部契约文档 | QA |
+
+`/tac-review` 是建议性门，输出报告后由人决定是否继续、修复后重审，或回流。
+
 ## 回流:发现根本问题时
 
 ### 第一步:根因诊断(必做,不跳过)

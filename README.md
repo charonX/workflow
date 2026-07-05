@@ -193,11 +193,11 @@ npx skills@latest add charonX/workflow
 | `/tac-to-prd` | PRD | 把讨论整理成 PRD |
 | `/tac-tech-design` | TECH-DESIGN | 对抗式技术方案设计 |
 | `/tac-review` | REVIEW | 手动审查 PRD/技术方案/代码（建议新会话） |
-| `/tac-design-system` | DESIGN | 建立项目级设计系统 |
-| `/tac-design-import` | DESIGN | 导入设计来源(Figma/GitHub/HTML) |
-| `/tac-ux-explore` | DESIGN | 迭代高保真 HTML UX 原型 |
+| `/tac-design-system` | DESIGN | 建立项目级设计系统（含编译 bundle/manifest/preview、资产记录） |
+| `/tac-design-import` | DESIGN | 导入设计来源（Figma/GitHub/HTML）并可选编译为设计系统 |
+| `/tac-ux-explore` | DESIGN | 迭代高保真 HTML UX 原型（含编译 preview、资产版本管理、变体） |
 | `/tac-signoff` | 签核 | assertion 阶段签核断言；feel 阶段依据 HTML 参照验收观感 |
-| `/tac-design-handoff` | 交接 | 从已批准 UX 生成开发交接包 |
+| `/tac-design-handoff` | 交接 | 从已批准 UX 生成开发交接包（含机器可读 manifest） |
 | `/tac-reflect` | REFLECT | 捕获经验教训 |
 
 ### 模型触发
@@ -219,13 +219,34 @@ npx skills@latest add charonX/workflow
 │   ├── requirements.md
 │   ├── requirements-v1.hash
 │   ├── ux/
+│   │   ├── *.html                 # HTML 原型（带 @dsCard 标签）
+│   │   ├── components/            # （可选）story 局部 JSX 组件
+│   │   ├── _ds_bundle.js          # （生成）story 组件 bundle
+│   │   ├── _ds_manifest.json     # （生成）story 设计系统清单
+│   │   ├── preview.html           # （生成）自包含预览页
+│   │   ├── _d_meta.json          # （生成）资产注册表 + 设计系统绑定
+│   │   └── _ds/<slug>/            # （生成）全局设计系统运行时拷贝
+│   ├── design_handoff/
+│   │   ├── README.md              # 开发交接文档
+│   │   └── _handoff_manifest.json # 机器可读交接清单
 │   ├── test-plan.md
 │   ├── signoff.md             # 断言签核 + 观感签核记录
 │   ├── workflow-state.yaml      # phase/attempt/history/archive 状态机
 │   └── archive/                 # 归档重做时,被推翻的承诺层产物 + reason.md
 └── global/
     ├── DESIGN.md                # 项目级设计系统文档
-    ├── tokens.css               # 可运行的 CSS token
+    ├── tokens.css               # CSS token 入口
+    ├── styles.css               # 全局样式入口（仅 @import + 工具类）
+    ├── README.md                # 设计系统概览
+    ├── components/              # （可选）JSX 组件 + .d.ts 契约
+    ├── cards/                   # （可选）@dsCard 预览卡片
+    ├── screens/                 # （可选）@startingPoint 起始页面
+    ├── _ds_bundle.js           # （生成）编译后的组件 bundle
+    ├── _ds_manifest.json       # （生成）设计系统清单
+    ├── _adherence.oxlintrc.json# （生成）实现侧 CSS prop 白名单
+    ├── preview.html            # （生成）自包含交互预览
+    ├── _ds/<slug>/             # （生成）运行时拷贝 + _ds_prompt.md
+    ├── _d_meta.json            # （生成）设计系统绑定与资产注册
     ├── engineering-lessons.md
     ├── architecture.md
     └── STANDARDS.md
@@ -242,7 +263,7 @@ npx skills@latest add charonX/workflow
 | [mattpocock/skills](https://github.com/mattpocock/skills) | 工程纪律：TDD 红绿重构、对抗式文档审查、诊断方法 |
 | [gstack](https://github.com/garrytan/gstack) | CEO/创始人级需求洞察、设计决策、发布与 QA 门禁、浏览器自动化、流程编排与产物链 |
 | [superpowers](https://github.com/obra/superpowers) | 严谨计划、subagent 驱动的批量执行、审查包 |
-| [baoyu-design](https://github.com/JimLiu/baoyu-design) | Claude Design 可移植 skill：HTML 原型方法论、设计系统、Figma 导入、起始组件 |
+| [baoyu-design](https://github.com/JimLiu/baoyu-design) | Claude Design 可移植 skill：HTML 原型方法论、设计系统编译管线、Figma 导入、起始组件 |
 
 > 理念的逐条推导见 [`design/test-as-contract-workflow.md`](./design/test-as-contract-workflow.md)，端到端流程总装图见 [`design/workflow-framework.md`](./design/workflow-framework.md)。
 

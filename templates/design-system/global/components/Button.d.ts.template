@@ -1,0 +1,15 @@
+/**
+ * @startingPoint section="Components" subtitle="Primary action button" viewport="200x120"
+ */
+export interface ButtonProps {
+  /** 按钮样式变体 */
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  /** 按钮尺寸 */
+  size?: 'sm' | 'md' | 'lg';
+  /** 是否禁用 */
+  disabled?: boolean;
+  /** 按钮文本/子元素 */
+  children: React.ReactNode;
+  /** 点击回调 */
+  onClick?: () => void;
+}

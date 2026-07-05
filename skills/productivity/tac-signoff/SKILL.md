@@ -67,6 +67,9 @@ sources:
 ### 输入
 
 - `.aiassist/stories/<id>/ux/*.html`
+- `.aiassist/stories/<id>/ux/preview.html`（自包含预览页）
+- `.aiassist/stories/<id>/ux/_d_meta.json`（资产注册表 + 设计系统绑定）
+- `.aiassist/stories/<id>/ux/_ds_manifest.json`（story 级组件清单，如有）
 - `.aiassist/stories/<id>/requirements.md`
 - 已实现的产品/app
 - `.aiassist/stories/<id>/qa-report.md`
@@ -74,20 +77,23 @@ sources:
 
 ### 执行步骤
 
-1. **展示 HTML 参照和当前实现**给用户。
-2. **对照 HTML 原型检查**：结构、元素顺序、颜色、排版、间距、动效、交互反馈、错误/降级状态。
-3. **读取 implementer 记录的偏差**：查看实现与 HTML 原型的已知偏差，确认是否在可接受范围。
-4. **记录偏差并分类**：
+1. **读取 `_d_meta.json`**：确认 canonical 资产列表、各 asset 状态（needs-review/approved/changes-requested）、设计系统绑定。
+2. **展示 `preview.html` 和当前实现**给用户。
+3. **对照 HTML 原型检查**：结构、元素顺序、颜色、排版、间距、动效、交互反馈、错误/降级状态。
+4. **读取 implementer 记录的偏差**：查看实现与 HTML 原型的已知偏差，确认是否在可接受范围。
+5. **记录偏差并分类**：
    - **缺陷**：实现偏离已签 REQ → 补标准增量 → 测试 → 实现。
    - **需求变更**：REQ 没写或写错 → 改 REQ → 重签 assertion → 测试 → 实现。
    - **可接受偏差**：HTML 原型无法 1:1 翻译（平台限制等）→ 记录并放行。
-5. **生成/更新 signoff 文件**：填写 `signoff.md` 中 Feel 部分的检查结果和偏差列表。
-6. **更新 workflow-state**：标记 feel-signoff 通过或退回。
+6. **生成/更新 signoff 文件**：填写 `signoff.md` 中 Feel 部分的检查结果和偏差列表。
+7. **更新 workflow-state**：标记 feel-signoff 通过或退回。
 
 ### 检查清单
 
 - [ ] 产品在目标环境启动无崩溃。
 - [ ] 关键用户流程可走完。
+- [ ] `preview.html` 已生成且能正常渲染。
+- [ ] `_d_meta.json` 中所有 asset 状态已确认（needs-review → approved/changes-requested）。
 - [ ] 视觉层面对照 HTML UX 参照：结构、元素顺序、颜色、排版、间距、动效。
 - [ ] 无系统错误弹窗 / 空白页。
 - [ ] 降级/错误状态表达温和、不焦虑。

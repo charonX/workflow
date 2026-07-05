@@ -25,6 +25,9 @@ sources:
 - `.aiassist/stories/<id>/tech-design.md`（如有）
 - `.aiassist/stories/<id>/signoff.md`
 - `.aiassist/stories/<id>/ux/*.html`（如有 UX 原型，作为视觉/结构参照）
+- `.aiassist/stories/<id>/ux/_d_meta.json`（资产注册表 + 设计系统绑定）
+- `.aiassist/stories/<id>/ux/_ds_manifest.json`（story 级组件清单与 prop 契约，如有）
+- `.aiassist/global/_ds/<slug>/_ds_prompt.md`（设计系统使用提示）
 - 测试文件（项目对应位置，如 `*Tests/**/*.swift`、`test/**/*.test.ts` 等）
 - 可选：workflow-state 中的 `slices` / `tasks` 列表
 
@@ -54,11 +57,11 @@ sources:
 与原有行为一致，但增加 HTML 原型参照：
 
 1. **读取测试**：理解每个测试的输入、输出、断言。
-2. **读取 HTML UX 原型**：如果 `ux/` 目录存在，读取所有 `.html` 文件，作为视觉与结构参照。记录：
+2. **读取 HTML UX 原型**：如果 `ux/` 目录存在，读取 `_d_meta.json` 中的 canonical 资产列表，然后读取对应 `.html` 文件，作为视觉与结构参照。同时读取 `ux/_ds_manifest.json` 与 `.aiassist/global/_ds/<slug>/_ds_prompt.md`，了解可用组件与 prop 契约。记录：
    - 页面/组件层级和命名。
    - 关键元素及其顺序（按钮、表单、列表、空态等）。
    - 交互状态（loading、empty、error、success、disabled）。
-   - 与 `tokens.css` / `DESIGN.md` 关联的样式 token。
+   - 与 `tokens.css` / `DESIGN.md` / `_ds_manifest.json` 关联的样式 token。
    实现时尽量对齐；实现后记录已知偏差。
 3. **内循环实现**：
    - 写最小实现使某个测试变绿。
@@ -121,7 +124,10 @@ for slice in remaining_slices:
 2. **输入文件路径**：
    - `requirements.md`（指出本切片对应的 REQ-ID）
    - `tech-design.md`（相关模块/数据流/seams）
+   - `ux/_d_meta.json`（canonical 资产列表 + 设计系统绑定）
    - `ux/*.html`（视觉/结构参照；子代理必须读取并对齐）
+   - `ux/_ds_manifest.json`（story 级组件清单与 prop 契约）
+   - `.aiassist/global/_ds/<slug>/_ds_prompt.md`（设计系统使用提示）
    - 测试文件路径
    - `signoff.md`
 3. **产出要求**：

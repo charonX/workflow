@@ -1,0 +1,34 @@
+# {{PROJECT_NAME}} Design System
+
+> 项目级设计系统，为所有 story 的 UX 原型与最终实现提供视觉契约。
+
+## 来源
+
+- PRD / 品牌资料：见相关 story 的 `prd.md`
+- 导入参考：`.aiassist/design-refs/`
+
+## 内容清单
+
+- `tokens.css` — 颜色、字体、间距、圆角、阴影、z-index、动效 token
+- `styles.css` — 全局样式入口，仅含 `@import` + 少量工具类
+- `components/` — 可复用 JSX 组件 + `.d.ts` 类型契约 + `.prompt.md` 用法提示
+- `cards/` — `@dsCard` 预览卡片
+- `screens/` — `@startingPoint` 起始页面
+- `assets/` — 字体、图片、图标
+
+## 基础原则
+
+- 主观视觉不进测试；视觉决策沉淀在本设计系统与 HTML 原型中。
+- 任何实现代码应优先引用本系统的 token，避免硬编码 magic value。
+- 修改 token 后必须重新跑 `compile-design-system.mjs` 与 `build-preview.mjs`。
+
+## 使用方式
+
+在 story 的 HTML 原型中：
+
+```html
+<link rel="stylesheet" href="_ds/{{SLUG}}/styles.css">
+<script src="_ds/{{SLUG}}/_ds_bundle.js"></script>
+```
+
+或在全局预览中直接打开 `preview.html`。

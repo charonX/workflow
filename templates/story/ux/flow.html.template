@@ -1,0 +1,35 @@
+<!-- @dsCard group="{{FLOW_GROUP}}" name="{{FLOW_NAME}}" viewport="1280x800" -->
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{FLOW_NAME}} — {{STORY_ID}}</title>
+  <!-- 引用已导入的项目级设计系统运行时拷贝 -->
+  <link rel="stylesheet" href="_ds/{{DS_SLUG}}/styles.css">
+  <!-- Story 局部 token 覆盖（可选） -->
+  <link rel="stylesheet" href="tokens.css">
+  <style>
+    /* 本页面临时样式，不替代设计系统 token */
+    body { margin: 0; background: var(--color-background); color: var(--color-text); }
+    .page { min-height: 100vh; padding: var(--space-6); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>{{FLOW_NAME}}</h1>
+    <p>在此处构建 {{STORY_ID}} 的高保真 HTML 原型。</p>
+    <!-- 页面内容 -->
+  </div>
+
+  <!-- 如使用设计系统组件，加载 bundle -->
+  <script src="_ds/{{DS_SLUG}}/_ds_bundle.js"></script>
+  <!-- 如使用 React+Babel 交互 -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+  <script type="text/babel">
+    // 局部 React 组件可写在这里，或拆分到 components/*.jsx 后由 compile 打包
+  </script>
+</body>
+</html>

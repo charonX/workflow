@@ -1,0 +1,29 @@
+/* Global styles entry for {{PROJECT_NAME}} */
+/* 只放 @import，不要写具体规则。编译器会把这里的 @import 闭包打包给消费者。 */
+
+@import "./tokens.css";
+
+/* 可选：按关注拆分 token 文件时使用 */
+/* @import "./tokens/colors.css"; */
+/* @import "./tokens/typography.css"; */
+/* @import "./tokens/spacing.css"; */
+
+/* 品牌字体文件（如果有本地字体） */
+/* @import "./assets/fonts/fonts.css"; */
+
+/* 工具类示例 —— 可删除或扩展为完整工具类 */
+.ds-surface {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+.ds-stack > * + * {
+  margin-block-start: var(--space-4);
+}
+
+.ds-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4);
+}

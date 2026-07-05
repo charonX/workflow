@@ -1,0 +1,35 @@
+# UX 变体创建指南
+
+## 何时创建变体
+
+当用户要求在同一 story 内探索不同主题、布局密度或视觉方向时使用。
+
+## 目录结构
+
+```
+ux/
+├── flow-a.html          # 基线
+├── tokens.css           # 基线 token（可选）
+└── variants/
+    └── dark/
+        ├── flow-a.html  # 覆盖后的页面
+        └── tokens.css   # 只覆盖需要变化的 token
+```
+
+## 步骤
+
+1. 在 `ux/variants/<variant-name>/` 下创建目录。
+2. 复制基线 HTML，仅修改必要的 class 或结构。
+3. 编写 `tokens.css`，只覆盖变化的 token，其余继承全局设计系统。
+4. 对该目录运行：
+   ```bash
+   node scripts/design-system/compile-design-system.mjs .aiassist/stories/<id>/ux/variants/<variant-name>
+   node scripts/design-system/build-preview.mjs .aiassist/stories/<id>/ux/variants/<variant-name> --out .aiassist/stories/<id>/ux/variants/<variant-name>/preview.html
+   ```
+5. 使用 `record-asset.mjs` 记录变体，并设置 `inherit-from` 指向基线 HTML 路径。
+
+## 记录示例
+
+```bash
+node scripts/design-system/record-asset.mjs .aiassist/stories/<id>/ux variants/dark/flow-a.html --name "Flow A — Dark" --inherit-from flow-a.html --status needs-review
+```

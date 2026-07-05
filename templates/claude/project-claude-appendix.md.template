@@ -12,8 +12,9 @@
 | `/tac-to-prd` | 把讨论整理成 PRD | 用户 |
 | `/tac-tech-design` | 对抗式技术方案设计 | 用户 |
 | `/tac-review` | 手动审查 PRD/技术方案/代码（建议新会话） | 用户 |
-| `/tac-design-system` | 建立或校验项目级设计系统 | 用户 |
-| `/tac-ux-explore` | 用 HTML 原型进行高保真 UX 探索 | 用户 |
+| `/tac-design-system` | 建立或更新项目级设计系统（含编译、预览、资产记录） | 用户 |
+| `/tac-design-import` | 导入设计来源并可选编译为设计系统 | 用户 |
+| `/tac-ux-explore` | 用 HTML 原型探索 UX（含编译 preview、资产版本管理、变体） | 用户 |
 | `/tac-crystallize` | 把 PRD 稳定块转成 REQ-ID | 模型 |
 | `/tac-test-author` | 从 REQ 生成测试骨架 | 模型 |
 | `/tac-signoff` | assertion 阶段签核断言；feel 阶段依据 HTML 参照验收观感 | 用户 |
@@ -34,13 +35,34 @@
 │   ├── review-tech.md         # 技术方案审查报告（可选）
 │   ├── review-code.md         # 代码审查报告（可选）
 │   ├── ux/                    # 用于 `/tac-signoff --stage=feel` 的 HTML UX 参照
+│   │   ├── *.html             # HTML 原型（带 @dsCard 标签）
+│   │   ├── components/        # （可选）story 局部 JSX 组件
+│   │   ├── _ds_bundle.js      # （生成）story 组件 bundle
+│   │   ├── _ds_manifest.json # （生成）story 设计系统清单
+│   │   ├── preview.html       # （生成）自包含预览页
+│   │   ├── _d_meta.json      # （生成）资产注册表 + 设计系统绑定
+│   │   └── _ds/<slug>/        # （生成）全局设计系统运行时拷贝
+│   ├── design_handoff/
+│   │   ├── README.md
+│   │   └── _handoff_manifest.json # 机器可读交接清单
 │   ├── test-plan.md           # 测试作者的计划
 │   ├── signoff.md             # 断言签核 + 观感签核记录
 │   ├── workflow-state.yaml    # 当前阶段 / 阻塞项 / 归档历史
 │   └── archive/               # 归档重做时,被推翻的承诺层产物 + reason.md
 └── global/
     ├── DESIGN.md              # 项目级设计系统文档
-    ├── tokens.css             # 可运行的 CSS token
+    ├── tokens.css             # CSS token 入口
+    ├── styles.css             # 全局样式入口（仅 @import + 工具类）
+    ├── README.md              # 设计系统概览
+    ├── components/            # （可选）JSX 组件 + .d.ts 契约
+    ├── cards/                 # （可选）@dsCard 预览卡片
+    ├── screens/               # （可选）@startingPoint 起始页面
+    ├── _ds_bundle.js         # （生成）编译后的组件 bundle
+    ├── _ds_manifest.json     # （生成）设计系统清单
+    ├── _adherence.oxlintrc.json # （生成）实现侧 CSS prop 白名单
+    ├── preview.html          # （生成）自包含交互预览
+    ├── _ds/<slug>/           # （生成）运行时拷贝 + _ds_prompt.md
+    ├── _d_meta.json          # （生成）设计系统绑定与资产注册
     ├── engineering-lessons.md
     ├── architecture.md
     └── STANDARDS.md

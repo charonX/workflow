@@ -1,0 +1,23 @@
+# Button
+
+主要操作按钮。优先在表单提交、模态框确认、页面主 CTA 使用。
+
+## 用法
+
+```jsx
+<Button variant="primary" size="md" onClick={handleSave}>
+  保存
+</Button>
+```
+
+## 变体
+
+- `primary` — 品牌主色，页面最高优先级操作
+- `secondary` — 次级操作
+- `ghost` — 低强调，常用于工具栏
+- `danger` — 破坏性操作
+
+## 注意
+
+- 同一视图内避免多个 `primary` 按钮
+- `disabled` 状态需同时移除 `onClick`

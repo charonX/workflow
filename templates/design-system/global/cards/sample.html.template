@@ -1,0 +1,32 @@
+<!-- @dsCard group="Components" name="Button" viewport="700x220" -->
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Button — {{PROJECT_NAME}}</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body { padding: var(--space-6); font-family: var(--font-family-base); }
+    .row { display: flex; gap: var(--space-4); align-items: center; margin-bottom: var(--space-4); }
+  </style>
+</head>
+<body>
+  <div class="row">
+    <button class="ds-btn ds-btn-primary">Primary</button>
+    <button class="ds-btn ds-btn-secondary">Secondary</button>
+    <button class="ds-btn ds-btn-ghost">Ghost</button>
+    <button class="ds-btn ds-btn-danger">Danger</button>
+  </div>
+  <div class="row">
+    <button class="ds-btn ds-btn-primary" disabled>Disabled</button>
+    <button class="ds-btn ds-btn-primary ds-btn-sm">Small</button>
+    <button class="ds-btn ds-btn-primary ds-btn-lg">Large</button>
+  </div>
+  <script src="../_ds_bundle.js"></script>
+  <script type="text/babel">
+    const { Button } = window.{{NAMESPACE}};
+    // 运行时示例可在此处挂载
+  </script>
+</body>
+</html>

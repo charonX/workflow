@@ -22,3 +22,17 @@ archive: []
 blocks: {}
 #  stable: [块A, 块B]      # 已稳定,可结晶为 REQ
 #  moving: [块C]           # 还在动,暂不入 REQ(被推翻的块降级回这里)
+
+# 设计系统绑定(由 /tac-design-system 与 /tac-ux-explore 维护)。
+design_system:
+  slug: ""                  # 主设计系统 slug,对应 _d_meta.json 的 primaryDesignSystem
+  compiled: false           # 是否已跑过 compile-design-system
+  preview: ""               # 当前有效的 preview.html 路径
+
+# story 内已记录的设计资产(由 record-asset.mjs 维护)。
+assets:
+  recorded: []              # [flow-a.html, flow-b.html, ...]
+
+# 已生成的变体(按需)。
+variants:
+  active: []                # [dark, compact, ...]

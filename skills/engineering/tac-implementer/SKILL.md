@@ -15,7 +15,7 @@ sources:
 
 ## 何时调用
 
-- assertion-signoff 已通过，用户说"开始实现"、"/tac-implementer"时。
+- `/tac-signoff --stage=assertion` 已通过，用户说"开始实现"、"/tac-implementer"时。
 - 被 `/tac-story` 总入口调用，且 workflow-state 的 phase 为 BUILD 时。
 
 ## 输入
@@ -23,7 +23,8 @@ sources:
 - `.aiassist/stories/<id>/workflow-state.yaml`
 - `.aiassist/stories/<id>/requirements.md`
 - `.aiassist/stories/<id>/tech-design.md`（如有）
-- `.aiassist/stories/<id>/assertion-signoff.md`
+- `.aiassist/stories/<id>/signoff.md`
+- `.aiassist/stories/<id>/ux/*.html`（如有 UX 原型，作为视觉/结构参照）
 - 测试文件（项目对应位置，如 `*Tests/**/*.swift`、`test/**/*.test.ts` 等）
 - 可选：workflow-state 中的 `slices` / `tasks` 列表
 
@@ -50,19 +51,26 @@ sources:
 
 ## 单切片模式
 
-与原有行为一致：
+与原有行为一致，但增加 HTML 原型参照：
 
 1. **读取测试**：理解每个测试的输入、输出、断言。
-2. **内循环实现**：
+2. **读取 HTML UX 原型**：如果 `ux/` 目录存在，读取所有 `.html` 文件，作为视觉与结构参照。记录：
+   - 页面/组件层级和命名。
+   - 关键元素及其顺序（按钮、表单、列表、空态等）。
+   - 交互状态（loading、empty、error、success、disabled）。
+   - 与 `tokens.css` / `DESIGN.md` 关联的样式 token。
+   实现时尽量对齐；实现后记录已知偏差。
+3. **内循环实现**：
    - 写最小实现使某个测试变绿。
    - 跑 **全套单元测试**（不是只跑当前测试）。
    - 如果回归失败，先修回归。
    - 重复直到全绿。
-3. **轮数上限**：超过 N 轮（默认 10 轮）仍未全绿，停止并升级。
-4. **升级策略**：
+4. **轮数上限**：超过 N 轮（默认 10 轮）仍未全绿，停止并升级。
+5. **升级策略**：
    - "我实现不出来，诊断如下" → 升级给人/更强模型。
-   - "我怀疑断言 X 自相矛盾/不可满足，证据如下" → 回 assertion-signoff。
-5. **提交**：全绿后提交，commit 消息使用 `[tac-build]` 标签。一个 commit 只包含实现代码，不能包含测试文件。
+   - "我怀疑断言 X 自相矛盾/不可满足，证据如下" → 回 `/tac-signoff --stage=assertion`。
+6. **偏差记录**：提交前输出一段简短说明，列出实现与 HTML 原型的已知偏差（如无法直接复刻的动画、平台限制导致的布局差异）。
+7. **提交**：全绿后提交，commit 消息使用 `[tac-build]` 标签。一个 commit 只包含实现代码，不能包含测试文件。
 
 ## 自动连续模式
 
@@ -74,7 +82,7 @@ sources:
    - 优先读取 `workflow-state.yaml` 里的 `slices` 或 `tasks` 列表。
    - 如果没有，按 `requirements.md` 中的 REQ-ID 分组，把每个稳定块作为一个切片。
 2. **检查断言签核**：
-   - 所有切片对应的测试文件必须存在且已被 `assertion-signoff.md` 覆盖。
+   - 所有切片对应的测试文件必须存在且已被 `signoff.md` 覆盖。
    - 如果还有未签核的切片：
      - 对每个未签核切片调用 `/tac-test-author` 生成测试骨架。
      - 汇总所有测试清单，请用户**一次性批量签核**。
@@ -113,10 +121,12 @@ for slice in remaining_slices:
 2. **输入文件路径**：
    - `requirements.md`（指出本切片对应的 REQ-ID）
    - `tech-design.md`（相关模块/数据流/seams）
+   - `ux/*.html`（视觉/结构参照；子代理必须读取并对齐）
    - 测试文件路径
-   - `assertion-signoff.md`
+   - `signoff.md`
 3. **产出要求**：
    - 只写实现代码，不修改测试。
+   - 对照 HTML 原型实现视觉与结构，无法完全对齐时记录偏差。
    - 实现完成后跑**全套单元测试**。
    - 全部通过后再 commit。
    - commit 消息格式：`[tac-build] <slice 名称>`。
@@ -124,6 +134,7 @@ for slice in remaining_slices:
    - 状态：`DONE` / `DONE_WITH_CONCERNS` / `BLOCKED`
    - 修改的文件列表
    - 测试命令和输出摘要
+   - 与 HTML 原型的已知偏差
    - commit hash
    - 任何 concerns
 
@@ -139,8 +150,8 @@ for slice in remaining_slices:
 
 1. 跑 `git log --oneline` 汇总所有 `[tac-build]` commit。
 2. 汇报：哪些切片已完成、总测试数、是否有 concerns。
-3. 推荐下一步：`/tac-qa-runner` → `/tac-feel-signoff`。
-4. 不要自行合并，等待 `/tac-feel-signoff` 通过。
+3. 推荐下一步：`/tac-qa-runner` → `/tac-signoff --stage=feel`。
+4. 不要自行合并，等待 `/tac-signoff --stage=feel` 通过。
 
 ## 内循环命令
 
@@ -160,6 +171,7 @@ xcodebuild -project BanshanJourney.xcodeproj -scheme BanshanJourneyTests -destin
 - **每轮跑全套单元**：停机条件是"全套绿"。
 - **不擅自放宽断言**。
 - **不跳过看起来"无关"的失败**。
+- **HTML 原型是参照不是规范**：实现时尽量对齐 HTML 原型，但偏差必须显式记录，不能悄悄忽略。
 - **自动模式下不合并切片 commit**：每个切片独立 commit，便于回滚和审查。
 - **验证不能省**：子代理说完成不算，父代理必须亲自跑测试确认。
 
@@ -170,4 +182,4 @@ xcodebuild -project BanshanJourney.xcodeproj -scheme BanshanJourneyTests -destin
 - superpowers `verification-before-completion`：给我们"证据先于完成声明"的纪律。
 - superpowers `finishing-a-development-branch`：给我们全部任务完成后的收尾思路。
 - mattpocock `implement`：给我们"按已有上下文实现"的轻量模式。
-- 核心差异：测试只读 + 断言归人 + 轮数上限逃生口 + TAC 的两道门（assertion-signoff 批量签、feel-signoff 最后统一过）。
+- 核心差异：测试只读 + 断言归人 + 轮数上限逃生口 + TAC 的两道门（`/tac-signoff --stage=assertion` 批量签、`/tac-signoff --stage=feel` 最后统一过）。

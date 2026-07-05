@@ -1,6 +1,6 @@
 ---
 name: tac-design-handoff
-description: 在 `/tac-feel-signoff` 完成后，将 UX 原型转化为结构化开发交接包——README（像素级规格 + 交互行为 + 状态管理）+ 设计文件打包，开发人员可脱离设计对话独立实现。
+description: 在 `/tac-signoff --stage=feel` 完成后，将 UX 原型转化为结构化开发交接包——README（像素级规格 + 交互行为 + 状态管理）+ 设计文件打包，开发人员可脱离设计对话独立实现。
 disable-model-invocation: true
 sources:
   - reference/baoyu-design/skills/baoyu-design/built-in-skills/handoff-to-claude-code.md
@@ -10,14 +10,14 @@ sources:
 
 ## 何时调用
 
-- `/tac-feel-signoff` 完成，用户对 HTML 原型的视觉和交互感到满意。
+- `/tac-signoff --stage=feel` 完成，用户对 HTML 原型的视觉和交互感到满意。
 - 需要将设计移交给开发人员（或自己的开发阶段）实现。
 - 用户明确说"生成开发交接文档"、"/tac-design-handoff"。
 
 ## 前置条件
 
 - `/tac-ux-explore` 已完成，HTML 原型存在于 `.aiassist/stories/<id>/ux/`
-- `/tac-feel-signoff` 已完成，用户确认了原型的感觉
+- `/tac-signoff --stage=feel` 已完成，用户确认了原型的感觉
 
 ## 输入
 
@@ -171,7 +171,7 @@ sources:
 
 ## 纪律
 
-- 交接包是**交付物**，不是迭代工具——只在 `/tac-feel-signoff` 后生成。
+- 交接包是**交付物**，不是迭代工具——只在 `/tac-signoff --stage=feel` 后生成。
 - 描述精确到像素——"约 16px"不行，要"16px"。
 - 状态覆盖完整——加载、空态、错误、边界情况。
 - 不添加设计中不存在的内容。

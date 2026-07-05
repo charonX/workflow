@@ -37,7 +37,7 @@ BUILD 阶段全单元绿，进入 REVIEW/QA 慢外门时。或被 `/tac-story` �
    - 哪些 REQ 被验证
    - 哪些失败
    - 不稳定测试列表
-   - 建议下一步（feel-signoff / 回 BUILD / 回 REQ）
+   - 建议下一步（`/tac-signoff --stage=feel` / 回 BUILD / 回 REQ）
 
 ## QA 报告模板
 
@@ -69,16 +69,16 @@ BUILD 阶段全单元绿，进入 REVIEW/QA 慢外门时。或被 `/tac-story` �
 | ... | 时绿时红 | 已开单，限时修 |
 
 ## 结论
-- [ ] 可进入 feel-signoff
+- [ ] 可进入 `/tac-signoff --stage=feel`
 - [ ] 需回 BUILD
 - [ ] 需回 REQ
 ```
 
 ## 纪律
 
-- 行为对错由测试判；观感好坏留给 feel-signoff 人判。
+- 行为对错由测试判；观感好坏留给 `/tac-signoff --stage=feel` 人判。
 - 不稳定测试不掩盖：默认放行但开限时单；反复时绿时红到阈值转阻断。
-- 不自动修不稳定 E2E；疑似产品竞态则回 assertion-signoff/REQ。
+- 不自动修不稳定 E2E；疑似产品竞态则回 `/tac-signoff --stage=assertion`/REQ。
 
 ## 与参考项目的差异
 

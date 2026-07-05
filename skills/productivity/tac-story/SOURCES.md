@@ -8,7 +8,7 @@
 
 ## 改动记录
 
-- 2026-07-04：在路由说明中增加手动 `/tac-review` 建议时机（PRD 后、TECH-DESIGN 后、BUILD 后）。
+- 2026-07-05：路由表更新：ASSERTION-SIGNOFF / FEEL-SIGNOFF 统一指向 `/tac-signoff` 的对应 stage。
 - 2026-07-03：增加 `TECH-DESIGN` 阶段路由；归档范围增加 `tech-design.md`；阶段列表同步更新。
 - 2026-07-02：重命名为 `/tac-story`(原 `/test-as-contract`),补全路由逻辑与回流机制
   - story = 初衷;实现路径错 → 归档重做;初衷错 → 删 story
@@ -19,6 +19,6 @@
   - REVIEW 阶段新增 `/tac-design-handoff`(可选) 引导
 - 2026-06-25：基于设计文档（`workflow/design/`）实现
   - 10 阶段流程映射
-  - 双 Gate（assertion-signoff + feel-signoff）
+  - 双 Gate（`/tac-signoff --stage=assertion` + `/tac-signoff --stage=feel`）
   - 角色分离（human / test-author / implementer）
   - 阶段可跳过逻辑（无 UI 跳 DESIGN，明确需求跳 THINK）

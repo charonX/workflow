@@ -56,11 +56,11 @@
 | 6 | **技术方案审查** | `/tac-review --stage=tech` | 用户（手动） | 新会话视角审查技术方案（可选但建议） |
 | 7 | **结晶** | `/tac-crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
 | 8 | **测试** | `/tac-test-author` | 模型 | 从 REQ + tech-design 生成测试骨架,为人留出占位断言 |
-| 9 | **断言签核** | `/tac-assertion-signoff` | 用户 | 人在实现前签核所有断言(门 1) |
+| 9 | **断言签核** | `/tac-signoff --stage=assertion` | 用户 | 人在实现前签核所有断言(门 1) |
 | 10 | **实现** | `/tac-implementer` | 模型 | 针对测试实现代码,对测试只读,每轮跑全套测试 |
 | 11 | **代码审查** | `/tac-review --stage=code` | 用户（手动） | 新会话视角审查实现 diff（可选但建议） |
 | 12 | **QA** | `/tac-qa-runner` | 模型 | E2E、回归、证据收集 |
-| 13 | **观感签核** | `/tac-feel-signoff` | 用户 | 人依据 HTML 参照验收观感,偏差回流 REQ(门 2) |
+| 13 | **观感签核** | `/tac-signoff --stage=feel` | 用户 | 人依据 HTML 参照验收观感,偏差回流 REQ(门 2) |
 | — | **反思** | `/tac-reflect` | 用户 | 捕获经验教训,更新全局知识 |
 
 ### 三种角色(权限互斥)
@@ -75,8 +75,8 @@
 
 ### 两道硬性签核
 
-1. **门 1 — `/tac-assertion-signoff`**:人确认测试准确捕捉了需求。不签不准实现。
-2. **门 2 — `/tac-feel-signoff`**:人确认实现后的 UI 观感与批准的 HTML 参照一致。不签不准合并。
+1. **门 1 — `/tac-signoff --stage=assertion`**:人确认测试准确捕捉了需求。不签不准实现。
+2. **门 2 — `/tac-signoff --stage=feel`**:人确认实现后的 UI 观感与批准的 HTML 参照一致。不签不准合并。
 
 人在边界使劲(门 1 签断言、门 2 验观感),中段全自主;失败走逃生口(实现者轮数上限→上报,不许自己改测试)。
 
@@ -196,8 +196,7 @@ npx skills@latest add charonX/workflow
 | `/tac-design-system` | DESIGN | 建立项目级设计系统 |
 | `/tac-design-import` | DESIGN | 导入设计来源(Figma/GitHub/HTML) |
 | `/tac-ux-explore` | DESIGN | 迭代高保真 HTML UX 原型 |
-| `/tac-assertion-signoff` | 签核 | 在实现前签核断言 |
-| `/tac-feel-signoff` | 签核 | 依据 HTML 参照验收观感 |
+| `/tac-signoff` | 签核 | assertion 阶段签核断言；feel 阶段依据 HTML 参照验收观感 |
 | `/tac-design-handoff` | 交接 | 从已批准 UX 生成开发交接包 |
 | `/tac-reflect` | REFLECT | 捕获经验教训 |
 
@@ -221,8 +220,7 @@ npx skills@latest add charonX/workflow
 │   ├── requirements-v1.hash
 │   ├── ux/
 │   ├── test-plan.md
-│   ├── assertion-signoff.md
-│   ├── feel-signoff.md
+│   ├── signoff.md             # 断言签核 + 观感签核记录
 │   ├── workflow-state.yaml      # phase/attempt/history/archive 状态机
 │   └── archive/                 # 归档重做时,被推翻的承诺层产物 + reason.md
 └── global/

@@ -19,6 +19,7 @@ sources:
 - `.aiassist/stories/<id>/requirements.md`
 - `.aiassist/stories/<id>/requirements-v1.hash`
 - `.aiassist/stories/<id>/tech-design.md`
+- `.aiassist/stories/<id>/ux/*.html`（如有 UX 原型，作为结构与行为测试的输入）
 
 ## 输出
 
@@ -28,14 +29,21 @@ sources:
 ## 执行步骤
 
 1. **逐条读取 REQ 与 tech-design.md**：按 tech-design 中定义的 seams，为每条验收标准设计至少一个测试方法。
-2. **写测试文件头部**：必须包含 `REQ-TRACE`、`REQ-VERSION`、`TEST-AUTHOR`、`ASSERTIONS-SIGNED`。
-3. **搭建脚手架**：
+2. **读取 HTML UX 原型**：如果 `ux/` 目录存在，扫描所有 `.html` 文件，提取可验证的行为与结构项：
+   - 关键元素是否存在（如按钮、表单、列表、空态提示）。
+   - 页面/组件之间的导航流程（点击 A → 出现 B）。
+   - 交互状态（loading、empty、error、success、disabled）。
+   - 数据驱动的列表/卡片结构。
+   - 与 token.css 关联的 class/style 是否被正确引用（不验证具体像素值）。
+   把这些可验证项映射到对应 REQ-ID，补充进测试计划。
+3. **写测试文件头部**：必须包含 `REQ-TRACE`、`REQ-VERSION`、`TEST-AUTHOR`、`ASSERTIONS-SIGNED`。
+4. **搭建脚手架**：
    - 必要的 import、`@testable import`、setUp/tearDown
    - mock/fixture（如 `MockHealthKitManager`、`TestContainer`）
    - 调用被测对象的代码
-4. **占位断言**：在需要人拍预期值的地方写 `// TODO: HUMAN ASSERTION`。
-5. **编译检查**：确保测试文件能编译（可能需要临时 stub 实现）。
-6. **输出 test-plan.md**：列出每个 REQ-ID 对应哪些测试方法。
+5. **占位断言**：在需要人拍预期值的地方写 `// TODO: HUMAN ASSERTION`。
+6. **编译检查**：确保测试文件能编译（可能需要临时 stub 实现）。
+7. **输出 test-plan.md**：列出每个 REQ-ID 对应哪些测试方法，并标注哪些测试来自 HTML 原型映射。
 
 ## 测试头部模板
 
@@ -53,6 +61,7 @@ sources:
 - 默认**禁用快照当判定依据**。
 - 能用单元测的，不进 E2E（缺陷下沉原则）。
 - 覆盖：正常路径 + 边界 + 错误路径。
+- **HTML 原型是测试输入**：从 HTML 中提取行为和结构，但不把主观视觉（如“间距 12px 才好看”）写进测试。
 
 ## 与参考项目的差异
 

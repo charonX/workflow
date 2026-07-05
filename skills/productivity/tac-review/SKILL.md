@@ -53,7 +53,7 @@ sources:
 - `.aiassist/stories/<id>/prd.md`
 - `.aiassist/stories/<id>/tech-design.md`
 - `.aiassist/stories/<id>/requirements.md`
-- `.aiassist/stories/<id>/assertion-signoff.md`
+- `.aiassist/stories/<id>/signoff.md`
 - 当前 branch 与 base branch 的 diff
 - `.aiassist/global/STANDARDS.md`（如有）
 

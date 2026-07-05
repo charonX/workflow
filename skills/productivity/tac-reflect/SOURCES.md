@@ -8,7 +8,7 @@
 ## 主要改动
 
 - 简化为个人/OPC 经验沉淀。
-- 与 REQ-ID 腐化指标、feel-signoff 发现率挂钩。
+- 与 REQ-ID 腐化指标、`/tac-signoff --stage=feel` 发现率挂钩。
 
 ## 未来局部更新建议
 

@@ -86,9 +86,8 @@ sources:
 1. 静态检查（lint / typecheck，按技术栈）
 2. 单元测试 + coverage
 3. E2E 测试
-4. `assertion-signoff.md` 存在性检查
-5. `feel-signoff.md` 存在性检查
-6. 实现 PR 不能同时修改测试文件
+4. `signoff.md` 存在性检查（assertion 阶段签核后生成）
+5. 实现 PR 不能同时修改测试文件
 
 ### 3. 配置 git hooks
 

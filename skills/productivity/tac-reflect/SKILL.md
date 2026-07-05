@@ -12,14 +12,13 @@ sources:
 
 ## 何时调用
 
-feel-signoff 通过，用户说"复盘"、"/tac-reflect"时。
+`/tac-signoff --stage=feel` 通过，用户说"复盘"、"/tac-reflect"时。
 
 ## 输入
 
 - `.aiassist/stories/<id>/prd.md`
 - `.aiassist/stories/<id>/requirements.md`
-- `.aiassist/stories/<id>/assertion-signoff.md`
-- `.aiassist/stories/<id>/tac-feel-signoff.md`
+- `.aiassist/stories/<id>/signoff.md`
 - `.aiassist/stories/<id>/qa-report.md`
 
 ## 输出
@@ -32,9 +31,9 @@ feel-signoff 通过，用户说"复盘"、"/tac-reflect"时。
 ## 执行步骤
 
 1. **统计健康指标**：
-   - feel-signoff 发现的缺陷数 / 需求变更数
+   - `/tac-signoff --stage=feel` 发现的缺陷数 / 需求变更数
    - 每个阶段耗时/轮数
-   - 哪些 REQ 验收标准在 feel-signoff 被发现遗漏
+   - 哪些 REQ 验收标准在 `/tac-signoff --stage=feel` 被发现遗漏
    - 本 story 是否发生过归档重做(`workflow-state.yaml` 的 `archive` 记录),根因活在哪一层
 2. **提炼经验**：
    - 下次应该在哪个阶段多问什么问题
@@ -51,8 +50,8 @@ feel-signoff 通过，用户说"复盘"、"/tac-reflect"时。
 
 | 指标 | 本期值 | 目标 |
 |---|---|---|
-| feel-signoff 缺陷率 | N/M | 随时间下降 |
-| feel-signoff 需求变更率 | N/M | 随时间下降 |
+| `/tac-signoff --stage=feel` 缺陷率 | N/M | 随时间下降 |
+| `/tac-signoff --stage=feel` 需求变更率 | N/M | 随时间下降 |
 | 实现者轮数 | N | ≤ 5 |
 | 单 REQ 平均测试数 | N | ≥ 1 |
 | 归档重做次数 | N | 0;>0 说明需求洞察投入不够 |

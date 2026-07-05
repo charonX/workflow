@@ -60,10 +60,10 @@ sources:
 | TECH-DESIGN | `/tac-tech-design` |
 | CRYSTALLIZE | `/tac-crystallize` |
 | TEST | `/tac-test-author` |
-| ASSERTION-SIGNOFF | `/tac-assertion-signoff` |
+| ASSERTION-SIGNOFF | `/tac-signoff --stage=assertion` |
 | BUILD | `/tac-implementer` |
 | QA | `/tac-qa-runner` |
-| FEEL-SIGNOFF | `/tac-feel-signoff` |
+| FEEL-SIGNOFF | `/tac-signoff --stage=feel` |
 | REFLECT | `/tac-reflect` |
 
 3. 若 `archive` 下已有历史 attempt,提示用户:"本 story 已尝试过 N 次,最新归档原因见 `archive/attempt-N/reason.md`,这次别踩同样的坑。"
@@ -100,7 +100,7 @@ sources:
 
 1. **归档本次 attempt**:
    - 创建 `.aiassist/stories/<id>/archive/attempt-<N>/`。
-   - 移入**承诺层产物**:`prd.md`、`tech-design.md`、`requirements.md`、`requirements-*.hash`、`assertion-signoff.md`、`feel-signoff.md`、`qa-report.md`、相关代码。
+   - 移入**承诺层产物**:`prd.md`、`tech-design.md`、`requirements.md`、`requirements-*.hash`、`signoff.md`、`qa-report.md`、相关代码。
    - **不归档**:`ux/`(一挡思考工具,直接改)、`interview-notes.md`(软的)、`workflow-state.yaml`(状态机本身,要更新不是归档)。
 2. **写归档原因**:`archive/attempt-<N>/reason.md`,记录根因(错误假设活在哪一层)+ 推翻理由 + 下次该避开什么。这是下次 `/tac-demand-insight` 的关键输入。
 3. **更新 workflow-state**:
@@ -119,7 +119,7 @@ sources:
 
 | 情况 | 机制 | 动作 |
 |---|---|---|
-| REQ 漏了一个 case | feel-signoff 已有 | 回 `/tac-crystallize` 补验收标准增量 |
+| REQ 漏了一个 case | `/tac-signoff --stage=feel` 已有 | 回 `/tac-crystallize` 补验收标准增量 |
 | 断言自相矛盾/不可满足 | 逃生口 | 回门 1 重审断言 |
 | 实现者烧完轮数不绿 | 逃生口 | 上报,换模型或回门 1 |
 | 一挡内某块被推翻 | 按块回流 | 该块降级回"移动块",其它块不动,UX 直接改 |

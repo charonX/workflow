@@ -32,7 +32,7 @@
 关键机制：
 
 - **两挡**：一挡（探索期 —— PRD、HTML 原型、无测试、可随意推翻）→ 跨越线 → 二挡（测试锁定 —— REQ-ID → tests → code）。
-- **两道硬签核**：`/tac-assertion-signoff` = 人在实现前签核断言；`/tac-feel-signoff` = 人依据 HTML 参照验收观感。
+- **两道硬签核**：`/tac-signoff --stage=assertion` = 人在实现前签核断言；`/tac-signoff --stage=feel` = 人依据 HTML 参照验收观感。
 - **三种角色**：人（REQ/断言/HTML）、test-author agent（编写测试骨架）、implementer agent（编写代码，对测试只读）。
 - **REQ-ID 可追溯**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
 
@@ -60,10 +60,10 @@
 | 3 | DESIGN — UX 探索 | `/tac-ux-explore` | 用户 | 用 React 迭代高保真 HTML UX 原型；行为决策 → REQ，视觉决策 → HTML |
 | 4 | Crystallize | `/tac-crystallize` | 模型 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
 | 5 | TEST — 编写靶子 | `/tac-test-author` | 模型 | 从 REQ 生成测试骨架；为人留出占位断言 |
-| 6 | assertion-signoff | `/tac-assertion-signoff` | 用户 | 人在实现开始前签核所有断言 |
+| 6 | assertion-signoff | `/tac-signoff --stage=assertion` | 用户 | 人在实现开始前签核所有断言 |
 | 7 | BUILD | `/tac-implementer` | 模型 | 针对测试实现代码；对测试只读；每轮迭代跑全套测试 |
 | 8 | REVIEW/QA | `/tac-qa-runner` | 模型 | E2E、回归、证据收集 |
-| 9 | feel-signoff | `/tac-feel-signoff` | 用户 | 人依据 HTML 参照验收观感；偏差回流到 REQ |
+| 9 | feel-signoff | `/tac-signoff --stage=feel` | 用户 | 人依据 HTML 参照验收观感；偏差回流到 REQ |
 |   | 开发者交接（可选） | `/tac-design-handoff` | 用户 | 从已批准的 UX 原型生成结构化开发交接包 |
 | 10 | REFLECT | `/tac-reflect` | 用户 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
 
@@ -173,10 +173,9 @@
 | 导入设计来源（Figma/GitHub/HTML） | `/tac-design-import` |
 | 把 PRD 转成 REQ-ID | `/tac-crystallize` |
 | 从 REQ 生成测试骨架 | `/tac-test-author` |
-| 在实现前签核断言 | `/tac-assertion-signoff` |
+| 在实现前签核断言 / 验收观感 | `/tac-signoff` |
 | 针对已签核测试实现代码 | `/tac-implementer` |
 | 运行 QA / E2E / 回归 | `/tac-qa-runner` |
-| 依据 HTML 参照验收观感 | `/tac-feel-signoff` |
 | 从 UX 生成开发者交接包 | `/tac-design-handoff` |
 | 捕获经验教训并更新知识 | `/tac-reflect` |
 | 同步参考项目并吸收上游变更 | `/tac-sync-refs` |

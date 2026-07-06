@@ -87,13 +87,13 @@
 
 ### 在目标项目里启动
 
-1. 确保目标项目已安装本工作流 skill：
+1. 确保目标项目已安装本工作流 skill。推荐通过 Claude Code Marketplace：
    ```bash
-   mkdir -p .claude/skills
-   cp -R /path/to/workflow/skills/productivity/* .claude/skills/
-   cp -R /path/to/workflow/skills/engineering/* .claude/skills/
-   cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
+   /plugin marketplace add charonX/workflow
+   /plugin install test-as-contract-workflow@charonx-workflow
+   /reload-plugins
    ```
+   也可以手动复制或软链（见 `README.md`）。
 2. 在目标项目里运行 `/tac-bootstrap-workflow`，创建 `.aiassist/` 项目基础设施。
 3. 运行 `/tac-story`，开始第一个 story。
 
@@ -169,6 +169,7 @@
 | 发现根本问题,要回流(归档重做/删 story) | `/tac-story`(回流分支) |
 | 在目标项目初始化工作流 | `/tac-bootstrap-workflow` |
 | 运行对抗式需求访谈 | `/tac-demand-insight` |
+| 针对技术/API/库问题做带引用的调研 | `/tac-research` |
 | 把讨论整理成 PRD | `/tac-to-prd` |
 | 用 HTML 原型探索 UX（含编译 preview、资产版本管理、变体） | `/tac-ux-explore` |
 | 建立或更新设计系统（含编译、预览、资产记录） | `/tac-design-system` |

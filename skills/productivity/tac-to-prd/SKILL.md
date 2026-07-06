@@ -3,7 +3,6 @@ name: tac-to-prd
 description: 把需求访谈笔记和现有上下文合成为正式 PRD，不访谈，只合成。
 disable-model-invocation: true
 sources:
-  - reference/mattpocock/skills/engineering/tac-to-prd/SKILL.md
   - reference/superpowers/skills/writing-plans/SKILL.md
   - reference/gstack/office-hours/SKILL.md
   - workflow/design/test-as-contract-workflow.md
@@ -28,11 +27,12 @@ sources:
 
 1. **读取访谈笔记**：如果还没读，先读。
 2. **探索仓库（如需要）**：了解当前代码状态，使用项目已有的领域词汇。
-3. **勾勒测试 seams**：在写 PRD 时就考虑"在哪里测、测什么接口"。优先使用已有 seams，需要新 seams 时提到最高层。
-4. **识别模块/服务边界**：明确每个稳定块会触碰哪些 module/service/executive，是否会引入新的跨模块耦合。提前解耦的决策写进 PRD 第 6.1 节。
-5. **填充 PRD 模板**：使用 `templates/tac-story/prd.md.template`。
-6. **标注稳定/移动块**：明确哪些部分可以结晶为 REQ，哪些还在动。
-7. **提交给用户审查**：请用户确认或修改。
+3. **判断是否需要前置调研**：若 PRD 中某些稳定块依赖外部技术事实（陌生 API、第三方协议、库能力边界），建议先调用 `/tac-research` 产出带引用的笔记，再在 PRD 中引用它。
+4. **勾勒测试 seams**：在写 PRD 时就考虑"在哪里测、测什么接口"。优先使用已有 seams，需要新 seams 时提到最高层。
+5. **识别模块/服务边界**：明确每个稳定块会触碰哪些 module/service/executive，是否会引入新的跨模块耦合。提前解耦的决策写进 PRD 第 6.1 节。
+6. **填充 PRD 模板**：使用 `templates/tac-story/prd.md.template`。
+7. **标注稳定/移动块**：明确哪些部分可以结晶为 REQ，哪些还在动。
+8. **提交给用户审查**：请用户确认或修改。
 
 ## PRD 模板字段
 
@@ -59,7 +59,7 @@ sources:
 - **提前解耦**：快速增长的项目，模块/服务边界在一挡就要明确。跨模块的 REQ 需要显式接口契约。
 - **明确阶段切换线**：稳定块是下一阶段 `/tac-crystallize` 的输入。
 
-## 与 mattpocock to-prd 的差异
+## 与参考来源的差异
 
 - 我们不发布到问题跟踪系统。
 - 我们增加 `稳定块` / `移动块` 字段，服务于 test-as-contract 的双挡模型。

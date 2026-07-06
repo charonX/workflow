@@ -14,7 +14,11 @@
 | baoyu-design wireframe | `reference/baoyu-design/skills/baoyu-design/built-in-skills/wireframe.md` | 线框图策略 |
 | baoyu-design use-design-system | `reference/baoyu-design/skills/baoyu-design/built-in-skills/use-design-system.md` | `_ds/` 导入、`_d_meta.json`、资产版本管理 |
 | baoyu-design design-system-preview | `reference/baoyu-design/skills/baoyu-design/built-in-skills/design-system-preview.md` | 自包含 `preview.html` 生成 |
-| baoyu-design compile/check/preview/import/record | `reference/baoyu-design/skills/baoyu-design/agents/{compile,check,build-preview,import,record}-*.mjs` | story 级设计系统管线脚本 |
+| baoyu-design compile | `reference/baoyu-design/skills/baoyu-design/agents/compile-design-system.mjs` | story 级设计系统编译 |
+| baoyu-design check | `reference/baoyu-design/skills/baoyu-design/agents/check-design-system.mjs` | story 级设计系统校验 |
+| baoyu-design preview | `reference/baoyu-design/skills/baoyu-design/agents/build-preview.mjs` | story 级自包含预览页生成 |
+| baoyu-design import | `reference/baoyu-design/skills/baoyu-design/agents/import-design-system.mjs` | 将设计系统引入项目 |
+| baoyu-design record | `reference/baoyu-design/skills/baoyu-design/agents/record-asset.mjs` | 资产版本注册 |
 | test-as-contract 流程 | `workflow/design/test-as-contract-workflow.md` | 双轨收割、PRD 回流机制 |
 
 ## 改动记录

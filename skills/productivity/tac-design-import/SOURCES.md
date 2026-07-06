@@ -9,7 +9,10 @@
 | baoyu-design import-from-html | `reference/baoyu-design/skills/baoyu-design/built-in-skills/import-from-html.md` | HTML/CSS 作为设计参考的 token 提取方法 |
 | baoyu-design design-system-authoring | `reference/baoyu-design/skills/baoyu-design/built-in-skills/design-system-authoring-guide.md` | 设计系统目录结构与编译器契约 |
 | baoyu-design use-design-system | `reference/baoyu-design/skills/baoyu-design/built-in-skills/use-design-system.md` | `_ds/` 导入、`_d_meta.json`、设计系统绑定 |
-| baoyu-design compile/check/preview/import | `reference/baoyu-design/skills/baoyu-design/agents/{compile,check,build-preview,import}-*.mjs` | 将导入参考编译并引入项目的脚本 |
+| baoyu-design compile | `reference/baoyu-design/skills/baoyu-design/agents/compile-design-system.mjs` | 设计系统编译 |
+| baoyu-design check | `reference/baoyu-design/skills/baoyu-design/agents/check-design-system.mjs` | 设计系统校验 |
+| baoyu-design preview | `reference/baoyu-design/skills/baoyu-design/agents/build-preview.mjs` | 自包含预览页生成 |
+| baoyu-design import | `reference/baoyu-design/skills/baoyu-design/agents/import-design-system.mjs` | 将设计系统引入项目 |
 
 ## 改动记录
 

@@ -6,7 +6,8 @@
 |------|------|-----------|
 | baoyu-design handoff-to-claude-code | `reference/baoyu-design/skills/baoyu-design/built-in-skills/handoff-to-claude-code.md` | 开发交接包结构、README 模板、像素级规格描述方式 |
 | baoyu-design use-design-system | `reference/baoyu-design/skills/baoyu-design/built-in-skills/use-design-system.md` | `_ds/` 导入、`_d_meta.json`、设计系统绑定提示 |
-| baoyu-design compile/preview | `reference/baoyu-design/skills/baoyu-design/agents/{compile,build-preview}-*.mjs` | 设计系统清单与预览产物结构 |
+| baoyu-design compile | `reference/baoyu-design/skills/baoyu-design/agents/compile-design-system.mjs` | 设计系统清单产物结构 |
+| baoyu-design preview | `reference/baoyu-design/skills/baoyu-design/agents/build-preview.mjs` | 自包含预览页生成 |
 
 ## 改动记录
 

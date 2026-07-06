@@ -22,9 +22,12 @@ PRD 已有明确稳定块，但进入 `/tac-crystallize` 之前还需要把"用�
 
 - `.aiassist/stories/<id>/prd.md`
 - `.aiassist/stories/<id>/workflow-state.yaml`
+- `.aiassist/stories/<id>/research/*.md`（如有）
 - 现有代码库（了解当前架构、领域词汇、已有 seams）
 - `.aiassist/global/architecture.md`（如有）
 - `.aiassist/global/STANDARDS.md`（如有）
+
+如果存在 `/tac-research` 产出的调研笔记，**优先读取**它们，把其中的事实作为技术方案设计的前提，不重复做事实调研。
 
 ## 输出
 

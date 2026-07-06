@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "charonx-workflow",
+  "description": "测试即契约（Test-as-Contract）工作流插件市场：人机协作开发，断言归人、实现归 AI",
+  "owner": {
+    "name": "charonX"
+  },
+  "plugins": [
+    {
+      "name": "test-as-contract-workflow",
+      "description": "测试即契约工作流：人在实现前签核断言，AI 在测试契约内自主迭代，把纠错接口从改代码改成改需求与断言",
+      "version": "0.1.0",
+      "source": "./",
+      "author": {
+        "name": "charonX"
+      },
+      "homepage": "https://github.com/charonX/workflow"
+    }
+  ]
+}

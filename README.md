@@ -108,13 +108,31 @@ REQ 变 → 挂它的测试标记"过时待重生"。任何失败测试都能回
 
 ## 安装
 
-### 方式一：通过 Claude Code 插件市场安装（推荐）
+### 方式一：通过 Claude Code Marketplace 安装（推荐）
+
+在任意项目的 Claude Code 会话中：
+
+```bash
+# 1. 添加本仓库作为 marketplace（只需一次）
+/plugin marketplace add charonX/workflow
+
+# 2. 安装插件
+/plugin install test-as-contract-workflow@charonx-workflow
+
+# 3. 安装后刷新插件
+/reload-plugins
+```
+
+>  marketplace 名是 `charonx-workflow`，插件名是 `test-as-contract-workflow`。
+>  后续更新：先 `/plugin marketplace update charonx-workflow` 拉取最新目录，再 `/reload-plugins` 重载；必要时可 `/plugin uninstall test-as-contract-workflow@charonx-workflow` 后重新安装。
+
+### 方式二：通过 `npx skills` 安装（Vercel Labs skills CLI）
 
 ```bash
 npx skills@latest add charonX/workflow
 ```
 
-### 方式二：手动复制或软链
+### 方式三：手动复制或软链
 
 如果你本地有本仓库的克隆，可以把 `skills/` 目录复制或软链到目标项目的 `.claude/skills/`：
 
@@ -135,27 +153,13 @@ ln -s /path/to/workflow/skills/engineering/tac-* .claude/skills/
 ln -s /path/to/workflow/skills/maintenance/tac-* .claude/skills/
 ```
 
-### 方式三：安装到 workflow 仓库自身的开发环境
-
-如果你正在修改本仓库的 skill，可以软链到本地测试项目：
-
-```bash
-cd /path/to/test-project
-rm -rf .claude/skills/*
-ln -s /Users/zhanglei/charon/code/workspace/workflow/skills/productivity/tac-* .claude/skills/
-ln -s /Users/zhanglei/charon/code/workspace/workflow/skills/engineering/tac-* .claude/skills/
-ln -s /Users/zhanglei/charon/code/workspace/workflow/skills/maintenance/tac-* .claude/skills/
-```
-
 ## 保持同步
 
-当本仓库的 skill 更新后，重新安装到目标项目即可：
+当本仓库的 skill 更新后：
 
-```bash
-npx skills@latest add charonX/workflow
-```
-
-如果你使用本地软链开发，更新会自动生效，无需重新安装。
+- **Marketplace 方式**：`/plugin marketplace update charonx-workflow`
+- **npx skills 方式**：`npx skills@latest add charonX/workflow`
+- **本地软链开发**：更新会自动生效，无需重新安装
 
 ## 使用
 
@@ -169,8 +173,10 @@ npx skills@latest add charonX/workflow
 ### 快速上手
 
 ```bash
-# 1. 安装 skill 到目标项目
-npx skills@latest add charonX/workflow
+# 1. 添加 marketplace 并安装插件
+/plugin marketplace add charonX/workflow
+/plugin install test-as-contract-workflow@charonx-workflow
+/reload-plugins
 
 # 2. 初始化项目基础设施
 /tac-bootstrap-workflow
@@ -192,6 +198,7 @@ npx skills@latest add charonX/workflow
 | `/tac-demand-insight` | THINK | 对抗式需求访谈 |
 | `/tac-to-prd` | PRD | 把讨论整理成 PRD |
 | `/tac-tech-design` | TECH-DESIGN | 对抗式技术方案设计 |
+| `/tac-research` | THINK/TECH | 针对技术/API/库问题做带引用的 background 调研 |
 | `/tac-review` | REVIEW | 手动审查 PRD/技术方案/代码（建议新会话） |
 | `/tac-design-system` | DESIGN | 建立项目级设计系统（含编译 bundle/manifest/preview、资产记录） |
 | `/tac-design-import` | DESIGN | 导入设计来源（Figma/GitHub/HTML）并可选编译为设计系统 |
@@ -218,6 +225,8 @@ npx skills@latest add charonX/workflow
 │   ├── tech-design.md         # 技术方案（一挡可推翻）
 │   ├── requirements.md
 │   ├── requirements-v1.hash
+│   ├── research/                  # （可选）/tac-research 输出的调研笔记
+│   │   └── <topic-slug>.md
 │   ├── ux/
 │   │   ├── *.html                 # HTML 原型（带 @dsCard 标签）
 │   │   ├── components/            # （可选）story 局部 JSX 组件

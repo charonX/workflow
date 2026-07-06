@@ -37,3 +37,7 @@ pnpm-debug.log*
 
 # Reference projects are tracked in their own upstream repos
 reference/
+
+# Workflow runtime state and generated reports
+.aiassist/
+docs/sync-reports/

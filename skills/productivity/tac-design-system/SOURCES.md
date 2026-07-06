@@ -9,7 +9,11 @@
 | baoyu-design design-system-authoring | `reference/baoyu-design/skills/baoyu-design/built-in-skills/design-system-authoring-guide.md` | 设计系统编译管线、CSS token 作为绑定约束、组件/卡片/starting point 结构 |
 | baoyu-design create-design-system | `reference/baoyu-design/skills/baoyu-design/built-in-skills/create-design-system.md` | 设计系统创建流程与编译器契约 |
 | baoyu-design use-design-system | `reference/baoyu-design/skills/baoyu-design/built-in-skills/use-design-system.md` | 消费端 `_ds/` 导入、`_d_meta.json`、`_ds_prompt.md` 绑定 |
-| baoyu-design compile/check/preview/import/record | `reference/baoyu-design/skills/baoyu-design/agents/{compile,check,build-preview,import,record}-*.mjs` | 可移植设计系统管线脚本 |
+| baoyu-design compile | `reference/baoyu-design/skills/baoyu-design/agents/compile-design-system.mjs` | 设计系统编译 |
+| baoyu-design check | `reference/baoyu-design/skills/baoyu-design/agents/check-design-system.mjs` | 设计系统校验 |
+| baoyu-design preview | `reference/baoyu-design/skills/baoyu-design/agents/build-preview.mjs` | 自包含预览页生成 |
+| baoyu-design import | `reference/baoyu-design/skills/baoyu-design/agents/import-design-system.mjs` | 将设计系统引入项目 |
+| baoyu-design record | `reference/baoyu-design/skills/baoyu-design/agents/record-asset.mjs` | 资产版本注册 |
 | test-as-contract 流程 | `workflow/design/test-as-contract-workflow.md` | design-system → ux-explore 的两步设计流程 |
 
 ## 改动记录
@@ -26,7 +30,7 @@
   - DESIGN.md 和 tokens.css 双文件输出，tokens.css 作为绑定视觉约束
   - 新增暗色模式 `[data-theme="dark"]` token 支持
   - tokens.css 格式模板和 CSS 变量命名规范（--color-*, --font-*, --space-*, --radius-*, --shadow-*）
-  - 移除已失效的 `reference/gstack/tac-design-system/SKILL.md` 引用（上游已删除）
+  - 移除已失效的 gstack `tac-design-system` SKILL.md 引用（上游已删除）
   - 更新 sources 字段记录 baoyu-design 参考来源
 - 2026-06-25：基于设计文档（`workflow/design/`）重新实现
   - 明确 design-system 是项目级、一次性的

@@ -4,7 +4,7 @@
 
 - `reference/gstack/review/SKILL.md`
 - `reference/gstack/plan-eng-review/SKILL.md`
-- `reference/mattpocock/skills/in-progress/review/SKILL.md`
+- `reference/mattpocock/skills/engineering/code-review/SKILL.md`
 
 ## 主要改动
 

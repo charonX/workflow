@@ -53,7 +53,7 @@ disable-model-invocation: true
 - 🔄 `reference/baoyu-design/...` ← 有变更（显示提交记录）
    a1b2c3d 2026-06-28 ...       ← 具体提交
 - ✅ `reference/gstack/...`       ← 无变更
-- ⚠️  `reference/gstack/tac-design-system/SKILL.md`      ← 文件已不存在
+- ⚠️  `reference/some-repo/deleted-file.md`      ← 文件已不存在（上游移动或删除）
 
 ## 待处理事项                 ← 处理指引
 ```

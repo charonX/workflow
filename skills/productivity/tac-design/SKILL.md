@@ -311,11 +311,22 @@ node scripts/design-system/record-asset.mjs .aiassist/stories/<id>/ux <flow>.htm
 ### C.10 双轨收割
 
 - **行为/结构决策** → 更新 PRD 稳定块，必要时重新 `/tac-crystallize`。
-- **视觉/交互决策** → 保留在 HTML 中，作为 feel-signoff 参照。
+- **视觉/交互决策** → 保留在 HTML 中，作为后续 **feel-signoff**（实现并 QA 之后）的参照。不是现在签核。
 
 ### C.11 更新 workflow-state
 
 标记 DESIGN 阶段完成，记录 `design_system.slug`、`assets.recorded`、`variants.active`。
+
+### C.12 提示下一步
+
+DESIGN 阶段完成后，**不要直接进入 `/tac-signoff --stage=feel`**。正确顺序是：
+
+1. 更新 `workflow-state.yaml`，把 `phase` 设为 `TECH-DESIGN`。
+2. 由 `/tac-story` 路由到 `/tac-tech-design`，继续技术方案设计。
+3. 后续依次经过 `CRYSTALLIZE` → `TEST` → `ASSERTION-SIGNOFF` → `BUILD` → `QA`。
+4. BUILD 和 QA 都完成后，才进入 `/tac-signoff --stage=feel` 依据本 skill 产出的 HTML 原型验收观感。
+
+如果 DESIGN 阶段发现 PRD 需要大调，先回流 `/tac-to-prd`。
 
 ---
 

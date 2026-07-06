@@ -175,7 +175,7 @@
 | 用测试即契约启动新功能 / 继续一个 story | `/tac-story` |
 | 发现根本问题,要回流(归档重做/删 story) | `/tac-story`(回流分支) |
 | 在目标项目初始化工作流 | `/tac-bootstrap-workflow` |
-| 运行对抗式需求访谈 | `/tac-demand-insight` |
+| 运行对抗式需求访谈（适合模糊痛点/初步想法） | `/tac-demand-insight` |
 | 针对技术/API/库问题做带引用的调研 | `/tac-research` |
 | 把讨论整理成 PRD | `/tac-to-prd` |
 | 用 HTML 原型探索 UX（含编译 preview、资产版本管理、变体） | `/tac-design` |

@@ -1,6 +1,6 @@
 ---
 name: tac-tech-design
-description: 对 PRD 稳定块进行对抗式技术方案设计：通过拷问澄清模块边界、数据流、接口契约与测试 seams，输出 tech-design.md。
+description: 对抗式技术方案设计。适合已有方案主干的阶段，通过拷问把 PRD 稳定块翻译成系统语言：模块边界、数据流、接口契约与 CLI 优先的测试 seams。
 disable-model-invocation: true
 sources:
   - reference/gstack/plan-eng-review/SKILL.md

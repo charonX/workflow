@@ -15,9 +15,9 @@
 
 ## 主要改动
 
-- 以 superpowers `brainstorming` 为总体流程骨架：模糊想法 → 澄清 → 方向 → 批准。
-- 用 mattpocock `grill-me` / `grill-with-docs` 的对抗式追问技术填充单题循环。
-- 用 gstack `office-hours` 提供 CEO 视角的野心/价值拷问。
+- 以 superpowers `brainstorming` 为总体流程骨架：确认范围 → 探索上下文 → 澄清问题 → 提出 2-3 个方向 → 呈现并确认方向 → 记录洞察。
+- 用 mattpocock `grill-me` / `grill-with-docs` 的对抗式追问技术填充"澄清问题"环节：一次一问、展示思考、追问到可验证精度、显式化假设。
+- 用 gstack `office-hours` 提供 CEO 视角的野心/价值拷问，填充"待探索维度"。
 - 输出固定为 `interview-notes.md`，作为 `/tac-to-prd` 的输入。
 
 ## 未来局部更新建议

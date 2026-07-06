@@ -56,13 +56,20 @@ sources:
 
 ### 0. 判断模式
 
-读取 `.aiassist/global/_ds_manifest.json` 和 PRD：
+读取 `.aiassist/global/_ds_manifest.json` 和 PRD，初步判断应进入哪种模式。
 
-- 无 `_ds_manifest.json` → 模式 A（建立设计系统）。
-- 用户主动提供外部设计源 → 模式 B（导入），导入后根据用户意图选择：
+**但必须先向用户确认，不能自动执行。** 用一句话说明检测到的状态和推荐模式，例如：
+
+> "检测到项目还没有已编译的设计系统，建议先进入模式 A：建立/更新项目级设计系统。确认吗？"
+> "检测到已有设计系统 `xxx`，当前 story 的 PRD 需要 UI，建议进入模式 C：迭代 UX 原型。要设计哪些流程？"
+
+- 无 `_ds_manifest.json` → 推荐模式 A（建立设计系统）。
+- 用户主动提供外部设计源 → 推荐模式 B（导入），导入后再让用户选择：
   - 采纳为项目设计系统 → 回到模式 A 做整合。
   - 仅作 story 参考 → 进入模式 C。
-- 有 `_ds_manifest.json` + PRD 需要 UI → 模式 C（UX 探索）。
+- 有 `_ds_manifest.json` + PRD 需要 UI → 推荐模式 C（UX 探索）。
+
+**得到用户明确回复后，再进入对应模式。**
 
 ---
 
@@ -79,10 +86,14 @@ sources:
 ### A.2 判断处理路径
 
 - 如果 `DESIGN.md` + `tokens.css` + `_ds_manifest.json` + `_d_meta.json` 都存在且用户未要求更新 → 告知设计系统已就绪，可打开 `preview.html` 查看；若当前是 story 的 DESIGN 阶段，直接提示进入模式 C。
-- 如果只有 `DESIGN.md` + `tokens.css`、缺少编译产物 → 直接进入 A.5 跑编译管线。
+- 如果只有 `DESIGN.md` + `tokens.css`、缺少编译产物 → 直接进入 A.6 跑编译管线。
 - 如果缺失或不全 → 进入建设流程（A.3）。
 
-### A.3 访谈用户（如需要新建）
+### A.3 确认后再开始
+
+如果缺失或不全，**不要直接生成文件**。先向用户说明将进入建设流程，并简要列出接下来会做什么（生成 `DESIGN.md`、`tokens.css`、编译 preview 等）。得到用户确认后再进入 A.4。
+
+### A.4 访谈用户（如需要新建）
 
 - 产品调性是什么？（专业/活泼/高端/亲和等）
 - 目标用户是谁？
@@ -91,7 +102,7 @@ sources:
 - 平台优先级？（iOS/web/Android 等）
 - 是否需要主题变体？（暗色、高密度等）
 
-### A.4 生成设计系统源文件
+### A.5 生成设计系统源文件
 
 写入 `.aiassist/global/`：
 
@@ -105,7 +116,7 @@ sources:
 
 参考模板：`templates/design-system/global/`。
 
-### A.5 运行编译管线
+### A.6 运行编译管线
 
 ```bash
 node scripts/design-system/compile-design-system.mjs .aiassist/global
@@ -113,7 +124,7 @@ node scripts/design-system/check-design-system.mjs .aiassist/global
 node scripts/design-system/build-preview.mjs .aiassist/global --out .aiassist/global/preview.html
 ```
 
-### A.6 记录资产并自导入
+### A.7 记录资产并自导入
 
 ```bash
 node scripts/design-system/record-asset.mjs .aiassist/global preview.html --name "Design System Preview" --status approved
@@ -122,7 +133,7 @@ node scripts/design-system/import-design-system.mjs .aiassist/global .aiassist/g
 
 自导入创建 `.aiassist/global/_ds/<slug>/` 与 `_ds_prompt.md`，并在 `_d_meta.json` 中标记 `primaryDesignSystem`。
 
-### A.7 更新 workflow-state
+### A.8 更新 workflow-state
 
 ```yaml
 design_system:
@@ -131,7 +142,7 @@ design_system:
   preview: .aiassist/global/preview.html
 ```
 
-### A.8 提示下一步
+### A.9 提示下一步
 
 - 若当前是 story 的 DESIGN 阶段 → 进入模式 C 迭代 UX。
 - 若只是更新项目设计系统 → 完成。
@@ -140,11 +151,17 @@ design_system:
 
 ## 模式 B：导入设计来源
 
-### B.1 确认导入源类型
+### B.1 询问并确认导入源类型
 
-- Figma `.fig` 文件
-- GitHub 仓库 URL
-- 已有 HTML/CSS 文件或目录
+**不要假设用户要导入什么。** 先问：
+
+- 要导入哪种来源？
+  - Figma `.fig` 文件
+  - GitHub 仓库 URL
+  - 已有 HTML/CSS 文件或目录
+- 导入后想怎么用？（采纳为项目设计系统 / 仅作 story 参考）
+
+得到用户明确回答后，再进入对应 B-figma / B-github / B-htmlcss 流程。
 
 ### B.2 流程 B-figma
 
@@ -199,12 +216,16 @@ node scripts/design-system/import-design-system.mjs .aiassist/design-refs/<name>
 - 询问用户是否有截图、Figma `.fig`、GitHub 仓库、HTML/CSS 参考。
 - 如有外部源 → 进入模式 B 导入，再回来。
 
-### C.3 读取 PRD，识别需要可视化的用户流程
+### C.3 确认设计范围后再生成
+
+**在生成任何 HTML 之前，先向用户提问并等待回答：**
 
 - 哪些屏幕/流程需要设计？
 - 要几个方案？探索什么维度？
 - 遵循现有模式还是新颖大胆？
 - 无品牌约束时遵循[前端审美指引](#前端审美指引)。
+
+得到用户明确回答后，再进入 C.4 及以下步骤。**禁止根据 PRD 直接静默生成原型。**
 
 ### C.4 检查模块/服务边界
 
@@ -259,6 +280,7 @@ node scripts/design-system/record-asset.mjs .aiassist/stories/<id>/ux <flow>.htm
 
 ## 统一纪律
 
+- **模式判断和关键决策必须先向用户确认，禁止自动执行文件生成。**
 - DESIGN 阶段**不写测试、不写实现代码**。
 - HTML 是思考工具，不是最终实现。
 - 主观判断（"好看""舒服"）留在 HTML 里，由 Gate 2 人判。

@@ -21,7 +21,7 @@ sources:
 
 - 用户访谈 / 痛点挖掘 → 走 `/tac-demand-insight`。
 - 技术方案设计本身 → 走 `/tac-tech-design`。
-- 设计系统 / UX 探索 → 走 `/tac-design-system` / `/tac-ux-explore`。
+- 设计系统 / UX 探索 → 走 `/tac-design`。
 
 ## 输入
 

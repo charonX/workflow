@@ -114,7 +114,7 @@ chmod +x .aiassist/hooks/commit-msg
 - `.aiassist/global/engineering-lessons.md`
 - `.aiassist/global/STANDARDS.md`
 
-这些文件内容由 `/tac-design-system`、`/tac-reflect` 等 skill 后续填充。
+这些文件内容由 `/tac-design`（模式 A）、`/tac-reflect` 等 skill 后续填充。
 
 ### 5. 更新项目 `CLAUDE.md`
 

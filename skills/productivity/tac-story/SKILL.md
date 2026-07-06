@@ -56,7 +56,7 @@ sources:
 |---|---|
 | THINK | `/tac-demand-insight` |
 | PRD | `/tac-to-prd` |
-| DESIGN | `/tac-ux-explore`(若无设计系统,先 `/tac-design-system`) |
+| DESIGN | `/tac-design` |
 | TECH-DESIGN | `/tac-tech-design`（若对技术/API/库不熟，可先 `/tac-research`） |
 | CRYSTALLIZE | `/tac-crystallize` |
 | TEST | `/tac-test-author` |

@@ -19,7 +19,7 @@ sources:
 
 ## 前置条件
 
-- `/tac-ux-explore` 已完成，HTML 原型存在于 `.aiassist/stories/<id>/ux/`
+- `/tac-design` 已完成（模式 C），HTML 原型存在于 `.aiassist/stories/<id>/ux/`
 - `/tac-signoff --stage=feel` 已完成，用户确认了原型的感觉
 
 ## 输入

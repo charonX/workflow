@@ -8,6 +8,7 @@
 
 ## 改动记录
 
+- 2026-07-06：DESIGN 阶段路由统一为 `/tac-design`，合并 `tac-design-system`、`tac-design-import`、`tac-ux-explore` 三个入口。
 - 2026-07-05：路由表更新：ASSERTION-SIGNOFF / FEEL-SIGNOFF 统一指向 `/tac-signoff` 的对应 stage。
 - 2026-07-03：增加 `TECH-DESIGN` 阶段路由；归档范围增加 `tech-design.md`；阶段列表同步更新。
 - 2026-07-02：重命名为 `/tac-story`(原 `/test-as-contract`),补全路由逻辑与回流机制

@@ -278,10 +278,13 @@ node scripts/design-system/import-design-system.mjs .aiassist/global .aiassist/s
 
 **模式 C-lite**：在 `.aiassist/stories/<id>/ux/tokens.css` 中定义最小临时 token，不写入 `.aiassist/global/`。明确告诉用户这是 story 级临时样式，不成为项目设计系统。
 
-### C.6 生成第一版 HTML 原型
+### C.6 生成第一版可交互 HTML 原型
+
+原型不是静态效果图，必须能点击、能走通核心流程。
 
 - 默认 HTML-native 源：plain HTML/CSS/JS，引用 `ux/_ds/<slug>/styles.css`（模式 C）或 `ux/tokens.css`（模式 C-lite）。
-- 需要复杂交互时才用 React + Babel Standalone。
+- **每个屏幕/流程必须包含基本交互**：按钮可点击、链接可跳转、表单可提交、状态可切换。用原生 JS 或少量内联脚本即可实现，不需要复杂框架。
+- 需要复杂状态管理（多步骤表单、实时协作、大量条件分支）时才用 React + Babel Standalone。
 - story 局部 JSX 组件放在 `ux/components/*.jsx` + `*.d.ts`。
 - 每个 `.html` 第一行：`<!-- @dsCard group="..." name="..." viewport="..." -->`。
 - 参考模板：`templates/story/ux/flow.html.template`。
@@ -304,6 +307,7 @@ node scripts/design-system/record-asset.mjs .aiassist/stories/<id>/ux <flow>.htm
 
 - 通过 localhost 预览：`python3 -m http.server 4311 --directory .aiassist/stories/<id>/ux`
 - 让用户打开 `preview.html` 或具体 `flow.html`。
+- **验证交互**：让用户点击按钮、填写表单、切换状态、在屏幕间跳转，确保核心流程能走通。静态视觉只是底线，可点击的流程才是原型的价值。
 - 根据反馈迭代，每次修改后重新跑 C.7-C.8。
 - 如需多方案对比，用 design-canvas 组件并排展示。
 - 如需变体，在 `ux/variants/<name>/` 下创建目录并跑完整管线。

@@ -19,12 +19,22 @@
   <div class="page">
     <h1>{{FLOW_NAME}}</h1>
     <p>在此处构建 {{STORY_ID}} 的高保真 HTML 原型。</p>
-    <!-- 页面内容 -->
+
+    <!-- 示例：可点击交互。删除或替换为真实流程 -->
+    <button id="demo-action">点击我</button>
+    <p id="demo-state" style="margin-top: var(--space-4);">初始状态</p>
   </div>
 
   <!-- 如使用设计系统组件，加载 bundle -->
   <script src="_ds/{{DS_SLUG}}/_ds_bundle.js"></script>
-  <!-- 如使用 React+Babel 交互 -->
+  <!-- 基本交互用原生 JS；复杂状态才需要 React+Babel -->
+  <script>
+    document.getElementById('demo-action').addEventListener('click', () => {
+      const state = document.getElementById('demo-state');
+      state.textContent = state.textContent === '初始状态' ? '已点击' : '初始状态';
+    });
+  </script>
+  <!-- 如使用 React+Babel 交互，保留下面三行 -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>

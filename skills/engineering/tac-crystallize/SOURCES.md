@@ -1,5 +1,9 @@
 # 参考来源：crystallize
 
+## 理念
+
+需求必须可被追踪，才能被测试。本 skill 把 PRD 中的稳定块冻结成带 REQ-ID 和 version hash 的验收标准，建立从"用户痛点 → PRD → REQ → 测试 → 实现"的不可断链路。
+
 ## 借鉴的 reference 文件
 
 - `reference/mattpocock/skills/engineering/grill-with-docs/SKILL.md`

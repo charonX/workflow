@@ -1,5 +1,9 @@
 # 参考来源：demand-insight
 
+## 理念
+
+在写任何代码之前，先把问题说到机器可验的精度。本 skill 用对抗式访谈逼出隐性需求、边界条件和自相矛盾，并把"问题陈述"锚定为用户痛点——方案会变，痛点不会，它是后续回流的判断基准。
+
 ## 借鉴的 reference 文件
 
 - `reference/mattpocock/skills/productivity/grill-me/SKILL.md`

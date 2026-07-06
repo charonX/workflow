@@ -1,5 +1,9 @@
 # 参考来源：tac-research
 
+## 理念
+
+一挡探索不应只依赖直觉。本 skill 用背景研究补充需求/技术决策，限定 primary sources，明确引用纪律；产出是 `.aiassist/stories/<id>/research/` 中的结构化笔记，为 PRD 和技术方案提供可审计的输入。
+
 ## 借鉴的 reference 文件
 
 - `reference/mattpocock/skills/engineering/research/SKILL.md`

@@ -1,5 +1,9 @@
 # 参考来源：bootstrap-workflow
 
+## 理念
+
+一人创作者的项目基础设施应该一次性、显式地建立，而不是在每个 story 里重复创建。本 skill 只负责初始化 `.aiassist/` 全局目录和更新目标项目 `CLAUDE.md`，不创建具体 story，把"项目级"和"story 级"职责分开。
+
 ## 借鉴的 reference 文件
 
 - `reference/gstack/CLAUDE.md`

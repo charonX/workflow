@@ -1,5 +1,9 @@
 # 参考来源：qa-runner
 
+## 理念
+
+行为机器判，观感人判。QA 不是额外步骤，而是契约的第二轮验证：跑 E2E、收集回归证据、处理不稳定测试，让"完成"有客观依据。
+
 ## 借鉴的 reference 文件
 
 - `reference/gstack/qa/SKILL.md`

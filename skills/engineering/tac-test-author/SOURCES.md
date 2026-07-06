@@ -1,5 +1,9 @@
 # 参考来源：test-author
 
+## 理念
+
+人写断言，AI 写骨架；测试是人与实现之间的契约文本。本 skill 从 REQ-ID 生成可运行的测试结构，为人留出断言占位，确保裁决权始终在人手中。
+
 ## 借鉴的 reference 文件
 
 - `reference/mattpocock/skills/engineering/tdd/SKILL.md`

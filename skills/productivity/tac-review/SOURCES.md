@@ -1,5 +1,9 @@
 # 参考来源：tac-review
 
+## 理念
+
+人在关键转换点需要一双"新眼睛"，避免当前会话的上下文偏见。本 skill 是建议性而非强制性的审查门：输出 review 报告，但不自动修改产物；是否回流由人拍板。
+
 ## 借鉴的 reference 文件
 
 - `reference/gstack/review/SKILL.md`

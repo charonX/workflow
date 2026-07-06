@@ -1,5 +1,9 @@
 # 参考来源：signoff
 
+## 理念
+
+人的裁决必须显式化。本 skill 把实现前的断言签核（门 1）和实现后的观感验收（门 2）合并为一个入口；不签字不准往下，签字后契约生效，偏差必须回到契约层修正。
+
 ## 借鉴的 reference 文件
 
 - `reference/gstack/plan-eng-review/SKILL.md`

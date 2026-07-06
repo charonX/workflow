@@ -1,5 +1,9 @@
 # 参考来源：tac-tech-design
 
+## 理念
+
+把用户语言翻译成系统语言。本 skill 通过单题对抗式提问，按依赖关系递进澄清模块边界、数据流、接口契约与测试 seams；目标是让 PRD 稳定块变成可结晶、可测试的技术方案，而不是直接给出代码。
+
 ## 借鉴的 reference 文件
 
 - `reference/gstack/plan-eng-review/SKILL.md`

@@ -1,5 +1,9 @@
 # 参考来源：implementer
 
+## 理念
+
+实现代理对测试只读，逐轮迭代直至全套测试通过；人不直接修改实现代码，只修改需求和断言。把"红绿循环"自动化，但把契约所有权牢牢留在人手中。
+
 ## 借鉴的 reference 文件
 
 - `reference/superpowers/skills/subagent-driven-development/SKILL.md`

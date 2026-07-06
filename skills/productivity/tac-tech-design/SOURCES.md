@@ -4,6 +4,8 @@
 
 把用户语言翻译成系统语言。本 skill 通过单题对抗式提问，按依赖关系递进澄清模块边界、数据流、接口契约与测试 seams；目标是让 PRD 稳定块变成可结晶、可测试的技术方案，而不是直接给出代码。
 
+**CLI 是默认测试 seam。** 产品 CLI 是人类和 agent 共用的真实接口，能把可观察行为变成稳定、快速、状态保持的测试；不能 CLI 化的部分才退到单元或浏览器 E2E。
+
 ## 借鉴的 reference 文件
 
 - `reference/gstack/plan-eng-review/SKILL.md`

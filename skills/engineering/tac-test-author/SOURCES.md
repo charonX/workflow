@@ -4,6 +4,8 @@
 
 人写断言，AI 写骨架；测试是人与实现之间的契约文本。本 skill 从 REQ-ID 生成可运行的测试结构，为人留出断言占位，确保裁决权始终在人手中。
 
+**CLI 优先。** 能用产品 CLI 验证的行为，先生成 CLI 测试；CLI 测不了的复杂前端交互才退到单元或浏览器 E2E。CLI 是真实用户路径，不是测试专用工具。
+
 ## 借鉴的 reference 文件
 
 - `reference/mattpocock/skills/engineering/tdd/SKILL.md`

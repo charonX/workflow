@@ -51,10 +51,10 @@
 | 1 | **THINK** | `/tac-demand-insight` | 用户 | 对抗式访谈,暴露隐性需求、边界与矛盾 |
 | 2 | **PRD** | `/tac-to-prd` | 用户 | 把讨论整理成结构化 PRD(问题陈述锚定痛点) |
 | 3 | **DESIGN** | `/tac-design` | 用户 | 统一入口:建/更新设计系统、导入设计源、迭代 HTML 原型 |
-| 4 | **技术方案** | `/tac-tech-design` | 用户 | 对抗式设计模块、数据流、接口契约与测试 seams |
+| 4 | **技术方案** | `/tac-tech-design` | 用户 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
 | 5 | **技术方案审查** | `/tac-review --stage=tech` | 用户（手动） | 新会话视角审查技术方案（可选但建议） |
 | 6 | **结晶** | `/tac-crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
-| 7 | **测试** | `/tac-test-author` | 模型 | 从 REQ + tech-design 生成测试骨架,为人留出占位断言 |
+| 7 | **测试** | `/tac-test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架,再按需补单元/E2E,为人留占位断言 |
 | 8 | **断言签核** | `/tac-signoff --stage=assertion` | 用户 | 人在实现前签核所有断言(门 1) |
 | 9 | **实现** | `/tac-implementer` | 模型 | 针对测试实现代码,对测试只读,每轮跑全套测试 |
 | 10 | **代码审查** | `/tac-review --stage=code` | 用户（手动） | 新会话视角审查实现 diff（可选但建议） |
@@ -71,6 +71,17 @@
 | **实现者 agent** | 实现代码 | 测试(只读) | 在测试契约内自主迭代到全套绿 |
 
 测试作者与实现者**权限互斥**,是"绿灯不撒谎"的结构性保证。
+
+### CLI 作为默认测试 seam
+
+除非项目明显是纯浏览器 C 端且没有任何后台行为,否则优先把产品 CLI 当作首要测试 seam:
+
+- **CLI 是人类和 agent 共用的真实接口**。测试在跑的命令,就是人可以手动跑的命令,避免"测试专用路径"与"真实用户路径"分叉。
+- **可观察行为优先**:CLI 测试断言 stdout/stderr/exit code/文件 side effect/数据库状态,不窥视实现细节。
+- **状态保持友好**:CLI 可以守护长期状态(数据库、配置、会话),测试之间不用反复启停,比浏览器 E2E 更稳定。
+- **缺陷下沉**:能用 CLI 验证的行为,不进浏览器 E2E;不能 CLI 化的复杂前端交互,才退到单元测试或浏览器 E2E。
+
+因此 `/tac-tech-design` 会默认问:"这个稳定块能否映射到产品 CLI 的某个命令?"`/tac-test-author` 会优先生成 CLI 测试,再按需补充单元/E2E 测试。
 
 ### 两道硬性签核
 
@@ -196,7 +207,7 @@ ln -s /path/to/workflow/skills/maintenance/tac-* .claude/skills/
 | `/tac-bootstrap-workflow` | 初始化 | 创建 `.aiassist/` 项目基础设施 |
 | `/tac-demand-insight` | THINK | 对抗式需求访谈 |
 | `/tac-to-prd` | PRD | 把讨论整理成 PRD |
-| `/tac-tech-design` | TECH-DESIGN | 对抗式技术方案设计 |
+| `/tac-tech-design` | TECH-DESIGN | 对抗式技术方案设计；CLI 优先的 seams，不能 CLI 化的才退到单元/浏览器 E2E |
 | `/tac-research` | THINK/TECH | 针对技术/API/库问题做带引用的 background 调研 |
 | `/tac-review` | REVIEW | 手动审查 PRD/技术方案/代码（建议新会话） |
 | `/tac-design` | DESIGN | 设计阶段统一入口：建/更新设计系统、导入设计源、迭代 HTML UX 原型 |
@@ -209,7 +220,7 @@ ln -s /path/to/workflow/skills/maintenance/tac-* .claude/skills/
 | Skill | 阶段 | 用途 |
 |---|---|---|
 | `/tac-crystallize` | 结晶 | 把 PRD 转成 REQ-ID |
-| `/tac-test-author` | TEST | 生成测试骨架 |
+| `/tac-test-author` | TEST | 优先生成 CLI 测试骨架，再按需补单元/E2E，为人留占位断言 |
 | `/tac-implementer` | BUILD | 针对测试实现代码 |
 | `/tac-qa-runner` | QA | 运行 E2E/回归 |
 

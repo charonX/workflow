@@ -57,13 +57,24 @@
 | 2 | PRD 合成 | `/tac-to-prd` | 用户 | 把访谈笔记整理成结构化 PRD |
 | 3 | DESIGN — 设计 | `/tac-design` | 用户 | 统一入口：建/更新设计系统、导入设计源、迭代 HTML-native 高保真原型 |
 | 4 | Crystallize | `/tac-crystallize` | 模型 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
-| 5 | TEST — 编写靶子 | `/tac-test-author` | 模型 | 从 REQ 生成测试骨架；为人留出占位断言 |
+| 5 | TEST — 编写靶子 | `/tac-test-author` | 模型 | 从 REQ 优先生成 CLI 测试骨架；不能 CLI 化的再补单元/浏览器 E2E；为人留出占位断言 |
 | 6 | assertion-signoff | `/tac-signoff --stage=assertion` | 用户 | 人在实现开始前签核所有断言 |
 | 7 | BUILD | `/tac-implementer` | 模型 | 针对测试实现代码；对测试只读；每轮迭代跑全套测试 |
 | 8 | REVIEW/QA | `/tac-qa-runner` | 模型 | E2E、回归、证据收集 |
 | 9 | feel-signoff | `/tac-signoff --stage=feel` | 用户 | 人依据 HTML 参照验收观感；偏差回流到 REQ |
 |   | 开发者交接（可选） | `/tac-design-handoff` | 用户 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
 | 10 | REFLECT | `/tac-reflect` | 用户 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
+
+### CLI 优先的测试 seam
+
+本工作流默认把**产品 CLI** 当作首要测试 seam：
+
+- CLI 是人类和 agent 共用的真实接口，测试跑的就是人可以手动跑的命令。
+- CLI 测试断言可观察行为（stdout/stderr/exit code/文件/数据库 side effect），不窥视实现细节。
+- CLI 能保持状态，测试之间无需反复启停，比浏览器 E2E 更稳定。
+- 能用 CLI 验证的行为不进浏览器 E2E；不能 CLI 化的复杂前端交互才退到单元测试或浏览器 E2E。
+
+因此 `/tac-tech-design` 会把"这个稳定块能否映射到产品 CLI 命令"作为默认问题；`/tac-test-author` 会优先生成 CLI 测试，再按需补充其他 seams。
 
 ### 回流机制
 
@@ -171,7 +182,8 @@
 | 建立或更新设计系统（含编译、预览、资产记录） | `/tac-design` |
 | 导入设计来源（Figma/GitHub/HTML）并可选编译为设计系统 | `/tac-design` |
 | 把 PRD 转成 REQ-ID | `/tac-crystallize` |
-| 从 REQ 生成测试骨架 | `/tac-test-author` |
+| 做对抗式技术方案设计，确定 CLI 优先的测试 seams | `/tac-tech-design` |
+| 从 REQ 优先生成 CLI 测试骨架，再按需补单元/E2E | `/tac-test-author` |
 | 在实现前签核断言 / 验收观感 | `/tac-signoff` |
 | 针对已签核测试实现代码 | `/tac-implementer` |
 | 运行 QA / E2E / 回归 | `/tac-qa-runner` |

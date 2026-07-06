@@ -4,19 +4,24 @@
 
 在写任何代码之前，先把问题说到机器可验的精度。本 skill 用对抗式访谈逼出隐性需求、边界条件和自相矛盾，并把"问题陈述"锚定为用户痛点——方案会变，痛点不会，它是后续回流的判断基准。
 
+**方向来自 brainstorming，追问来自 grilling。** 用户进入 THINK 阶段时通常只有模糊痛点或初步念头，我们先像 brainstorming 一样帮其找准方向；一旦方向出现，就用 grilling 技术把假设钉到可验证的精度。
+
 ## 借鉴的 reference 文件
 
-- `reference/mattpocock/skills/productivity/grill-me/SKILL.md`
-- `reference/mattpocock/skills/engineering/grill-with-docs/SKILL.md`
-- `reference/gstack/office-hours/SKILL.md`
+- `reference/superpowers/skills/brainstorming/SKILL.md`：从模糊想法到明确方向的流程（探索上下文、澄清问题、提出方案、获得批准）。
+- `reference/mattpocock/skills/productivity/grill-me/SKILL.md`：通用盘问技术，把 design tree 的树枝补全。
+- `reference/mattpocock/skills/engineering/grill-with-docs/SKILL.md`：带引用/上下文的对抗式追问。
+- `reference/gstack/office-hours/SKILL.md`：CEO 视角的野心/价值拷问。
 
 ## 主要改动
 
-- mattpocock `grill-me` 是通用盘问，我们把它聚焦到"需求洞察"上下文。
-- gstack `office-hours` 提供 CEO 视角的野心/价值拷问。
+- 以 superpowers `brainstorming` 为总体流程骨架：模糊想法 → 澄清 → 方向 → 批准。
+- 用 mattpocock `grill-me` / `grill-with-docs` 的对抗式追问技术填充单题循环。
+- 用 gstack `office-hours` 提供 CEO 视角的野心/价值拷问。
 - 输出固定为 `interview-notes.md`，作为 `/tac-to-prd` 的输入。
 
 ## 未来局部更新建议
 
+- superpowers `brainstorming` 更新时，检查"探索上下文 → 澄清 → 提出方案 → 批准"流程。
 - mattpocock 若更新提问技术，检查"执行步骤"中的追问维度。
 - gstack 若更新 CEO 审查清单，检查"谁/为什么/边界/矛盾/野心"覆盖。

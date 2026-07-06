@@ -1,6 +1,6 @@
 ---
 name: tac-design
-description: 设计阶段统一入口。根据项目状态自动路由到：建立/更新项目级设计系统、导入外部设计来源、或迭代 story 级高保真 HTML UX 原型。
+description: 设计阶段统一入口。人在上，AI 在下：设计系统由人驱动、来源优先；story 级 UX 原型在确认范围后生成。
 disable-model-invocation: true
 sources:
   - reference/baoyu-design/skills/baoyu-design/built-in-skills/design-system-authoring-guide.md
@@ -29,13 +29,24 @@ sources:
 
 ## 何时调用
 
-用户在 DESIGN 阶段说"/tac-design"，或 `/tac-story` 路由到 DESIGN 阶段时。本 skill 是设计阶段的**唯一入口**，内部根据项目状态自动选择模式：
+本 skill 是设计阶段的**唯一入口**，但设计系统**不是 story 的默认产物**。触发方式有两种：
 
-| 状态 | 进入模式 |
-|---|---|
-| 项目没有已编译的设计系统（缺少 `.aiassist/global/_ds_manifest.json`） | **A. 建立/更新设计系统** |
-| 用户提供了 Figma `.fig`、GitHub 仓库或 HTML/CSS 作为设计源 | **B. 导入设计来源**（导入后可衔接到 A 或 C） |
-| 项目已有设计系统 + PRD 需要可视化 | **C. 迭代 UX 原型** |
+1. **用户主动建立/更新设计系统**
+   - 用户说"建立设计系统"、"更新品牌系统"、"/tac-design --mode=system"。
+   - 进入**模式 A：建立/更新项目级设计系统**。
+
+2. **story 进入 DESIGN 阶段**
+   - 用户说"/tac-design"，或 `/tac-story` 路由到 DESIGN。
+   - 先检查 `.aiassist/global/_ds_manifest.json`：
+     - **已有设计系统** → 进入**模式 C：迭代 UX 原型**。
+     - **没有设计系统** → **不要自动建立**。先问用户：
+       - "这个项目还没有设计系统。你是想先建立项目级设计系统（模式 A），还是为这个 story 做临时 UX 探索（模式 C-lite，产物只在 story 内）？"
+     - 用户选 A → 进入模式 A。
+     - 用户选 C-lite → 进入模式 C，但只做 story 级临时样式，不生成 `.aiassist/global/` 项目设计系统。
+
+3. **用户提供了外部设计源**
+   - Figma `.fig`、GitHub 仓库、HTML/CSS 参考。
+   - 进入**模式 B：导入设计来源**，导入后再让用户选择用途。
 
 如果 PRD 里某功能完全没有 UI（纯后台逻辑），跳过本 skill，直接 `/tac-crystallize`。
 
@@ -43,14 +54,15 @@ sources:
 
 - `.aiassist/stories/<id>/prd.md`（模式 C 必需）
 - `.aiassist/stories/<id>/workflow-state.yaml`
-- 项目设计系统状态：`.aiassist/global/` 下是否有 `DESIGN.md`、`tokens.css`、`_ds_manifest.json`
-- 可选：Figma `.fig` 文件、GitHub 仓库 URL、HTML/CSS 参考、竞品截图
+- 项目设计系统状态：`.aiassist/global/` 下是否有 `_ds_manifest.json`
+- 可选：Figma `.fig` 文件、GitHub 仓库 URL、HTML/CSS 参考、竞品截图、品牌 deck
 
 ## 输出
 
 模式 A → `.aiassist/global/` 项目级设计系统。  
 模式 B → `.aiassist/design-refs/<name>/`。  
-模式 C → `.aiassist/stories/<id>/ux/` story 级原型。
+模式 C → `.aiassist/stories/<id>/ux/` story 级原型。  
+模式 C-lite → `.aiassist/stories/<id>/ux/` story 级原型 + 临时 `tokens.css`（不写入 `.aiassist/global/`）。
 
 ## 执行步骤
 
@@ -60,20 +72,22 @@ sources:
 
 **但必须先向用户确认，不能自动执行。** 用一句话说明检测到的状态和推荐模式，例如：
 
-> "检测到项目还没有已编译的设计系统，建议先进入模式 A：建立/更新项目级设计系统。确认吗？"
 > "检测到已有设计系统 `xxx`，当前 story 的 PRD 需要 UI，建议进入模式 C：迭代 UX 原型。要设计哪些流程？"
+> "这个项目还没有设计系统。你是想先建立项目级设计系统（模式 A），还是为这个 story 做临时 UX 探索（模式 C-lite）？"
+> "你提供了 Figma 文件，建议进入模式 B：导入设计来源。导入后想采纳为项目设计系统，还是仅作 story 参考？"
 
-- 无 `_ds_manifest.json` → 推荐模式 A（建立设计系统）。
-- 用户主动提供外部设计源 → 推荐模式 B（导入），导入后再让用户选择：
-  - 采纳为项目设计系统 → 回到模式 A 做整合。
-  - 仅作 story 参考 → 进入模式 C。
-- 有 `_ds_manifest.json` + PRD 需要 UI → 推荐模式 C（UX 探索）。
+- 用户主动要求建立/更新设计系统 → 模式 A。
+- story DESIGN 阶段且无 `_ds_manifest.json` → 问用户：模式 A 还是模式 C-lite。
+- 用户提供外部设计源 → 模式 B，导入后让用户选择后续路径。
+- 有 `_ds_manifest.json` + PRD 需要 UI → 模式 C。
 
 **得到用户明确回复后，再进入对应模式。**
 
 ---
 
 ## 模式 A：建立/更新项目级设计系统
+
+设计系统是**高权重产物**，必须由人驱动、来源优先。AI 不能凭空定品牌。
 
 ### A.1 检查现有设计系统
 
@@ -85,28 +99,45 @@ sources:
 
 ### A.2 判断处理路径
 
-- 如果 `DESIGN.md` + `tokens.css` + `_ds_manifest.json` + `_d_meta.json` 都存在且用户未要求更新 → 告知设计系统已就绪，可打开 `preview.html` 查看；若当前是 story 的 DESIGN 阶段，直接提示进入模式 C。
+- 如果 `DESIGN.md` + `tokens.css` + `_ds_manifest.json` + `_d_meta.json` 都存在且用户未要求更新 → 告知设计系统已就绪，可打开 `preview.html` 查看。
 - 如果只有 `DESIGN.md` + `tokens.css`、缺少编译产物 → 直接进入 A.6 跑编译管线。
-- 如果缺失或不全 → 进入建设流程（A.3）。
+- 如果缺失或不全 → 进入 A.3，但**不要直接生成文件**。
 
-### A.3 确认后再开始
+### A.3 收集来源与品牌输入
 
-如果缺失或不全，**不要直接生成文件**。先向用户说明将进入建设流程，并简要列出接下来会做什么（生成 `DESIGN.md`、`tokens.css`、编译 preview 等）。得到用户确认后再进入 A.4。
+**先问来源，再问调性。** 没有来源时，至少要有人明确回答的品牌问题。
 
-### A.4 访谈用户（如需要新建）
+1. **来源问题**：
+   - 有没有 Figma `.fig` 文件、GitHub 设计系统仓库、现有 HTML/CSS/网站、品牌 deck、竞品截图？
+   - 有的话，路径/URL 是什么？访问权限是否已准备好？
 
-- 产品调性是什么？（专业/活泼/高端/亲和等）
-- 目标用户是谁？
-- 有没有必须遵守的品牌色/字体？
-- 有没有竞品或参考应用？
-- 平台优先级？（iOS/web/Android 等）
-- 是否需要主题变体？（暗色、高密度等）
+2. **调性问题**（在没有来源或来源不足时必填）：
+   - 产品调性是什么？（专业/活泼/高端/亲和/粗犷/极简等）
+   - 目标用户是谁？年龄、职业、使用场景？
+   - 有没有必须遵守的品牌色、品牌字体、Logo？
+   - 平台优先级？（iOS/web/Android 等）
+   - 是否需要主题变体？（暗色、高密度等）
+   - 有没有竞品或参考应用？
 
-### A.5 生成设计系统源文件
+**如果用户没有提供任何来源且回答模糊，不要继续生成。** 停下来要求补充，或建议先 `/tac-research` 做竞品/参考研究。
 
-写入 `.aiassist/global/`：
+### A.4 确认范围后再开始
 
-- `DESIGN.md`：token 值、组件形态、情绪调性。
+根据 A.3 的回答，向用户说明：
+
+- 将采用哪些来源
+- 将生成哪些产物（`DESIGN.md`、`tokens.css`、字体、`components/`、cards、preview）
+- 哪些决策需要用户中途确认（token、字体、核心组件）
+
+得到用户明确同意后，再进入 A.5。
+
+### A.5 提取与生成设计系统源文件
+
+**有来源时**：按 baoyu-design 的提取流程读取来源，提取颜色、字体、间距、圆角、阴影、交互状态、图标、Logo，写入 `.aiassist/global/`。
+
+**无来源时**：基于用户回答的调性，先生成最小可迭代版本（MVP 设计系统）：
+
+- `DESIGN.md`：设计原则、token 值、组件形态、情绪调性、来源记录。
 - `tokens.css`：CSS 自定义属性，使用 `/* @kind color|font|spacing|radius|shadow|z|motion|other */` 注释帮助 checker 分类。
 - `styles.css`：仅 `@import "./tokens.css";` + 少量工具类。
 - `README.md`：设计系统概览、来源、内容清单、使用方式。
@@ -116,7 +147,17 @@ sources:
 
 参考模板：`templates/design-system/global/`。
 
-### A.6 运行编译管线
+### A.6 中途确认关键决策
+
+在继续跑编译管线之前，**先让用户确认核心 token 和字体**：
+
+- 打开/展示 `tokens.css` 和 `DESIGN.md` 的关键段落。
+- 问："这些颜色、字体、调性是否符合你的品牌预期？"
+- 如果有字体文件缺失，明确告诉用户并询问替代方案。
+
+用户确认后再进入 A.7。如果用户有修改意见，先修改再确认。
+
+### A.7 运行编译管线
 
 ```bash
 node scripts/design-system/compile-design-system.mjs .aiassist/global
@@ -124,7 +165,7 @@ node scripts/design-system/check-design-system.mjs .aiassist/global
 node scripts/design-system/build-preview.mjs .aiassist/global --out .aiassist/global/preview.html
 ```
 
-### A.7 记录资产并自导入
+### A.8 记录资产并自导入
 
 ```bash
 node scripts/design-system/record-asset.mjs .aiassist/global preview.html --name "Design System Preview" --status approved
@@ -133,7 +174,7 @@ node scripts/design-system/import-design-system.mjs .aiassist/global .aiassist/g
 
 自导入创建 `.aiassist/global/_ds/<slug>/` 与 `_ds_prompt.md`，并在 `_d_meta.json` 中标记 `primaryDesignSystem`。
 
-### A.8 更新 workflow-state
+### A.9 更新 workflow-state（如适用）
 
 ```yaml
 design_system:
@@ -142,10 +183,10 @@ design_system:
   preview: .aiassist/global/preview.html
 ```
 
-### A.9 提示下一步
+### A.10 提示下一步
 
 - 若当前是 story 的 DESIGN 阶段 → 进入模式 C 迭代 UX。
-- 若只是更新项目设计系统 → 完成。
+- 若只是建立/更新项目设计系统 → 完成，建议用户打开 `preview.html`  review。
 
 ---
 
@@ -188,19 +229,14 @@ design_system:
 4. 输出 `tokens.css`。
 5. 记录来源。
 
-### B.5 可选编译/引入项目
+### B.5 确认用途后再流转
 
-若用户想把导入参考采纳为设计系统：
+导入完成后，向用户展示关键提取结果（主要颜色、字体、组件清单），并问：
 
-```bash
-node scripts/design-system/compile-design-system.mjs .aiassist/design-refs/<name>
-node scripts/design-system/check-design-system.mjs .aiassist/design-refs/<name>
-node scripts/design-system/build-preview.mjs .aiassist/design-refs/<name> --out .aiassist/design-refs/<name>/preview.html
-node scripts/design-system/import-design-system.mjs .aiassist/design-refs/<name> . --primary
-```
+- 想采纳为项目设计系统（进入模式 A 做整合）？
+- 还是仅作 story 参考（进入模式 C）？
 
-- 若采纳 → 进入模式 A 做项目级整合。
-- 若仅作参考 → 进入模式 C。
+得到明确回答后再流转。
 
 ---
 
@@ -208,8 +244,9 @@ node scripts/design-system/import-design-system.mjs .aiassist/design-refs/<name>
 
 ### C.1 检查设计系统
 
-- 查找 `.aiassist/global/_ds_manifest.json`。缺失则提示先进入模式 A。
-- 读取 `_ds_manifest.json`、`_ds/<slug>/_ds_prompt.md`。
+- 查找 `.aiassist/global/_ds_manifest.json`。
+- 如果有 → 读取 `_ds_manifest.json`、`_ds/<slug>/_ds_prompt.md`，导入全局设计系统到 story。
+- 如果没有 → 进入**模式 C-lite**：story 级临时样式，不归入 `.aiassist/global/`。
 
 ### C.2 收集设计上下文
 
@@ -231,15 +268,19 @@ node scripts/design-system/import-design-system.mjs .aiassist/design-refs/<name>
 
 UI 流程常常暴露模块耦合问题。把发现的边界问题反馈回 PRD 第 6.1 节，必要时回流 `/tac-to-prd`。
 
-### C.5 导入全局设计系统到 story
+### C.5 导入全局设计系统（模式 C）或建立临时样式（模式 C-lite）
+
+**模式 C**：
 
 ```bash
 node scripts/design-system/import-design-system.mjs .aiassist/global .aiassist/stories/<id>/ux --primary
 ```
 
+**模式 C-lite**：在 `.aiassist/stories/<id>/ux/tokens.css` 中定义最小临时 token，不写入 `.aiassist/global/`。明确告诉用户这是 story 级临时样式，不成为项目设计系统。
+
 ### C.6 生成第一版 HTML 原型
 
-- 默认 HTML-native 源：plain HTML/CSS/JS，引用 `ux/_ds/<slug>/styles.css`。
+- 默认 HTML-native 源：plain HTML/CSS/JS，引用 `ux/_ds/<slug>/styles.css`（模式 C）或 `ux/tokens.css`（模式 C-lite）。
 - 需要复杂交互时才用 React + Babel Standalone。
 - story 局部 JSX 组件放在 `ux/components/*.jsx` + `*.d.ts`。
 - 每个 `.html` 第一行：`<!-- @dsCard group="..." name="..." viewport="..." -->`。
@@ -280,6 +321,7 @@ node scripts/design-system/record-asset.mjs .aiassist/stories/<id>/ux <flow>.htm
 
 ## 统一纪律
 
+- **设计系统由人驱动、来源优先。** AI 不能凭空定品牌；没有来源或明确输入时不生成项目级设计系统。
 - **模式判断和关键决策必须先向用户确认，禁止自动执行文件生成。**
 - DESIGN 阶段**不写测试、不写实现代码**。
 - HTML 是思考工具，不是最终实现。

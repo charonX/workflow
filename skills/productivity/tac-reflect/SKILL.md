@@ -1,6 +1,6 @@
 ---
 name: tac-reflect
-description: 沉淀本次 story 的经验：更新 engineering-lessons、ADR、STANDARDS，并定义下一个阶段切换线。
+description: 外层设计循环的反馈。feel-signoff 通过后沉淀本次 story 的经验：更新 engineering-lessons、ADR、STANDARDS，让下一个 story 的设计上下文更准确。
 disable-model-invocation: true
 sources:
   - reference/gstack/retro/SKILL.md

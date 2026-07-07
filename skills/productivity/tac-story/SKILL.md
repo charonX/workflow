@@ -1,6 +1,6 @@
 ---
 name: tac-story
-description: "\"测试即契约\" 工作流总入口。管理 story 生命周期:创建/选择 story,读取 workflow-state 路由到当前阶段,并在发现根本问题时执行回流(归档重做或删 story)。"
+description: "\"测试即契约\" 工作流总入口。管理 story 生命周期:读取 workflow-state 路由到当前阶段(外层人控设计循环 / 内层 agent 实现循环),在签核门切换循环,并在发现根本问题时执行回流。"
 disable-model-invocation: true
 sources:
   - workflow/design/workflow-framework.md
@@ -11,18 +11,18 @@ sources:
 
 # story
 
-本 skill 是工作流总入口,承担两件事:
+本 skill 是工作流总入口,承担三件事:
 
 1. **路由**:读 `workflow-state.yaml`,把用户送进当前 story 所处的阶段。
-2. **回流**:当用户发现"根本问题"时,执行归档重做或删 story。
+2. **循环切换**:在 assertion-signoff(门 1)把外层设计循环交给内层实现循环;在 feel-signoff(门 2)把内层实现循环交回外层验收/回流。
+3. **回流**:当用户发现"根本问题"时,执行归档重做或删 story。
 
-## 何时调用
+## 核心概念:两个循环 + story = 初衷
 
-- 用户说"开始一个新功能"、"继续上次的 story"、"/tac-story"时 → 路由分支。
-- 用户说"这个方向错了"、"要推倒重来"、"回到需求"时 → 回流分支。
-- 被其它 skill 在完成本阶段后调回,继续下一阶段时 → 路由分支。
-
-## 核心概念:story = 初衷
+- **外层循环 — 人控制的设计上下文**:THINK → PRD → DESIGN → TECH-DESIGN → CRYSTALLIZE → TEST → ASSERTION-SIGNOFF。人做决定、签核、改需求。
+- **内层循环 — agent 控制的实现迭代**:BUILD → QA。AI 在测试契约内自主迭代到全绿。
+- **门 1(assertion-signoff)**:外层循环的终点,把完整上下文(REQ + 测试)交给 AI。
+- **门 2(feel-signoff)**:内层循环的终点,人验收 AI 产出;不通过则回流到外层循环修设计。
 
 一个 story 对应一个**初衷**——用户痛点,不是具体方案。
 
@@ -52,19 +52,19 @@ sources:
 1. 读 `workflow-state.yaml`。
 2. 按 `phase` 路由:
 
-| 当前 phase | 路由到 |
-|---|---|
-| THINK | `/tac-demand-insight` |
-| PRD | `/tac-to-prd` |
-| DESIGN | `/tac-design` |
-| TECH-DESIGN | `/tac-tech-design`（若对技术/API/库不熟，可先 `/tac-research`） |
-| CRYSTALLIZE | `/tac-crystallize` |
-| TEST | `/tac-test-author` |
-| ASSERTION-SIGNOFF | `/tac-signoff --stage=assertion` |
-| BUILD | `/tac-implementer` |
-| QA | `/tac-qa-runner` |
-| FEEL-SIGNOFF | `/tac-signoff --stage=feel` |
-| REFLECT | `/tac-reflect` |
+| 当前 phase | 所属循环 | 路由到 |
+|---|---|---|
+| THINK | 外层 | `/tac-demand-insight` |
+| PRD | 外层 | `/tac-to-prd` |
+| DESIGN | 外层 | `/tac-design` |
+| TECH-DESIGN | 外层 | `/tac-tech-design`（若对技术/API/库不熟，可先 `/tac-research`） |
+| CRYSTALLIZE | 外层 | `/tac-crystallize` |
+| TEST | 外层 | `/tac-test-author` |
+| ASSERTION-SIGNOFF | **门 1** | `/tac-signoff --stage=assertion` |
+| BUILD | 内层 | `/tac-implementer` |
+| QA | 内层 | `/tac-qa-runner` |
+| FEEL-SIGNOFF | **门 2** | `/tac-signoff --stage=feel` |
+| REFLECT | 外层 | `/tac-reflect` |
 
 3. 若 `archive` 下已有历史 attempt,提示用户:"本 story 已尝试过 N 次,最新归档原因见 `archive/attempt-N/reason.md`,这次别踩同样的坑。"
 

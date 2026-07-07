@@ -49,23 +49,55 @@
 
 在实现真实功能时，直接使用 `skills/` 中的 skill，而不是直接调用参考 skill。参考项目只供灵感，`skills/` 才是 operational 工作流。
 
+本工作流把开发压缩为三个动作：
+
+1. **设计上下文** —— 人把想做什么、为什么、长什么样、怎么算对，说清楚到机器可验。
+2. **开发迭代** —— AI 根据上下文写代码、跑测试、改 bug，直到契约全绿。
+3. **人验收** —— 人验证功能和观感；不通过就回到设计上下文修正，再交给 AI 重新迭代。
+
+这对应两个循环：
+
+- **外层循环（人控制）**：需求洞察 → PRD → UX → 技术方案 → REQ → 断言签核 → 验收 → 回流。人做决定、人签核、人改需求。
+- **内层循环（agent 控制）**：读测试 → 写代码 → 跑测试 → 改 bug → 全绿。AI 自主迭代，人对代码只读。
+
+两个循环的边界是**签核**：门 1 把上下文交给 AI，门 2 把 AI 产出交回给人验收。
+
 ### 阶段总览
 
-| # | 阶段 | Skill | 触发者 | 目的 |
-|---|---|---|---|---|
-| 1 | THINK — 需求洞察 | `/tac-demand-insight` | 用户 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
-| 2 | PRD 合成 | `/tac-to-prd` | 用户 | 把访谈笔记整理成结构化 PRD |
-| 3 | DESIGN — 设计 | `/tac-design` | 用户 | 统一入口：建/更新设计系统、导入设计源、迭代 HTML-native 高保真原型 |
-| 4 | Crystallize | `/tac-crystallize` | 模型 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
-| 5 | TEST — 编写靶子 | `/tac-test-author` | 模型 | 从 REQ 优先生成 CLI 测试骨架；不能 CLI 化的再补单元/浏览器 E2E；为人留出占位断言 |
-| 6 | assertion-signoff | `/tac-signoff --stage=assertion` | 用户 | 人在实现开始前签核所有断言 |
-| 7 | BUILD | `/tac-implementer` | 模型 | 针对测试实现代码；对测试只读；每轮迭代跑全套测试 |
-| 8 | REVIEW/QA | `/tac-qa-runner` | 模型 | E2E、回归、证据收集 |
-| 9 | feel-signoff | `/tac-signoff --stage=feel` | 用户 | 人依据 HTML 参照验收观感；偏差回流到 REQ |
-|   | 开发者交接（可选） | `/tac-design-handoff` | 用户 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
-| 10 | REFLECT | `/tac-reflect` | 用户 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
+| # | 阶段 | Skill | 触发者 | 所属循环 | 目的 |
+|---|---|---|---|---|---|
+| 1 | THINK — 需求洞察 | `/tac-demand-insight` | 用户 | 外层 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
+| 2 | PRD 合成 | `/tac-to-prd` | 用户 | 外层 | 把访谈笔记整理成结构化 PRD |
+| 3 | DESIGN — 设计 | `/tac-design` | 用户 | 外层 | 统一入口：建/更新设计系统、导入设计源、迭代 HTML-native 高保真原型 |
+| 4 | TECH-DESIGN — 技术方案 | `/tac-tech-design` | 用户 | 外层 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
+| 5 | CRYSTALLIZE — 结晶 | `/tac-crystallize` | 模型 | 外层 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
+| 6 | TEST — 编写靶子 | `/tac-test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；不能 CLI 化的再补单元/浏览器 E2E；为人留出占位断言 |
+| 7 | ASSERTION-SIGNOFF — 断言签核 | `/tac-signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核所有断言；把上下文交给 AI |
+| 8 | BUILD — 实现 | `/tac-implementer` | 模型 | 内层 | 针对测试实现代码；对测试只读；每轮迭代跑全套测试 |
+| 9 | QA — 回归 | `/tac-qa-runner` | 模型 | 内层 | E2E、回归、证据收集 |
+| 10 | FEEL-SIGNOFF — 观感签核 | `/tac-signoff --stage=feel` | 用户 | **门 2** | 人依据 HTML 参照验收观感；偏差回流到外层循环 |
+|   | 开发者交接（可选） | `/tac-design-handoff` | 用户 | 外层 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
+| 11 | REFLECT — 反思 | `/tac-reflect` | 用户 | 外层 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
 
-### CLI 优先的测试 seam
+### 两个循环的流转
+
+```
+外层循环（人控制的设计上下文）
+  THINK → PRD → DESIGN → TECH-DESIGN → CRYSTALLIZE → TEST
+              ↑                                     │
+              └──────── FEEL-SIGNOFF 不通过,回流 ─────┘
+                                                   │
+                                            门 1: ASSERTION-SIGNOFF
+                                                   │
+                                                   ▼
+内层循环（agent 控制的实现迭代）
+  BUILD → QA  (测试不绿就自修,不许改断言)
+                                                   │
+                                            门 2: FEEL-SIGNOFF
+                                                   │
+                                                   ▼
+                                         人验收 → 通过 / 不通过回流
+```
 
 本工作流默认把**产品 CLI** 当作首要测试 seam：
 
@@ -172,7 +204,7 @@
 
 | 我想…… | 使用 |
 |--------|------|
-| 用测试即契约启动新功能 / 继续一个 story | `/tac-story` |
+| 用测试即契约启动新功能 / 继续一个 story（路由外层/内层循环、回流） | `/tac-story` |
 | 发现根本问题,要回流(归档重做/删 story) | `/tac-story`(回流分支) |
 | 在目标项目初始化工作流 | `/tac-bootstrap-workflow` |
 | 运行对抗式需求访谈，用第一性原理剥离继承假设（适合模糊痛点/初步想法） | `/tac-demand-insight` |
@@ -184,11 +216,11 @@
 | 把 PRD 转成 REQ-ID | `/tac-crystallize` |
 | 做对抗式技术方案设计，用第一性原理区分真实约束与历史包袱，确定 CLI 优先的测试 seams | `/tac-tech-design` |
 | 从 REQ 优先生成 CLI 测试骨架，再按需补单元/E2E | `/tac-test-author` |
-| 在实现前签核断言 / 验收观感 | `/tac-signoff` |
-| 针对已签核测试实现代码 | `/tac-implementer` |
-| 运行 QA / E2E / 回归 | `/tac-qa-runner` |
+| 在实现前签核断言（门 1，把契约交给 AI）/ 验收观感（门 2，把 AI 产出交回人） | `/tac-signoff` |
+| 针对已签核测试实现代码（内层循环核心） | `/tac-implementer` |
+| 运行 QA / E2E / 回归（内层循环终点验证） | `/tac-qa-runner` |
 | 从 UX 生成开发者交接包（含机器可读 manifest） | `/tac-design-handoff` |
-| 捕获经验教训并更新知识 | `/tac-reflect` |
+| 捕获经验教训并更新知识（外层循环反馈） | `/tac-reflect` |
 | 同步参考项目并吸收上游变更 | `/tac-sync-refs` |
 
 ### 参考 skill（仅作灵感）

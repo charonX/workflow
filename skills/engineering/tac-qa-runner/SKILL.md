@@ -1,6 +1,6 @@
 ---
 name: tac-qa-runner
-description: 慢外门 QA：跑 E2E 测试、回归测试，收集证据，输出 QA 报告。
+description: 内层实现循环的终点验证。BUILD 全绿后跑 E2E/回归、收集证据、输出 QA 报告,为 feel-signoff 提供客观依据。
 sources:
   - reference/gstack/qa/SKILL.md
   - reference/gstack/qa-only/SKILL.md
@@ -12,13 +12,12 @@ sources:
 
 ## 何时调用
 
-BUILD 阶段全单元绿，进入 REVIEW/QA 慢外门时。或被 `/tac-story` 总入口调用。
+BUILD 阶段全单元绿，进入 QA 慢外门时。或被 `/tac-story` 总入口调用。
 
 ## 输入
 
 - 实现代码
-- `BanshanJourneyTests/**/*.swift`
-- `BanshanJourneyUITests/**/*.swift`（如有）
+- 测试文件（项目对应位置，如 `tests/**/*.test.ts`、`*Tests/**/*.swift` 等）
 - `.aiassist/stories/<id>/requirements.md`
 
 ## 输出

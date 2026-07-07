@@ -1,6 +1,6 @@
 ---
 name: tac-implementer
-description: 在测试契约内自主实现代码。支持单切片模式与自动连续模式，可按顺序独立完成多个切片，每个切片一个 commit，对测试只读。
+description: 内层实现循环的核心。在已签核的测试契约内自主写代码、跑测试、改 bug;对测试只读,直到全套绿。支持单切片与自动连续模式。
 sources:
   - reference/superpowers/skills/subagent-driven-development/SKILL.md
   - reference/superpowers/skills/executing-plans/SKILL.md

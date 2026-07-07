@@ -2,7 +2,7 @@
 
 ## 理念
 
-工作流的价值一半在交付，一半在学习。本 skill 在每次 story 结束后提取经验教训，把个人直觉沉淀为项目级知识（`STANDARDS.md`、`engineering-lessons.md`），让同一错误不被重复支付。
+外层设计循环的反馈。工作流的价值一半在交付，一半在学习。本 skill 在每次 story 结束后提取经验教训，把个人直觉沉淀为项目级知识（`STANDARDS.md`、`engineering-lessons.md`），让下一个 story 的设计上下文更准确，同一错误不被重复支付。
 
 ## 借鉴的 reference 文件
 

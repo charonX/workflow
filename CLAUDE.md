@@ -71,9 +71,9 @@
 | 3 | DESIGN — 设计 | `/design` | 用户 | 外层 | 统一入口：建/更新设计系统、导入设计源、迭代 HTML-native 高保真原型 |
 | 4 | TECH-DESIGN — 技术方案 | `/tech-design` | 用户 | 外层 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
 | 5 | CRYSTALLIZE — 结晶 | `/crystallize` | 模型 | 外层 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
-| 6 | TEST — 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；不能 CLI 化的再补单元/浏览器 E2E；为人留出占位断言 |
+| 6 | TEST — 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；不能 CLI 化的退到浏览器 E2E 或 public 接口测试；为人留出占位断言 |
 | 7 | ASSERTION-SIGNOFF — 断言签核 | `/signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核所有断言；把上下文交给 AI |
-| 8 | BUILD — 实现 | `/implementer` | 模型 | 内层 | 针对测试实现代码；对测试只读；每轮迭代跑全套测试 |
+| 8 | BUILD — 实现 | `/implementer` | 模型 | 内层 | 针对测试实现代码；对业务测试只读；内部用 `/tdd` 纪律 RED → GREEN；每轮迭代跑全套业务测试 |
 | 9 | QA — 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集 |
 | 10 | FEEL-SIGNOFF — 观感签核 | `/signoff --stage=feel` | 用户 | **门 2** | 人依据 HTML 参照验收观感；偏差回流到外层循环 |
 |   | 开发者交接（可选） | `/design-handoff` | 用户 | 外层 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
@@ -104,9 +104,9 @@
 - CLI 是人类和 agent 共用的真实接口，测试跑的就是人可以手动跑的命令。
 - CLI 测试断言可观察行为（stdout/stderr/exit code/文件/数据库 side effect），不窥视实现细节。
 - CLI 能保持状态，测试之间无需反复启停，比浏览器 E2E 更稳定。
-- 能用 CLI 验证的行为不进浏览器 E2E；不能 CLI 化的复杂前端交互才退到单元测试或浏览器 E2E。
+- 能用 CLI 验证的行为不进浏览器 E2E；不能 CLI 化的行为退到 public 接口测试或浏览器 E2E。
 
-因此 `/tech-design` 会把"这个稳定块能否映射到产品 CLI 命令"作为默认问题；`/test-author` 会优先生成 CLI 测试，再按需补充其他 seams。
+因此 `/tech-design` 会把"这个稳定块能否映射到产品 CLI 命令"作为默认问题；`/test-author` 会优先生成 CLI 测试，不能 CLI 化时补充浏览器 E2E 或 public 接口测试。`/implementer` 在实现过程中用 `/tdd` 纪律写单元测试驱动代码。
 
 ### 回流机制
 
@@ -215,7 +215,8 @@
 | 导入设计来源（Figma/GitHub/HTML）并可选编译为设计系统 | `/design` |
 | 把 PRD 转成 REQ-ID | `/crystallize` |
 | 做对抗式技术方案设计，用第一性原理区分真实约束与历史包袱，确定 CLI 优先的测试 seams | `/tech-design` |
-| 从 REQ 优先生成 CLI 测试骨架，再按需补单元/E2E | `/test-author` |
+| 从 REQ 优先生成 CLI 测试骨架，不能 CLI 化时补充浏览器 E2E 或 public 接口测试 | `/test-author` |
+| 内层实现纪律：RED → GREEN 写单元测试驱动代码（单元测试不进入契约） | `/tdd` |
 | 在实现前签核断言（门 1，把契约交给 AI）/ 验收观感（门 2，把 AI 产出交回人） | `/signoff` |
 | 针对已签核测试实现代码（内层循环核心） | `/implementer` |
 | 运行 QA / E2E / 回归（内层循环终点验证） | `/qa-runner` |

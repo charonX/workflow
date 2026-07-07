@@ -1,6 +1,6 @@
 ---
 name: test-author
-description: 从 REQ 生成可执行测试骨架。默认把产品 CLI 当作首要测试 seam，不能 CLI 化的行为才退到单元测试或浏览器 E2E。用占位符标记等人签断言。不写实现代码。
+description: 从 REQ 生成可执行的业务测试骨架（验收测试）。默认把产品 CLI 当作首要测试 seam，不能 CLI 化的行为退到浏览器 E2E 或 public API/函数接口测试。用占位符标记等人签断言。不写实现代码，不写 TDD 单元测试。
 sources:
   - reference/mattpocock/skills/engineering/tdd/SKILL.md
   - reference/superpowers/skills/test-driven-development/SKILL.md
@@ -24,11 +24,13 @@ sources:
 
 ## 输出
 
-- 测试文件（按项目约定目录，如 `tests/`、`src/__tests__/`、`Tests/**/*.swift` 等）
+- 业务测试文件（验收测试，按项目约定目录，如 `tests/`、`src/__tests__/`、`Tests/**/*.swift` 等）
   - CLI 测试：`<story-id>/cli/*.test.sh` 或 `*.test.ts`
-  - 单元测试：按语言框架惯例
+  - API / public 函数接口测试：按语言框架惯例
   - 浏览器 E2E：`<story-id>/e2e/*.test.ts` 等
 - `.aiassist/stories/<id>/test-plan.md`
+
+**不输出**：TDD 单元测试。单元测试由 `/implementer` 在实现过程中自行写、自行维护。
 
 ## 执行步骤
 
@@ -44,8 +46,8 @@ sources:
 4. **写测试文件头部**：必须包含 `REQ-TRACE`、`REQ-VERSION`、`TEST-AUTHOR`、`ASSERTIONS-SIGNED`。
 5. **按 seam 类型搭建脚手架**：
    - **CLI seam**：生成调用产品 CLI 的测试，断言 stdout/stderr/exit code/文件 side effect。参考[CLI 测试模板](#cli-测试模板)。
-   - **单元 seam**：生成语言/框架惯用的单元测试，含必要的 mock/fixture。
-   - **浏览器 E2E seam**：只在 CLI 无法覆盖的复杂前端交互时生成。
+   - **API / public 函数 seam**：生成对 public 接口的调用测试，断言返回值/可观察行为。这是业务边界测试，不是实现细节测试。
+   - **浏览器 E2E seam**：只在 CLI 和 public 接口都无法覆盖的复杂前端交互时生成。
 6. **占位断言**：在需要人拍预期值的地方写 `// TODO: HUMAN ASSERTION`。
 7. **编译/可执行检查**：确保测试文件能运行（可能需要临时 stub 实现或 CLI 入口）。
 8. **输出 test-plan.md**：列出每个 REQ-ID 对应哪些测试方法/CLI 命令，并标注 seam 类型和哪些测试来自 HTML 原型映射。

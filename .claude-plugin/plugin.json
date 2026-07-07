@@ -32,8 +32,9 @@
     "./skills/productivity/research",
     "./skills/maintenance/sync-refs",
     "./skills/engineering/crystallize",
-    "./skills/engineering/test-author",
     "./skills/engineering/implementer",
-    "./skills/engineering/qa-runner"
+    "./skills/engineering/qa-runner",
+    "./skills/engineering/tdd",
+    "./skills/engineering/test-author"
   ]
 }

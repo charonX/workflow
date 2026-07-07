@@ -87,8 +87,9 @@
 | 4 | **技术方案** | `/tech-design` | 用户 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
 | 5 | **技术方案审查** | `/review --stage=tech` | 用户（手动） | 新会话视角审查技术方案（可选但建议） |
 | 6 | **结晶** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
-| 7 | **测试** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架,再按需补单元/E2E,为人留占位断言 |
-| 8 | **断言签核** | `/signoff --stage=assertion` | 用户 | 人在实现前签核所有断言(门 1) |
+| 7 | **测试** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架；不能 CLI 化的退到浏览器 E2E 或 public 接口测试；为人留占位断言 |
+| 8 | **TDD** | `/tdd` | 模型 | 内层实现纪律：RED → GREEN 写单元测试驱动代码；单元测试不进入契约 |
+| 9 | **断言签核** | `/signoff --stage=assertion` | 用户 | 人在实现前签核所有断言(门 1) |
 | 9 | **实现** | `/implementer` | 模型 | 针对测试实现代码,对测试只读,每轮跑全套测试 |
 | 10 | **代码审查** | `/review --stage=code` | 用户（手动） | 新会话视角审查实现 diff（可选但建议） |
 | 11 | **QA** | `/qa-runner` | 模型 | E2E、回归、证据收集 |
@@ -112,9 +113,9 @@
 - **CLI 是人类和 agent 共用的真实接口**。测试在跑的命令,就是人可以手动跑的命令,避免"测试专用路径"与"真实用户路径"分叉。
 - **可观察行为优先**:CLI 测试断言 stdout/stderr/exit code/文件 side effect/数据库状态,不窥视实现细节。
 - **状态保持友好**:CLI 可以守护长期状态(数据库、配置、会话),测试之间不用反复启停,比浏览器 E2E 更稳定。
-- **缺陷下沉**:能用 CLI 验证的行为,不进浏览器 E2E;不能 CLI 化的复杂前端交互,才退到单元测试或浏览器 E2E。
+- **缺陷下沉**:能用 CLI 验证的行为,不进浏览器 E2E;不能 CLI 化的行为,退到 public 接口测试或浏览器 E2E。
 
-因此 `/tech-design` 会默认问:"这个稳定块能否映射到产品 CLI 的某个命令?"`/test-author` 会优先生成 CLI 测试,再按需补充单元/E2E 测试。
+因此 `/tech-design` 会默认问:"这个稳定块能否映射到产品 CLI 的某个命令?"`/test-author` 会优先生成 CLI 测试,不能 CLI 化时再补充浏览器 E2E 或 public 接口测试。`/implementer` 在实现过程中用 `/tdd` 纪律写单元测试驱动代码。
 
 ### 两道硬性签核
 
@@ -253,8 +254,9 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 | Skill | 阶段 | 用途 |
 |---|---|---|
 | `/crystallize` | 结晶 | 把 PRD 转成 REQ-ID |
-| `/test-author` | TEST | 优先生成 CLI 测试骨架，再按需补单元/E2E，为人留占位断言 |
-| `/implementer` | BUILD | 内层实现循环核心；针对已签核测试写代码，对测试只读 |
+| `/test-author` | TEST | 优先生成 CLI 测试骨架，不能 CLI 化时补充浏览器 E2E 或 public 接口测试，为人留占位断言 |
+| `/tdd` | BUILD | 内层实现纪律：RED → GREEN 写单元测试驱动代码；单元测试不进入契约 |
+| `/implementer` | BUILD | 内层实现循环核心；针对已签核测试写代码，对业务测试只读；内部用 `/tdd` |
 | `/qa-runner` | QA | 内层实现循环终点验证；跑 E2E/回归，输出 QA 报告 |
 
 ## 产物目录

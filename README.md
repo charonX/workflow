@@ -81,19 +81,19 @@
 
 | # | 阶段 | Skill | 触发者 | 做什么 |
 |---|---|---|---|---|
-| 1 | **THINK** | `/tac-demand-insight` | 用户 | 对抗式访谈,暴露隐性需求、边界与矛盾 |
-| 2 | **PRD** | `/tac-to-prd` | 用户 | 把讨论整理成结构化 PRD(问题陈述锚定痛点) |
-| 3 | **DESIGN** | `/tac-design` | 用户 | 统一入口:建/更新设计系统、导入设计源、迭代 HTML 原型 |
-| 4 | **技术方案** | `/tac-tech-design` | 用户 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
-| 5 | **技术方案审查** | `/tac-review --stage=tech` | 用户（手动） | 新会话视角审查技术方案（可选但建议） |
-| 6 | **结晶** | `/tac-crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
-| 7 | **测试** | `/tac-test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架,再按需补单元/E2E,为人留占位断言 |
-| 8 | **断言签核** | `/tac-signoff --stage=assertion` | 用户 | 人在实现前签核所有断言(门 1) |
-| 9 | **实现** | `/tac-implementer` | 模型 | 针对测试实现代码,对测试只读,每轮跑全套测试 |
-| 10 | **代码审查** | `/tac-review --stage=code` | 用户（手动） | 新会话视角审查实现 diff（可选但建议） |
-| 11 | **QA** | `/tac-qa-runner` | 模型 | E2E、回归、证据收集 |
-| 12 | **观感签核** | `/tac-signoff --stage=feel` | 用户 | 人依据 HTML 参照验收观感,偏差回流 REQ(门 2) |
-| — | **反思** | `/tac-reflect` | 用户 | 捕获经验教训,更新全局知识 |
+| 1 | **THINK** | `/demand-insight` | 用户 | 对抗式访谈,暴露隐性需求、边界与矛盾 |
+| 2 | **PRD** | `/to-prd` | 用户 | 把讨论整理成结构化 PRD(问题陈述锚定痛点) |
+| 3 | **DESIGN** | `/design` | 用户 | 统一入口:建/更新设计系统、导入设计源、迭代 HTML 原型 |
+| 4 | **技术方案** | `/tech-design` | 用户 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
+| 5 | **技术方案审查** | `/review --stage=tech` | 用户（手动） | 新会话视角审查技术方案（可选但建议） |
+| 6 | **结晶** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
+| 7 | **测试** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架,再按需补单元/E2E,为人留占位断言 |
+| 8 | **断言签核** | `/signoff --stage=assertion` | 用户 | 人在实现前签核所有断言(门 1) |
+| 9 | **实现** | `/implementer` | 模型 | 针对测试实现代码,对测试只读,每轮跑全套测试 |
+| 10 | **代码审查** | `/review --stage=code` | 用户（手动） | 新会话视角审查实现 diff（可选但建议） |
+| 11 | **QA** | `/qa-runner` | 模型 | E2E、回归、证据收集 |
+| 12 | **观感签核** | `/signoff --stage=feel` | 用户 | 人依据 HTML 参照验收观感,偏差回流 REQ(门 2) |
+| — | **反思** | `/reflect` | 用户 | 捕获经验教训,更新全局知识 |
 
 ### 三种角色(权限互斥)
 
@@ -114,12 +114,12 @@
 - **状态保持友好**:CLI 可以守护长期状态(数据库、配置、会话),测试之间不用反复启停,比浏览器 E2E 更稳定。
 - **缺陷下沉**:能用 CLI 验证的行为,不进浏览器 E2E;不能 CLI 化的复杂前端交互,才退到单元测试或浏览器 E2E。
 
-因此 `/tac-tech-design` 会默认问:"这个稳定块能否映射到产品 CLI 的某个命令?"`/tac-test-author` 会优先生成 CLI 测试,再按需补充单元/E2E 测试。
+因此 `/tech-design` 会默认问:"这个稳定块能否映射到产品 CLI 的某个命令?"`/test-author` 会优先生成 CLI 测试,再按需补充单元/E2E 测试。
 
 ### 两道硬性签核
 
-1. **门 1 — `/tac-signoff --stage=assertion`**:人确认测试准确捕捉了需求。不签不准实现。
-2. **门 2 — `/tac-signoff --stage=feel`**:人确认实现后的 UI 观感与批准的 HTML 参照一致。不签不准合并。
+1. **门 1 — `/signoff --stage=assertion`**:人确认测试准确捕捉了需求。不签不准实现。
+2. **门 2 — `/signoff --stage=feel`**:人确认实现后的 UI 观感与批准的 HTML 参照一致。不签不准合并。
 
 人在边界使劲(门 1 签断言、门 2 验观感),中段全自主;失败走逃生口(实现者轮数上限→上报,不许自己改测试)。
 
@@ -136,7 +136,7 @@ REQ 变 → 挂它的测试标记"过时待重生"。任何失败测试都能回
 
 ### 回流机制
 
-工作流承认一挡会推翻,把"推倒重来"做成显式、留证据、可学习的动作。`/tac-story` 内置回流分支。
+工作流承认一挡会推翻,把"推倒重来"做成显式、留证据、可学习的动作。`/story` 内置回流分支。
 
 **核心:story = 初衷。** 初衷指向用户痛点,不是具体方案(方案会变,痛点不会)。
 
@@ -147,7 +147,7 @@ REQ 变 → 挂它的测试标记"过时待重生"。任何失败测试都能回
 
 - **归档范围**:PRD、requirements、断言签核、代码等承诺层产物 + `reason.md`(根因+推翻理由)。UX 原型不归档(一挡思考工具,直接改)。
 - **根因诊断优先**:回流前先判"初衷在不在"。模型提议,人拍板。
-- **不算回流的情况**(走局部纠错):REQ 漏 case → `/tac-crystallize` 补验收标准;断言自相矛盾 → 门 1 重审;一挡内单块推翻 → 该块降级回"移动块"。
+- **不算回流的情况**(走局部纠错):REQ 漏 case → `/crystallize` 补验收标准;断言自相矛盾 → 门 1 重审;一挡内单块推翻 → 该块降级回"移动块"。
 
 ## 安装
 
@@ -160,14 +160,14 @@ REQ 变 → 挂它的测试标记"过时待重生"。任何失败测试都能回
 /plugin marketplace add charonX/workflow
 
 # 2. 安装插件
-/plugin install test-as-contract-workflow@charonx-workflow
+/plugin install loop-workflow@charonx-workflow
 
 # 3. 安装后刷新插件
 /reload-plugins
 ```
 
->  marketplace 名是 `charonx-workflow`，插件名是 `test-as-contract-workflow`。
->  后续更新：先 `/plugin marketplace update charonx-workflow` 拉取最新目录，再 `/reload-plugins` 重载；必要时可 `/plugin uninstall test-as-contract-workflow@charonx-workflow` 后重新安装。
+>  marketplace 名是 `charonx-workflow`，插件名是 `loop-workflow`。
+>  后续更新：先 `/plugin marketplace update charonx-workflow` 拉取最新目录，再 `/reload-plugins` 重载；必要时可 `/plugin uninstall loop-workflow@charonx-workflow` 后重新安装。
 
 ### 方式二：通过 `npx skills` 安装（Vercel Labs skills CLI）
 
@@ -191,10 +191,27 @@ cp -R /path/to/workflow/skills/engineering/* .claude/skills/
 cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 
 # 或软链(仅本地开发)
-ln -s /path/to/workflow/skills/productivity/tac-* .claude/skills/
-ln -s /path/to/workflow/skills/engineering/tac-* .claude/skills/
-ln -s /path/to/workflow/skills/maintenance/tac-* .claude/skills/
+ln -s /path/to/workflow/skills/productivity/* .claude/skills/
+ln -s /path/to/workflow/skills/engineering/* .claude/skills/
+ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 ```
+
+## 从旧版迁移
+
+如果你之前安装过 `test-as-contract-workflow`，本次重命名后需要重新安装：
+
+```bash
+/plugin uninstall test-as-contract-workflow@charonx-workflow
+/plugin install loop-workflow@charonx-workflow
+/reload-plugins
+```
+
+主要变化：
+- 插件名：`test-as-contract-workflow` → `loop-workflow`
+- Skill 命令：旧版 `/tac-*` 已去掉前缀，例如 `/story`、`/design`、`/signoff`
+- Commit 标签：旧版 `[tac-test]` / `[tac-build]` 已改为 `[test]` / `[build]`
+
+目标项目中已生成的 `.aiassist/`、hooks 和 CI gate 文件建议重新运行 `/bootstrap-workflow` 生成，或手动把旧文件名改为新名。
 
 ## 保持同步
 
@@ -209,8 +226,8 @@ ln -s /path/to/workflow/skills/maintenance/tac-* .claude/skills/
 在目标项目中:
 
 ```
-/tac-bootstrap-workflow    # 初始化项目级工作流基础设施
-/tac-story                 # 开始或继续一个 story
+/bootstrap-workflow    # 初始化项目级工作流基础设施
+/story                 # 开始或继续一个 story
 ```
 
 ### 快速上手
@@ -218,14 +235,14 @@ ln -s /path/to/workflow/skills/maintenance/tac-* .claude/skills/
 ```bash
 # 1. 添加 marketplace 并安装插件
 /plugin marketplace add charonX/workflow
-/plugin install test-as-contract-workflow@charonx-workflow
+/plugin install loop-workflow@charonx-workflow
 /reload-plugins
 
 # 2. 初始化项目基础设施
-/tac-bootstrap-workflow
+/bootstrap-workflow
 
 # 3. 从需求洞察开始一个新 story
-/tac-story
+/story
 
 # 4. 按提示走完 PRD → 设计 → REQ → 测试 → 签核 → 实现
 ```
@@ -236,26 +253,26 @@ ln -s /path/to/workflow/skills/maintenance/tac-* .claude/skills/
 
 | Skill | 阶段 | 用途 |
 |---|---|---|
-| `/tac-story` | 路由 | 工作流总入口；路由外层/内层循环，执行回流(归档重做/删 story) |
-| `/tac-bootstrap-workflow` | 初始化 | 创建 `.aiassist/` 项目基础设施 |
-| `/tac-demand-insight` | THINK | 对抗式需求访谈；用第一性原理剥离继承假设，适合只有模糊痛点或初步想法的阶段 |
-| `/tac-to-prd` | PRD | 把讨论整理成 PRD |
-| `/tac-tech-design` | TECH-DESIGN | 对抗式技术方案设计；用第一性原理区分真实约束与历史包袱，确定 CLI 优先的 seams |
-| `/tac-research` | THINK/TECH | 针对技术/API/库问题做带引用的 background 调研 |
-| `/tac-review` | REVIEW | 外层循环手动检查点；新会话视角审查 PRD/技术方案/代码 |
-| `/tac-design` | DESIGN | 设计阶段统一入口：建/更新设计系统、导入设计源、迭代 HTML UX 原型 |
-| `/tac-signoff` | 签核 | 两个循环的切换点；门 1 把契约交给 AI，门 2 把 AI 产出交回人验收 |
-| `/tac-design-handoff` | 交接（可选） | 从已批准 UX 生成开发交接包（含机器可读 manifest） |
-| `/tac-reflect` | REFLECT（可选） | 外层循环反馈；捕获经验教训，更新全局知识 |
+| `/story` | 路由 | 工作流总入口；路由外层/内层循环，执行回流(归档重做/删 story) |
+| `/bootstrap-workflow` | 初始化 | 创建 `.aiassist/` 项目基础设施 |
+| `/demand-insight` | THINK | 对抗式需求访谈；用第一性原理剥离继承假设，适合只有模糊痛点或初步想法的阶段 |
+| `/to-prd` | PRD | 把讨论整理成 PRD |
+| `/tech-design` | TECH-DESIGN | 对抗式技术方案设计；用第一性原理区分真实约束与历史包袱，确定 CLI 优先的 seams |
+| `/research` | THINK/TECH | 针对技术/API/库问题做带引用的 background 调研 |
+| `/review` | REVIEW | 外层循环手动检查点；新会话视角审查 PRD/技术方案/代码 |
+| `/design` | DESIGN | 设计阶段统一入口：建/更新设计系统、导入设计源、迭代 HTML UX 原型 |
+| `/signoff` | 签核 | 两个循环的切换点；门 1 把契约交给 AI，门 2 把 AI 产出交回人验收 |
+| `/design-handoff` | 交接（可选） | 从已批准 UX 生成开发交接包（含机器可读 manifest） |
+| `/reflect` | REFLECT（可选） | 外层循环反馈；捕获经验教训，更新全局知识 |
 
 ### 模型触发
 
 | Skill | 阶段 | 用途 |
 |---|---|---|
-| `/tac-crystallize` | 结晶 | 把 PRD 转成 REQ-ID |
-| `/tac-test-author` | TEST | 优先生成 CLI 测试骨架，再按需补单元/E2E，为人留占位断言 |
-| `/tac-implementer` | BUILD | 内层实现循环核心；针对已签核测试写代码，对测试只读 |
-| `/tac-qa-runner` | QA | 内层实现循环终点验证；跑 E2E/回归，输出 QA 报告 |
+| `/crystallize` | 结晶 | 把 PRD 转成 REQ-ID |
+| `/test-author` | TEST | 优先生成 CLI 测试骨架，再按需补单元/E2E，为人留占位断言 |
+| `/implementer` | BUILD | 内层实现循环核心；针对已签核测试写代码，对测试只读 |
+| `/qa-runner` | QA | 内层实现循环终点验证；跑 E2E/回归，输出 QA 报告 |
 
 ## 产物目录
 
@@ -266,7 +283,7 @@ ln -s /path/to/workflow/skills/maintenance/tac-* .claude/skills/
 │   ├── tech-design.md         # 技术方案（一挡可推翻）
 │   ├── requirements.md
 │   ├── requirements-v1.hash
-│   ├── research/                  # （可选）/tac-research 输出的调研笔记
+│   ├── research/                  # （可选）/research 输出的调研笔记
 │   │   └── <topic-slug>.md
 │   ├── ux/
 │   │   ├── *.html                 # HTML 原型（带 @dsCard 标签）
@@ -302,7 +319,7 @@ ln -s /path/to/workflow/skills/maintenance/tac-* .claude/skills/
     └── STANDARDS.md
 ```
 
-模板放在 `templates/`,由 `/tac-story` 创建新 story 时复制使用。
+模板放在 `templates/`,由 `/story` 创建新 story 时复制使用。
 
 ## 参考项目
 

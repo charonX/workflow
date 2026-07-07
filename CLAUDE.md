@@ -32,7 +32,7 @@
 关键机制：
 
 - **两挡**：一挡（探索期 —— PRD、HTML 原型、无测试、可随意推翻）→ 跨越线 → 二挡（测试锁定 —— REQ-ID → tests → code）。
-- **两道硬签核**：`/tac-signoff --stage=assertion` = 人在实现前签核断言；`/tac-signoff --stage=feel` = 人依据 HTML 参照验收观感。
+- **两道硬签核**：`/signoff --stage=assertion` = 人在实现前签核断言；`/signoff --stage=feel` = 人依据 HTML 参照验收观感。
 - **三种角色**：人（REQ/断言/HTML）、test-author agent（编写测试骨架）、implementer agent（编写代码，对测试只读）。
 - **REQ-ID 可追溯**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
 
@@ -66,18 +66,18 @@
 
 | # | 阶段 | Skill | 触发者 | 所属循环 | 目的 |
 |---|---|---|---|---|---|
-| 1 | THINK — 需求洞察 | `/tac-demand-insight` | 用户 | 外层 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
-| 2 | PRD 合成 | `/tac-to-prd` | 用户 | 外层 | 把访谈笔记整理成结构化 PRD |
-| 3 | DESIGN — 设计 | `/tac-design` | 用户 | 外层 | 统一入口：建/更新设计系统、导入设计源、迭代 HTML-native 高保真原型 |
-| 4 | TECH-DESIGN — 技术方案 | `/tac-tech-design` | 用户 | 外层 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
-| 5 | CRYSTALLIZE — 结晶 | `/tac-crystallize` | 模型 | 外层 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
-| 6 | TEST — 编写靶子 | `/tac-test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；不能 CLI 化的再补单元/浏览器 E2E；为人留出占位断言 |
-| 7 | ASSERTION-SIGNOFF — 断言签核 | `/tac-signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核所有断言；把上下文交给 AI |
-| 8 | BUILD — 实现 | `/tac-implementer` | 模型 | 内层 | 针对测试实现代码；对测试只读；每轮迭代跑全套测试 |
-| 9 | QA — 回归 | `/tac-qa-runner` | 模型 | 内层 | E2E、回归、证据收集 |
-| 10 | FEEL-SIGNOFF — 观感签核 | `/tac-signoff --stage=feel` | 用户 | **门 2** | 人依据 HTML 参照验收观感；偏差回流到外层循环 |
-|   | 开发者交接（可选） | `/tac-design-handoff` | 用户 | 外层 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
-| 11 | REFLECT — 反思 | `/tac-reflect` | 用户 | 外层 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
+| 1 | THINK — 需求洞察 | `/demand-insight` | 用户 | 外层 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
+| 2 | PRD 合成 | `/to-prd` | 用户 | 外层 | 把访谈笔记整理成结构化 PRD |
+| 3 | DESIGN — 设计 | `/design` | 用户 | 外层 | 统一入口：建/更新设计系统、导入设计源、迭代 HTML-native 高保真原型 |
+| 4 | TECH-DESIGN — 技术方案 | `/tech-design` | 用户 | 外层 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
+| 5 | CRYSTALLIZE — 结晶 | `/crystallize` | 模型 | 外层 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
+| 6 | TEST — 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；不能 CLI 化的再补单元/浏览器 E2E；为人留出占位断言 |
+| 7 | ASSERTION-SIGNOFF — 断言签核 | `/signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核所有断言；把上下文交给 AI |
+| 8 | BUILD — 实现 | `/implementer` | 模型 | 内层 | 针对测试实现代码；对测试只读；每轮迭代跑全套测试 |
+| 9 | QA — 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集 |
+| 10 | FEEL-SIGNOFF — 观感签核 | `/signoff --stage=feel` | 用户 | **门 2** | 人依据 HTML 参照验收观感；偏差回流到外层循环 |
+|   | 开发者交接（可选） | `/design-handoff` | 用户 | 外层 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
+| 11 | REFLECT — 反思 | `/reflect` | 用户 | 外层 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
 
 ### 两个循环的流转
 
@@ -106,13 +106,13 @@
 - CLI 能保持状态，测试之间无需反复启停，比浏览器 E2E 更稳定。
 - 能用 CLI 验证的行为不进浏览器 E2E；不能 CLI 化的复杂前端交互才退到单元测试或浏览器 E2E。
 
-因此 `/tac-tech-design` 会把"这个稳定块能否映射到产品 CLI 命令"作为默认问题；`/tac-test-author` 会优先生成 CLI 测试，再按需补充其他 seams。
+因此 `/tech-design` 会把"这个稳定块能否映射到产品 CLI 命令"作为默认问题；`/test-author` 会优先生成 CLI 测试，再按需补充其他 seams。
 
 ### 回流机制
 
-工作流承认一挡会推翻。`/tac-story` 内置回流分支,把"推倒重来"做成显式、留证据、可学习的动作。
+工作流承认一挡会推翻。`/story` 内置回流分支,把"推倒重来"做成显式、留证据、可学习的动作。
 
-**核心：story = 初衷。** 初衷指向用户痛点，不是具体方案（`/tac-to-prd` 强制把问题陈述写成痛点形态）。
+**核心：story = 初衷。** 初衷指向用户痛点，不是具体方案（`/to-prd` 强制把问题陈述写成痛点形态）。
 
 | 情况 | 动作 |
 |---|---|
@@ -121,20 +121,20 @@
 
 - **归档范围**：PRD、requirements、断言签核、代码等承诺层产物 + `reason.md`（根因+推翻理由）。UX 原型不归档（一挡思考工具，直接改）。
 - **根因诊断优先**：回流前先判"初衷在不在"。模型提议，人拍板。
-- **不算回流的情况**（走局部纠错）：REQ 漏 case → `/tac-crystallize` 补验收标准；断言自相矛盾 → 门 1 重审；一挡内单块推翻 → 该块降级回"移动块"。
-- **健康指标**：`/tac-reflect` 统计归档重做次数和根因层；频繁归档说明一挡的完整性体检投入不够。
+- **不算回流的情况**（走局部纠错）：REQ 漏 case → `/crystallize` 补验收标准；断言自相矛盾 → 门 1 重审；一挡内单块推翻 → 该块降级回"移动块"。
+- **健康指标**：`/reflect` 统计归档重做次数和根因层；频繁归档说明一挡的完整性体检投入不够。
 
 ### 在目标项目里启动
 
 1. 确保目标项目已安装本工作流 skill。推荐通过 Claude Code Marketplace：
    ```bash
    /plugin marketplace add charonX/workflow
-   /plugin install test-as-contract-workflow@charonx-workflow
+   /plugin install loop-workflow@charonx-workflow
    /reload-plugins
    ```
    也可以手动复制或软链（见 `README.md`）。
-2. 在目标项目里运行 `/tac-bootstrap-workflow`，创建 `.aiassist/` 项目基础设施。
-3. 运行 `/tac-story`，开始第一个 story。
+2. 在目标项目里运行 `/bootstrap-workflow`，创建 `.aiassist/` 项目基础设施。
+3. 运行 `/story`，开始第一个 story。
 
 ### 安装 skill
 
@@ -204,24 +204,24 @@
 
 | 我想…… | 使用 |
 |--------|------|
-| 用双循环启动新功能 / 继续一个 story（路由外层/内层循环、回流） | `/tac-story` |
-| 发现根本问题,要回流(归档重做/删 story) | `/tac-story`(回流分支) |
-| 在目标项目初始化工作流 | `/tac-bootstrap-workflow` |
-| 运行对抗式需求访谈，用第一性原理剥离继承假设（适合模糊痛点/初步想法） | `/tac-demand-insight` |
-| 针对技术/API/库问题做带引用的调研 | `/tac-research` |
-| 把讨论整理成 PRD | `/tac-to-prd` |
-| 用 HTML 原型探索 UX（含编译 preview、资产版本管理、变体） | `/tac-design` |
-| 建立或更新设计系统（含编译、预览、资产记录） | `/tac-design` |
-| 导入设计来源（Figma/GitHub/HTML）并可选编译为设计系统 | `/tac-design` |
-| 把 PRD 转成 REQ-ID | `/tac-crystallize` |
-| 做对抗式技术方案设计，用第一性原理区分真实约束与历史包袱，确定 CLI 优先的测试 seams | `/tac-tech-design` |
-| 从 REQ 优先生成 CLI 测试骨架，再按需补单元/E2E | `/tac-test-author` |
-| 在实现前签核断言（门 1，把契约交给 AI）/ 验收观感（门 2，把 AI 产出交回人） | `/tac-signoff` |
-| 针对已签核测试实现代码（内层循环核心） | `/tac-implementer` |
-| 运行 QA / E2E / 回归（内层循环终点验证） | `/tac-qa-runner` |
-| 从 UX 生成开发者交接包（含机器可读 manifest） | `/tac-design-handoff` |
-| 捕获经验教训并更新知识（外层循环反馈） | `/tac-reflect` |
-| 同步参考项目并吸收上游变更 | `/tac-sync-refs` |
+| 用双循环启动新功能 / 继续一个 story（路由外层/内层循环、回流） | `/story` |
+| 发现根本问题,要回流(归档重做/删 story) | `/story`(回流分支) |
+| 在目标项目初始化工作流 | `/bootstrap-workflow` |
+| 运行对抗式需求访谈，用第一性原理剥离继承假设（适合模糊痛点/初步想法） | `/demand-insight` |
+| 针对技术/API/库问题做带引用的调研 | `/research` |
+| 把讨论整理成 PRD | `/to-prd` |
+| 用 HTML 原型探索 UX（含编译 preview、资产版本管理、变体） | `/design` |
+| 建立或更新设计系统（含编译、预览、资产记录） | `/design` |
+| 导入设计来源（Figma/GitHub/HTML）并可选编译为设计系统 | `/design` |
+| 把 PRD 转成 REQ-ID | `/crystallize` |
+| 做对抗式技术方案设计，用第一性原理区分真实约束与历史包袱，确定 CLI 优先的测试 seams | `/tech-design` |
+| 从 REQ 优先生成 CLI 测试骨架，再按需补单元/E2E | `/test-author` |
+| 在实现前签核断言（门 1，把契约交给 AI）/ 验收观感（门 2，把 AI 产出交回人） | `/signoff` |
+| 针对已签核测试实现代码（内层循环核心） | `/implementer` |
+| 运行 QA / E2E / 回归（内层循环终点验证） | `/qa-runner` |
+| 从 UX 生成开发者交接包（含机器可读 manifest） | `/design-handoff` |
+| 捕获经验教训并更新知识（外层循环反馈） | `/reflect` |
+| 同步参考项目并吸收上游变更 | `/sync-refs` |
 
 ### 参考 skill（仅作灵感）
 
@@ -288,7 +288,7 @@
 
 ### 快速同步
 
-运行 `/tac-sync-refs`（或 `./scripts/tac-sync-refs.sh`）。它会：
+运行 `/sync-refs`（或 `./scripts/sync-refs.sh`）。它会：
 
 1. 对所有参考仓库执行 `git pull`
 2. 解析每个 skill 的 `SOURCES.md`，找到它依赖的参考文件
@@ -300,7 +300,7 @@
 
 ```bash
 # 1. 拉取所有参考仓库
-./scripts/tac-sync-refs.sh --pull-only
+./scripts/sync-refs.sh --pull-only
 
 # 2. 查看某个参考文件的变更
 git -C reference/baoyu-design log --since="2026-06-01" -- skills/baoyu-design/system-prompt.md
@@ -313,7 +313,7 @@ git -C reference/baoyu-design diff <old-commit>..HEAD -- skills/baoyu-design/sys
 
 ### 更新节奏
 
-- **每月**（默认）：运行 `/tac-sync-refs`，大多数报告会是干净的
+- **每月**（默认）：运行 `/sync-refs`，大多数报告会是干净的
 - **大版本发布时**：gstack/superpowers/baoyu-design 发布主版本时
 - **重大工作流变更前**：检查上游是否已经解决了同样的问题
 

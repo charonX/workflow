@@ -1,5 +1,5 @@
 # Test-as-Contract workflow state
-# 由 /tac-story 创建和维护。本文件是状态机,不归档(回流时更新,不搬进 archive/)。
+# 由 /story 创建和维护。本文件是状态机,不归档(回流时更新,不搬进 archive/)。
 
 story_id: {{STORY_ID}}
 intention: >-
@@ -23,7 +23,7 @@ blocks: {}
 #  stable: [块A, 块B]      # 已稳定,可结晶为 REQ
 #  moving: [块C]           # 还在动,暂不入 REQ(被推翻的块降级回这里)
 
-# 设计系统绑定(由 /tac-design-system 与 /tac-ux-explore 维护)。
+# 设计系统绑定(由 /design-system 与 /ux-explore 维护)。
 design_system:
   slug: ""                  # 主设计系统 slug,对应 _d_meta.json 的 primaryDesignSystem
   compiled: false           # 是否已跑过 compile-design-system

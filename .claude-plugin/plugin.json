@@ -1,7 +1,7 @@
 {
-  "name": "test-as-contract-workflow",
+  "name": "loop-workflow",
   "description": "双循环工作流：人在外层设计上下文，AI 在内层契约内迭代，断言归人、实现归 AI",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "author": {
     "name": "charonX"
   },
@@ -11,29 +11,29 @@
   "keywords": [
     "claude-code",
     "workflow",
-    "test-as-contract",
-    "tdd",
+    "two-loop",
+    "loop-workflow",
     "agent-workflow",
     "requirements",
     "qa",
     "research"
   ],
   "skills": [
-    "./skills/productivity/tac-story",
-    "./skills/productivity/tac-bootstrap-workflow",
-    "./skills/productivity/tac-demand-insight",
-    "./skills/productivity/tac-to-prd",
-    "./skills/productivity/tac-tech-design",
-    "./skills/productivity/tac-review",
-    "./skills/productivity/tac-design",
-    "./skills/productivity/tac-signoff",
-    "./skills/productivity/tac-design-handoff",
-    "./skills/productivity/tac-reflect",
-    "./skills/productivity/tac-research",
-    "./skills/maintenance/tac-sync-refs",
-    "./skills/engineering/tac-crystallize",
-    "./skills/engineering/tac-test-author",
-    "./skills/engineering/tac-implementer",
-    "./skills/engineering/tac-qa-runner"
+    "./skills/productivity/story",
+    "./skills/productivity/bootstrap-workflow",
+    "./skills/productivity/demand-insight",
+    "./skills/productivity/to-prd",
+    "./skills/productivity/tech-design",
+    "./skills/productivity/review",
+    "./skills/productivity/design",
+    "./skills/productivity/signoff",
+    "./skills/productivity/design-handoff",
+    "./skills/productivity/reflect",
+    "./skills/productivity/research",
+    "./skills/maintenance/sync-refs",
+    "./skills/engineering/crystallize",
+    "./skills/engineering/test-author",
+    "./skills/engineering/implementer",
+    "./skills/engineering/qa-runner"
   ]
 }

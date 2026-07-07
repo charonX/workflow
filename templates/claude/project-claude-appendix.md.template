@@ -1,24 +1,24 @@
 ## 双循环工作流
 
-本项目使用 `test-as-contract` 工作流。Skill 安装在 `.claude/skills/` 下。
+本项目使用 `loop-workflow` 工作流。Skill 安装在 `.claude/skills/` 下。
 
 ### 可用 skill
 
 | Skill | 用途 | 触发者 |
 |---|---|---|
-| `/tac-story` | 开始/继续 story;执行回流(归档重做/删 story) | 用户 |
-| `/tac-bootstrap-workflow` | 初始化项目级工作流基础设施 | 用户 |
-| `/tac-demand-insight` | 对抗式需求访谈 | 用户 |
-| `/tac-to-prd` | 把讨论整理成 PRD | 用户 |
-| `/tac-tech-design` | 对抗式技术方案设计 | 用户 |
-| `/tac-review` | 手动审查 PRD/技术方案/代码（建议新会话） | 用户 |
-| `/tac-design` | 设计阶段统一入口：建/更新设计系统、导入设计源、迭代 HTML UX 原型 | 用户 |
-| `/tac-crystallize` | 把 PRD 稳定块转成 REQ-ID | 模型 |
-| `/tac-test-author` | 从 REQ 生成测试骨架 | 模型 |
-| `/tac-signoff` | assertion 阶段签核断言；feel 阶段依据 HTML 参照验收观感 | 用户 |
-| `/tac-implementer` | 针对已签核测试实现代码 | 模型 |
-| `/tac-qa-runner` | 运行 E2E、回归、收集证据 | 模型 |
-| `/tac-reflect` | 捕获经验教训并更新知识 | 用户 |
+| `/story` | 开始/继续 story;执行回流(归档重做/删 story) | 用户 |
+| `/bootstrap-workflow` | 初始化项目级工作流基础设施 | 用户 |
+| `/demand-insight` | 对抗式需求访谈 | 用户 |
+| `/to-prd` | 把讨论整理成 PRD | 用户 |
+| `/tech-design` | 对抗式技术方案设计 | 用户 |
+| `/review` | 手动审查 PRD/技术方案/代码（建议新会话） | 用户 |
+| `/design` | 设计阶段统一入口：建/更新设计系统、导入设计源、迭代 HTML UX 原型 | 用户 |
+| `/crystallize` | 把 PRD 稳定块转成 REQ-ID | 模型 |
+| `/test-author` | 从 REQ 生成测试骨架 | 模型 |
+| `/signoff` | assertion 阶段签核断言；feel 阶段依据 HTML 参照验收观感 | 用户 |
+| `/implementer` | 针对已签核测试实现代码 | 模型 |
+| `/qa-runner` | 运行 E2E、回归、收集证据 | 模型 |
+| `/reflect` | 捕获经验教训并更新知识 | 用户 |
 
 ### 产物目录
 
@@ -32,7 +32,7 @@
 │   ├── review-prd.md          # PRD 审查报告（可选）
 │   ├── review-tech.md         # 技术方案审查报告（可选）
 │   ├── review-code.md         # 代码审查报告（可选）
-│   ├── ux/                    # 用于 `/tac-signoff --stage=feel` 的 HTML UX 参照
+│   ├── ux/                    # 用于 `/signoff --stage=feel` 的 HTML UX 参照
 │   │   ├── *.html             # HTML 原型（带 @dsCard 标签）
 │   │   ├── components/        # （可选）story 局部 JSX 组件
 │   │   ├── _ds_bundle.js      # （生成）story 组件 bundle
@@ -72,17 +72,17 @@
 2. **错误向上回**：在受影响的最高层修复；永远不要因为测试或规格错了就直接改代码。
 3. **断言归人**：AI 写测试脚手架；人签 expected 值。
 4. **实现者对测试只读**：任何触及测试文件的代码差异都会让本轮作废。
-5. **`/tac-signoff --stage=assertion` 阻塞 BUILD；`/tac-signoff --stage=feel` 阻塞合并**。
+5. **`/signoff --stage=assertion` 阻塞 BUILD；`/signoff --stage=feel` 阻塞合并**。
 6. **没有 REQ-ID 就没有测试**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
-7. **主观判断不进测试**：观感/美学在 `/tac-signoff --stage=feel` 环节依据 HTML 参照验收。
-8. **story = 初衷**：初衷(痛点)不变 → 归档重做;初衷错 → 删 story。回流前先做根因诊断。详见 `/tac-story`。
+7. **主观判断不进测试**：观感/美学在 `/signoff --stage=feel` 环节依据 HTML 参照验收。
+8. **story = 初衷**：初衷(痛点)不变 → 归档重做;初衷错 → 删 story。回流前先做根因诊断。详见 `/story`。
 
 ### 开始新 story
 
 ```
-/tac-story
+/story
 # 或
-/tac-bootstrap-workflow
+/bootstrap-workflow
 ```
 
 ### commit 约定
@@ -91,11 +91,11 @@
 
 | 标签 | 用途 | 可改文件 |
 |---|---|---|
-| `[tac-test]` | 编写/修改测试、签核断言 | `test/`、`*.{test,spec}.*`、`e2e/` 等 |
-| `[tac-build]` | 编写实现代码 | `src/`、`app/`、`lib/` 等 |
-| `[tac-docs]` | PRD/REQ 文档更新 | `.aiassist/stories/*/prd.md`、`requirements.md` 等 |
-| `[tac-ux]` | UX 原型/设计系统更新 | `.aiassist/stories/*/ux/`、`global/DESIGN.md` 等 |
-| `[tac-bootstrap]` | 工作流基础设施 | `.aiassist/`、`CLAUDE.md`、hooks 等 |
+| `[test]` | 编写/修改测试、签核断言 | `test/`、`*.{test,spec}.*`、`e2e/` 等 |
+| `[build]` | 编写实现代码 | `src/`、`app/`、`lib/` 等 |
+| `[docs]` | PRD/REQ 文档更新 | `.aiassist/stories/*/prd.md`、`requirements.md` 等 |
+| `[ux]` | UX 原型/设计系统更新 | `.aiassist/stories/*/ux/`、`global/DESIGN.md` 等 |
+| `[bootstrap]` | 工作流基础设施 | `.aiassist/`、`CLAUDE.md`、hooks 等 |
 
 **核心纪律：一个 commit 不能同时包含实现代码和测试文件。**
 仓库已配置 `.aiassist/hooks/pre-commit` 和 `commit-msg` 进行拦截。

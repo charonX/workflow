@@ -3,7 +3,7 @@
 > 故事 ID：`{{STORY_ID}}`
 > 生成日期：{{DATE}}
 
-本文件由 `/tac-signoff` 维护，包含两个阶段：
+本文件由 `/signoff` 维护，包含两个阶段：
 - **Assertion** — 实现前签核功能断言。
 - **Feel** — 实现后验收视觉与交互观感。
 
@@ -30,7 +30,7 @@
 - [ ] 无 snapshot 当测试预言。
 - [ ] 边界/错误场景已覆盖。
 
-⏸ **BUILD 阶段在 `[tac-test] assertion-signoff for {{STORY_ID}}` commit 前不得开始。**
+⏸ **BUILD 阶段在 `[test] assertion-signoff for {{STORY_ID}}` commit 前不得开始。**
 
 ---
 

@@ -1,4 +1,4 @@
-## 测试即契约工作流
+## 双循环工作流
 
 本项目使用 `test-as-contract` 工作流。Skill 安装在 `.claude/skills/` 下。
 
@@ -12,9 +12,7 @@
 | `/tac-to-prd` | 把讨论整理成 PRD | 用户 |
 | `/tac-tech-design` | 对抗式技术方案设计 | 用户 |
 | `/tac-review` | 手动审查 PRD/技术方案/代码（建议新会话） | 用户 |
-| `/tac-design-system` | 建立或更新项目级设计系统（含编译、预览、资产记录） | 用户 |
-| `/tac-design-import` | 导入设计来源并可选编译为设计系统 | 用户 |
-| `/tac-ux-explore` | 用 HTML 原型探索 UX（含编译 preview、资产版本管理、变体） | 用户 |
+| `/tac-design` | 设计阶段统一入口：建/更新设计系统、导入设计源、迭代 HTML UX 原型 | 用户 |
 | `/tac-crystallize` | 把 PRD 稳定块转成 REQ-ID | 模型 |
 | `/tac-test-author` | 从 REQ 生成测试骨架 | 模型 |
 | `/tac-signoff` | assertion 阶段签核断言；feel 阶段依据 HTML 参照验收观感 | 用户 |

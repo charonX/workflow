@@ -1,7 +1,7 @@
 {
   "name": "test-as-contract-workflow",
-  "description": "测试即契约工作流：人在实现前签核断言，AI 在测试契约内自主迭代，把纠错接口从改代码改成改需求与断言",
-  "version": "0.4.0",
+  "description": "双循环工作流：人在外层设计上下文，AI 在内层契约内迭代，断言归人、实现归 AI",
+  "version": "0.5.0",
   "author": {
     "name": "charonX"
   },

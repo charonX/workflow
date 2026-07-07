@@ -10,7 +10,7 @@ sources:
 
 # tac-bootstrap-workflow
 
-在目标项目中初始化 **测试即契约**（Test-as-Contract）工作流所需的项目级基础设施。
+在目标项目中初始化 **双循环**（Two-Loop）工作流所需的项目级基础设施。
 
 本 skill 不创建具体 story，也不复制 skill 目录；它只负责建立 `.aiassist/` 目录结构和版本控制约定。Story 创建请使用 `/tac-story`。
 
@@ -118,13 +118,13 @@ chmod +x .aiassist/hooks/commit-msg
 
 ### 5. 更新项目 `CLAUDE.md`
 
-将 `templates/claude/project-claude-appendix.md.template` 的内容追加到目标项目 `CLAUDE.md` 末尾。如果已经存在测试即契约附录，跳过。
+将 `templates/claude/project-claude-appendix.md.template` 的内容追加到目标项目 `CLAUDE.md` 末尾。如果已经存在双循环附录，跳过。
 
 ### 6. 提交初始化变更
 
 ```bash
 git add .aiassist/ .github/workflows/ CLAUDE.md
-git commit -m "[tac-bootstrap] 初始化测试即契约工作流基础设施"
+git commit -m "[tac-bootstrap] 初始化双循环工作流基础设施"
 ```
 
 注意：`.aiassist/` 和 `.github/workflows/` 目录本身应被纳入版本控制，但具体 story 目录下的中间产物是否提交由团队决定。建议至少提交：

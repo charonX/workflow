@@ -25,7 +25,7 @@ done
 
 if [ "$HAS_IMPL" = true ] && [ "$HAS_TEST" = true ]; then
   echo ""
-  echo "❌ 测试即契约：一个 commit 不能同时修改实现代码和测试文件。"
+  echo "❌ 双循环：一个 commit 不能同时修改实现代码和测试文件。"
   echo ""
   echo "当前暂存区同时包含："
   echo "  • 实现代码（src/、app/、lib/ 等）"

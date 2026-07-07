@@ -84,7 +84,7 @@ jobs:
 
           if [ "$HAS_IMPL" = true ] && [ "$HAS_TEST" = true ]; then
             echo ""
-            echo "❌ 测试即契约：一个 PR 不能同时修改实现代码和测试文件。"
+            echo "❌ 双循环：一个 PR 不能同时修改实现代码和测试文件。"
             echo ""
             echo "请把测试修改拆到单独的 PR，或通过 /tac-story 回流到 TEST 阶段。"
             echo ""

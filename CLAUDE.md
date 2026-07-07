@@ -17,9 +17,9 @@
 
 真正敲代码是低杠杆的。让 agent 负责实现；人的工作是把握愿景、验证需求、审批设计、验收结果。
 
-## 我们的工作流：测试即契约
+## 我们的工作流：双循环
 
-本工作区现在包含我们自己的 Claude Code 工作流：**测试即契约**（`skills/`）。它融合了参考项目各自的优点：
+本工作区现在包含我们自己的 Claude Code 工作流：**双循环**（`skills/`）。它以"测试即契约"为内核，融合了参考项目各自的优点：
 
 - **mattpocock skills** —— 传统软件工程纪律（TDD、对抗式文档审查、诊断）。
 - **gstack** —— CEO/创始人级别的需求洞察、设计决策、发布与 QA 门禁、流程编排与产物链。
@@ -45,7 +45,7 @@
 | `reference/superpowers/` | Jesse's Superpowers | 严谨计划与执行：`writing-plans`、`subagent-driven-development`、`executing-plans` |
 | `reference/baoyu-design/` | baoyu-design（Jim Liu） | Claude Design 可移植 skill：HTML 原型、设计系统、Figma 导入、PPTX 导出、starter components |
 
-## 我们的测试即契约工作流
+## 我们的双循环工作流
 
 在实现真实功能时，直接使用 `skills/` 中的 skill，而不是直接调用参考 skill。参考项目只供灵感，`skills/` 才是 operational 工作流。
 
@@ -142,7 +142,7 @@
 
 ### 参考工作流（旧版）
 
-下面这份详细的五步参考工作流仍有助于理解高杠杆活动，但实际操作路径已经变成上面的测试即契约 skill 集合。
+下面这份详细的五步参考工作流仍有助于理解高杠杆活动，但实际操作路径已经变成上面的双循环 skill 集合。
 
 ### 1. 需求洞察 —— 我们在做对的事吗？
 
@@ -204,7 +204,7 @@
 
 | 我想…… | 使用 |
 |--------|------|
-| 用测试即契约启动新功能 / 继续一个 story（路由外层/内层循环、回流） | `/tac-story` |
+| 用双循环启动新功能 / 继续一个 story（路由外层/内层循环、回流） | `/tac-story` |
 | 发现根本问题,要回流(归档重做/删 story) | `/tac-story`(回流分支) |
 | 在目标项目初始化工作流 | `/tac-bootstrap-workflow` |
 | 运行对抗式需求访谈，用第一性原理剥离继承假设（适合模糊痛点/初步想法） | `/tac-demand-insight` |
@@ -263,7 +263,7 @@
 
 ## 创建与更新我们的 skill
 
-`skills/` 是测试即契约 skill 的 canonical 集合，按 Claude Code 插件组织：
+`skills/` 是双循环 skill 的 canonical 集合，按 Claude Code 插件组织：
 
 - `skills/productivity/` —— 用户触发的工作流 skill
 - `skills/engineering/` —— 模型触发的实现 skill

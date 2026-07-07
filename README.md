@@ -196,23 +196,6 @@ ln -s /path/to/workflow/skills/engineering/* .claude/skills/
 ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 ```
 
-## 从旧版迁移
-
-如果你之前安装过 `test-as-contract-workflow`，本次重命名后需要重新安装：
-
-```bash
-/plugin uninstall test-as-contract-workflow@charonx-workflow
-/plugin install loop-workflow@charonx-workflow
-/reload-plugins
-```
-
-主要变化：
-- 插件名：`test-as-contract-workflow` → `loop-workflow`
-- Skill 命令：旧版 `/tac-*` 已去掉前缀，例如 `/story`、`/design`、`/signoff`
-- Commit 标签：旧版 `[tac-test]` / `[tac-build]` 已改为 `[test]` / `[build]`
-
-目标项目中已生成的 `.aiassist/`、hooks 和 CI gate 文件建议重新运行 `/bootstrap-workflow` 生成，或手动把旧文件名改为新名。
-
 ## 保持同步
 
 当本仓库的 skill 更新后：

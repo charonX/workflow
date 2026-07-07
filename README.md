@@ -205,9 +205,9 @@ ln -s /path/to/workflow/skills/maintenance/tac-* .claude/skills/
 |---|---|---|
 | `/tac-story` | 路由 | 开始/继续 story;执行回流(归档重做/删 story) |
 | `/tac-bootstrap-workflow` | 初始化 | 创建 `.aiassist/` 项目基础设施 |
-| `/tac-demand-insight` | THINK | 对抗式需求访谈；适合只有模糊痛点或初步想法的阶段，帮你找到正确方向 |
+| `/tac-demand-insight` | THINK | 对抗式需求访谈；用第一性原理剥离继承假设，适合只有模糊痛点或初步想法的阶段 |
 | `/tac-to-prd` | PRD | 把讨论整理成 PRD |
-| `/tac-tech-design` | TECH-DESIGN | 对抗式技术方案设计；CLI 优先的 seams，不能 CLI 化的才退到单元/浏览器 E2E |
+| `/tac-tech-design` | TECH-DESIGN | 对抗式技术方案设计；用第一性原理区分真实约束与历史包袱，确定 CLI 优先的 seams |
 | `/tac-research` | THINK/TECH | 针对技术/API/库问题做带引用的 background 调研 |
 | `/tac-review` | REVIEW | 手动审查 PRD/技术方案/代码（建议新会话） |
 | `/tac-design` | DESIGN | 设计阶段统一入口：建/更新设计系统、导入设计源、迭代 HTML UX 原型 |

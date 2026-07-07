@@ -175,14 +175,14 @@
 | 用测试即契约启动新功能 / 继续一个 story | `/tac-story` |
 | 发现根本问题,要回流(归档重做/删 story) | `/tac-story`(回流分支) |
 | 在目标项目初始化工作流 | `/tac-bootstrap-workflow` |
-| 运行对抗式需求访谈（适合模糊痛点/初步想法） | `/tac-demand-insight` |
+| 运行对抗式需求访谈，用第一性原理剥离继承假设（适合模糊痛点/初步想法） | `/tac-demand-insight` |
 | 针对技术/API/库问题做带引用的调研 | `/tac-research` |
 | 把讨论整理成 PRD | `/tac-to-prd` |
 | 用 HTML 原型探索 UX（含编译 preview、资产版本管理、变体） | `/tac-design` |
 | 建立或更新设计系统（含编译、预览、资产记录） | `/tac-design` |
 | 导入设计来源（Figma/GitHub/HTML）并可选编译为设计系统 | `/tac-design` |
 | 把 PRD 转成 REQ-ID | `/tac-crystallize` |
-| 做对抗式技术方案设计，确定 CLI 优先的测试 seams | `/tac-tech-design` |
+| 做对抗式技术方案设计，用第一性原理区分真实约束与历史包袱，确定 CLI 优先的测试 seams | `/tac-tech-design` |
 | 从 REQ 优先生成 CLI 测试骨架，再按需补单元/E2E | `/tac-test-author` |
 | 在实现前签核断言 / 验收观感 | `/tac-signoff` |
 | 针对已签核测试实现代码 | `/tac-implementer` |

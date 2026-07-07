@@ -6,6 +6,8 @@
 
 **方向来自 brainstorming，追问来自 grilling。** 用户进入 THINK 阶段时通常只有模糊痛点或初步念头，我们先像 brainstorming 一样帮其找准方向；一旦方向出现，就用 grilling 技术把假设钉到可验证的精度。
 
+**第一性原理。** 需求讨论中最大的风险是把"现有方案""竞品做法""团队习惯"误认为问题本身。本 skill 在讨论陷入继承假设时，强制把用户拉回到"用户要完成的工作是什么"这一基本事实，从那里重新推导方向。
+
 ## 借鉴的 reference 文件
 
 - `reference/superpowers/skills/brainstorming/SKILL.md`：从模糊想法到明确方向的流程（探索上下文、澄清问题、提出方案、获得批准）。

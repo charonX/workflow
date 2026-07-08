@@ -20,43 +20,50 @@ sources:
 - `.aiassist/stories/<id>/requirements-v1.hash`
 - `.aiassist/stories/<id>/tech-design.md`（其中定义了 seams：CLI / 单元 / 浏览器 E2E）
 - `.aiassist/stories/<id>/ux/*.html`（如有 UX 原型，作为结构与行为测试的输入）
+- `.aiassist/global/business-capabilities.md`（能力地图，决定测试目录结构）
+- `.aiassist/global/CONTEXT.md`（统一术语与实体命名）
 - 项目 `CLAUDE.md` 中声明的 CLI 入口（如有）
 
 ## 输出
 
-- 业务测试文件（验收测试，按项目约定目录，如 `tests/`、`src/__tests__/`、`Tests/**/*.swift` 等）
-  - CLI 测试：`<story-id>/cli/*.test.sh` 或 `*.test.ts`
-  - API / public 函数接口测试：按语言框架惯例
-  - 浏览器 E2E：`<story-id>/e2e/*.test.ts` 等
+- 业务测试文件（验收测试），按 **业务能力 → 实体** 组织：
+  - 目录结构：`tests/capabilities/<capability>/<entity>/<story-id>/`
+  - CLI 测试：`.../<story-id>/cli/*.test.sh` 或 `*.test.ts`
+  - API / public 函数接口测试：`.../<story-id>/api/*.test.*`
+  - 浏览器 E2E：`.../<story-id>/e2e/*.test.*`
 - `.aiassist/stories/<id>/test-plan.md`
 
 **不输出**：TDD 单元测试。单元测试由 `/implementer` 在实现过程中自行写、自行维护。
 
 ## 执行步骤
 
-1. **读取 seams 声明**：从 `tech-design.md` 读取每个 REQ-ID 对应的 seam 类型。默认假设：**能用 CLI 测的，优先用 CLI 测**。
-2. **逐条读取 REQ 与 tech-design.md**：按 seams 为每条验收标准设计至少一个测试方法/命令。
-3. **读取 HTML UX 原型**：如果 `ux/` 目录存在，扫描所有 `.html` 文件，提取可验证的行为与结构项：
+1. **读取 seams 与 capability/entity 声明**：从 `tech-design.md` 读取每个 REQ-ID 对应的 seam 类型，从 `requirements.md` 读取每个 REQ 的 `capability` 和 `entity`。如果存在冲突或缺失，先调用 `/domain-model` 统一术语。
+2. **按 capability/entity 规划目录**：根据 `business-capabilities.md`，为每个 REQ 确定测试目录 `tests/capabilities/<capability>/<entity>/<story-id>/`。如果 capability/entity 是新的，在 `business-capabilities.md` 中预留条目（由 `/crystallize` 最终维护，但 `/test-author` 不应重复造名）。
+3. **逐条读取 REQ 与 tech-design.md**：按 seams 为每条验收标准设计至少一个测试方法/命令。
+4. **读取 HTML UX 原型**：如果 `ux/` 目录存在，扫描所有 `.html` 文件，提取可验证的行为与结构项：
    - 关键元素是否存在（如按钮、表单、列表、空态提示）。
    - 页面/组件之间的导航流程（点击 A → 出现 B）。
    - 交互状态（loading、empty、error、success、disabled）。
    - 数据驱动的列表/卡片结构。
    - 与 token.css 关联的 class/style 是否被正确引用（不验证具体像素值）。
    把这些可验证项映射到对应 REQ-ID，补充进测试计划。浏览器测试只在必要时生成。
-4. **写测试文件头部**：必须包含 `REQ-TRACE`、`REQ-VERSION`、`TEST-AUTHOR`、`ASSERTIONS-SIGNED`。
-5. **按 seam 类型搭建脚手架**：
+5. **写测试文件头部**：必须包含 `REQ-TRACE`、`REQ-VERSION`、`CAPABILITY-TRACE`、`ENTITY-TRACE`、`TEST-AUTHOR`、`ASSERTIONS-SIGNED`。
+6. **按 seam 类型搭建脚手架**：
    - **CLI seam**：生成调用产品 CLI 的测试，断言 stdout/stderr/exit code/文件 side effect。参考[CLI 测试模板](#cli-测试模板)。
    - **API / public 函数 seam**：生成对 public 接口的调用测试，断言返回值/可观察行为。这是业务边界测试，不是实现细节测试。
    - **浏览器 E2E seam**：只在 CLI 和 public 接口都无法覆盖的复杂前端交互时生成。
-6. **占位断言**：在需要人拍预期值的地方写 `// TODO: HUMAN ASSERTION`。
-7. **编译/可执行检查**：确保测试文件能运行（可能需要临时 stub 实现或 CLI 入口）。
-8. **输出 test-plan.md**：列出每个 REQ-ID 对应哪些测试方法/CLI 命令，并标注 seam 类型和哪些测试来自 HTML 原型映射。
+7. **占位断言**：在需要人拍预期值的地方写 `// TODO: HUMAN ASSERTION`。
+8. **编译/可执行检查**：确保测试文件能运行（可能需要临时 stub 实现或 CLI 入口）。
+9. **输出 test-plan.md**：列出每个 REQ-ID 对应哪些测试方法/CLI 命令，并标注 seam 类型、capability/entity、以及哪些测试来自 HTML 原型映射。
+10. **不修改 business-capabilities.md**：能力地图由 `/crystallize` 生成，`/test-author` 只读取并按其结构组织测试。如果发现能力地图与 REQ 不一致，回流 `/crystallize`。
 
 ## 测试头部模板
 
 ```swift
 // REQ-TRACE: REQ-P0-001, REQ-P0-002
 // REQ-VERSION: v1-hash:a3f7d2e
+// CAPABILITY-TRACE: <capability-name>
+// ENTITY-TRACE: <entity-name>
 // TEST-AUTHOR: agent
 // ASSERTIONS-SIGNED: false
 ```
@@ -73,6 +80,8 @@ set -euo pipefail
 
 # REQ-TRACE: REQ-P0-001
 # REQ-VERSION: v1-hash:a3f7d2e
+# CAPABILITY-TRACE: <capability-name>
+# ENTITY-TRACE: <entity-name>
 
 CLI="${CLI:-./myapp}"
 TMPDIR=$(mktemp -d)
@@ -90,6 +99,8 @@ $CLI project create --name "demo" --output-dir "$TMPDIR"
 ```ts
 // REQ-TRACE: REQ-P0-001
 // REQ-VERSION: v1-hash:a3f7d2e
+// CAPABILITY-TRACE: <capability-name>
+// ENTITY-TRACE: <entity-name>
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execSync } from "node:child_process";
@@ -137,9 +148,11 @@ describe("project create", () => {
 - 能用 CLI 测的，不进浏览器 E2E（缺陷下沉原则）。
 - 覆盖：正常路径 + 边界 + 错误路径。
 - **HTML 原型是测试输入**：从 HTML 中提取行为和结构，但不把主观视觉（如“间距 12px 才好看”）写进测试。
+- **测试按 capability/entity 组织**：目录结构必须反映 `business-capabilities.md` 中的能力地图。
+- **头部必须含 CAPABILITY-TRACE 和 ENTITY-TRACE**：这是连接 story 测试与长期业务能力资产的纽带。
 
 ## 与参考项目的差异
 
 - mattpocock `tdd`：给我们"红绿重构"和测试先行的纪律。
 - superpowers `test-driven-development`：给我们铁律和常见反模式清单。
-- 核心差异：测试作者和实现者必须分离；断言归人。
+- 核心差异：测试作者和实现者必须分离；断言归人；测试按业务能力/实体组织，服务于长期资产视图。

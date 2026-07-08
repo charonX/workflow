@@ -20,12 +20,20 @@ sources:
 - `.aiassist/stories/<id>/requirements.md`
 - `.aiassist/stories/<id>/signoff.md`
 - `.aiassist/stories/<id>/qa-report.md`
+- `.aiassist/global/adr/`（ADR 目录）
+- `.aiassist/global/business-capabilities.md`
+- `.aiassist/global/CONTEXT.md`
+- `.aiassist/global/architecture.md`（架构概览）
 
 ## 输出
 
 - `.aiassist/global/engineering-lessons.md`
-- `.aiassist/global/architecture.md`（ADR）
+- `.aiassist/global/adr/`（新增/更新 ADR，标记已取代的 ADR 状态）
+- `.aiassist/global/adr/README.md`（ADR 索引更新）
+- `.aiassist/global/business-capabilities.md`（更新能力健康指标与测试映射）
+- `.aiassist/global/CONTEXT.md`（更新领域术语，如有新共识）
 - `.aiassist/global/STANDARDS.md`
+- `.aiassist/global/architecture.md`（仅更新高层模块图和 ADR 索引，不承载具体决策）
 - `.aiassist/stories/<id>/workflow-state.yaml` 最终状态
 
 ## 执行步骤
@@ -38,11 +46,17 @@ sources:
 2. **提炼经验**：
    - 下次应该在哪个阶段多问什么问题
    - 哪些测试模式好用/不好用
-   - 哪些架构决策需要记录为 ADR
+   - 哪些架构决策需要记录为 ADR（写入 `adr/`）或已取代旧 ADR（更新状态）
+   - 是否有新领域术语或实体定义需要更新到 `CONTEXT.md`
+   - 能力地图是否需要调整：新增 capability、合并 entity、更新测试映射
    - **是否产生了可复用的 design pattern**：错误处理、状态管理、API 客户端封装、跨模块调用模式等。如果有，写入 `STANDARDS.md` 或 `engineering-lessons.md`。
 3. **更新全局文档**：
    - `engineering-lessons.md`
-   - `architecture.md`
+   - `adr/`：新增 ADR 或更新现有 ADR 状态（如 `superseded`）
+   - `adr/README.md`：更新索引
+   - `business-capabilities.md`：更新能力健康指标、测试数、覆盖率、最后更新日期
+   - `CONTEXT.md`：补充新术语/实体定义
+   - `architecture.md`：仅保留高层模块图和 ADR 索引，不写入具体决策
    - `STANDARDS.md`
 4. **定义下一个阶段切换线（crossing-line）**：如果是多 phase 项目，明确 P2 进入二挡的条件。
 
@@ -61,3 +75,4 @@ sources:
 
 - gstack `retro` 强调团队复盘；我们简化为个人/OPC 经验沉淀。
 - superpowers 的 plan 结构给我们的 ADR 格式。
+- 核心差异：把单文件 `architecture.md` 拆分为 `adr/` 目录 + `architecture.md` 概览，并维护 `business-capabilities.md` 与 `CONTEXT.md`。

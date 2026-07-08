@@ -45,7 +45,10 @@ sources:
 
 - `.aiassist/stories/<id>/prd.md`
 - `.aiassist/stories/<id>/tech-design.md`
-- `.aiassist/global/architecture.md`（如有）
+- `.aiassist/global/adr/`（检查 ADR 冲突与覆盖）
+- `.aiassist/global/adr/README.md`
+- `.aiassist/global/architecture.md`（如有，仅作概览）
+- `.aiassist/global/CONTEXT.md`（统一术语）
 - `.aiassist/global/STANDARDS.md`（如有）
 
 ### stage=code
@@ -55,7 +58,10 @@ sources:
 - `.aiassist/stories/<id>/requirements.md`
 - `.aiassist/stories/<id>/signoff.md`
 - 当前 branch 与 base branch 的 diff
+- `.aiassist/global/adr/`（检查实现是否与已有 ADR 冲突）
+- `.aiassist/global/CONTEXT.md`（检查术语一致性）
 - `.aiassist/global/STANDARDS.md`（如有）
+- `.aiassist/global/codegraph.json`（如启用，可做影响面分析）
 
 ## 输出
 
@@ -97,6 +103,8 @@ sources:
 | 测试 seams | 每个稳定块是否有清晰 seam？ |
 | 复杂度 | 是否过度设计？是否有更简方案？ |
 | 风险 | 风险与回流点是否明确？ |
+| ADR 覆盖 | 满足 ADR 三条件的决策是否已写入 `adr/`？是否与已有 ADR 冲突？ |
+| 术语一致性 | 方案中的术语是否与 `CONTEXT.md` 一致？ |
 | 标准 | 是否违反项目架构/标准？ |
 
 #### stage=code：审查实现代码
@@ -109,6 +117,8 @@ sources:
 | 标准符合 | 是否违反 `STANDARDS.md`、项目约定？ |
 | 范围外 | 是否顺手实现了 PRD 范围外功能？ |
 | 副作用 | 是否引入新的跨模块耦合/全局状态？ |
+| ADR 冲突 | 实现是否违反已有 ADR？是否引入了需要新 ADR 的决策？ |
+| 影响面 | 如启用 CodeGraph，可查询变更函数/模块的依赖关系，检查是否有未覆盖的影响面 |
 | 未处理项 | 是否有未处理 TODO、FIXME、临时代码？ |
 
 ### 4. 生成 review 报告
@@ -139,6 +149,8 @@ sources:
 - **新视角优先**：如果可能，在新会话中调用，减少上下文污染。
 - **失败项必须显性处理**：人不能对 FAIL 项视而不见，必须选择修或接受。
 - **建议回流但不强制**：review 报告可以建议回流，最终回流决策由人做。
+- **ADR 是硬约束**：stage=tech 和 stage=code 必须检查实现与已有 ADR 是否冲突。
+- **CodeGraph 是辅助**：stage=code 启用 CodeGraph 时，用影响面分析补充人工审查，但不替代代码语义判断。
 
 ## 与参考项目的差异
 

@@ -20,29 +20,37 @@ PRD 中已有明确稳定块，用户说"生成需求"、"/crystallize"时。或
 - `.aiassist/stories/<id>/prd.md`
 - `.aiassist/stories/<id>/tech-design.md`
 - `.aiassist/stories/<id>/workflow-state.yaml`
+- `.aiassist/global/business-capabilities.md`（如有，能力地图）
+- `.aiassist/global/CONTEXT.md`（如有，统一术语）
 - 项目设计系统（`.aiassist/global/DESIGN.md`、`.aiassist/global/tokens.css`）
 
 ## 输出
 
 - `.aiassist/stories/<id>/requirements.md`
 - `.aiassist/stories/<id>/requirements-v1.hash`
+- `.aiassist/global/business-capabilities.md`（更新能力地图）
 
 ## 执行步骤
 
-1. **读取 PRD 与 tech-design.md**：提取所有标注为"稳定"的块，以及对应的测试 seams、模块边界、接口契约。
+1. **读取 PRD、tech-design.md 与全局文档**：提取所有标注为"稳定"的块，以及对应的测试 seams、模块边界、接口契约。读取 `.aiassist/global/business-capabilities.md`，了解现有能力地图；读取 `.aiassist/global/CONTEXT.md`，统一术语。
 2. **技术可行性预演**：对每个稳定块，确认实现路径是否明确、是否有可测试的 seam、是否引入新的基础设施依赖。不清晰则降级回 PRD/TECH-DESIGN。
-3. **为每个稳定块分配 REQ-ID**：
+3. **识别 capability 与 entity**：根据 PRD 稳定块和 tech-design.md 中的模块/数据流，为每个 REQ 标注：
+   - `capability`：所属业务能力（如 `query-codegraph`、`sign-contract`）
+   - `entity`：涉及的核心业务实体（如 `story`、`requirement`、`test-suite`）
+   - 如果某个 capability/entity 在 `business-capabilities.md` 中不存在，本次新增。
+4. **为每个稳定块分配 REQ-ID**：
    - 格式：`REQ-<PHASE>-NNN`
    - `<PHASE>` 取自当前 story phase（如 BUILD、DESIGN、TEST 等）
    - 编号从 001 开始递增
-3. **定义验收标准**：每个 REQ 必须包含具体、可机器验证的标准，以及边界场景和错误处理。
-4. **标记模块边界属性**：
+5. **定义验收标准**：每个 REQ 必须包含具体、可机器验证的标准，以及边界场景和错误处理。
+6. **标记模块边界属性**：
    - `scope`：单个模块内（`intra-module`）或跨模块（`cross-module`）
    - `modules`：涉及哪些 module/service/executive
    - `interface_contract`：跨模块 REQ 必须显式定义接口契约（输入/输出/错误码/副作用）
-5. **生成测试可追溯性**：为每个 REQ 指定 seam、测试类型、预期测试文件。
-6. **计算 requirements 哈希**：将 `requirements.md` 内容哈希写入 `requirements-v1.hash`，用于后续检测测试是否过时。
-7. **提交给用户审查**：请用户确认 REQ-ID 和验收标准。
+7. **生成测试可追溯性**：为每个 REQ 指定 seam、测试类型、预期测试文件路径。路径按能力/实体组织：`tests/capabilities/<capability>/<entity>/...`。
+8. **更新业务能力地图**：把新 capability/entity/REQ-ID/测试文件追加到 `.aiassist/global/business-capabilities.md`，保持能力与测试的映射关系。
+9. **计算 requirements 哈希**：将 `requirements.md` 内容哈希写入 `requirements-v1.hash`，用于后续检测测试是否过时。
+10. **提交给用户审查**：请用户确认 REQ-ID、capability/entity 划分和验收标准。
 
 ## REQ 分类维度
 
@@ -52,6 +60,8 @@ PRD 中已有明确稳定块，用户说"生成需求"、"/crystallize"时。或
 | 必须性 | 必须 / 应该 / 可以 | 对应 MoSCoW |
 | scope | intra-module / cross-module | 是否跨模块 |
 | 测试类型 | 单元 / 集成 / E2E / 人工 | 主要验证手段 |
+| capability | `business-capabilities.md` 中的能力名 | 所属业务能力 |
+| entity | `CONTEXT.md` 中的实体名 | 涉及核心业务实体 |
 | UX 参照 | `ux/<flow>.html` | 如有 |
 
 ## 纪律
@@ -61,10 +71,12 @@ PRD 中已有明确稳定块，用户说"生成需求"、"/crystallize"时。或
 - **跨模块 REQ 必须显式接口契约**：模块之间的契约是二挡最重要的防线。
 - **主观判断不进 REQ**：观感/美学在 `/signoff --stage=feel` 环节依据 HTML 参照验收。
 - **REQ 变更必须重算哈希**：任何修改触发 `requirements-v{N}.hash` 更新，下游测试需要重新签核。
+- **每个 REQ 必须标注 capability/entity**：这是从 story 视图升级到能力视图的基础。
+- **不能破坏已有能力地图**：新增 capability/entity 前先检查 `business-capabilities.md`，避免重复命名或冲突。
 
 ## 与参考项目的差异
 
 - mattpocock `grill-with-docs`：给我们对抗式文档审查方法。
 - gstack `plan-eng-review`：给我们架构/边界检查点。
 - superpowers `writing-plans`：给我们结构化输出格式。
-- 核心差异：REQ-ID 驱动、模块边界显式化、哈希版本控制。
+- 核心差异：REQ-ID 驱动、模块边界显式化、哈希版本控制、capability/entity 可追溯。

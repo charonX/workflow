@@ -21,6 +21,8 @@
 
 **分类：** [P0/P1/P2...]
 **优先级：** 必须 / 应该 / 可以
+**Capability：** `<capability-name>`（对应 `business-capabilities.md`）
+**Entity：** `<entity-name>`（对应 `CONTEXT.md`）
 **UX 参照：** `ux/{{FLOW}}.html`（如有）
 
 #### 验收标准

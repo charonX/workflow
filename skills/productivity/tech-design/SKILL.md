@@ -24,7 +24,9 @@ PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户�
 - `.aiassist/stories/<id>/workflow-state.yaml`
 - `.aiassist/stories/<id>/research/*.md`（如有）
 - 现有代码库（了解当前架构、领域词汇、已有 seams）
-- `.aiassist/global/architecture.md`（如有）
+- `.aiassist/global/CONTEXT.md`（如有，统一领域术语）
+- `.aiassist/global/adr/`（如有，了解已有架构决策）
+- `.aiassist/global/architecture.md`（如有，作为架构概览）
 - `.aiassist/global/STANDARDS.md`（如有）
 - 项目 `CLAUDE.md` 中声明的 CLI 入口（如有）
 
@@ -38,10 +40,13 @@ PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户�
 
 ### 1. 读取上下文
 
-读 PRD，识别所有稳定块和已标注的模块边界/测试 seams。快速扫一遍现有代码，了解：
+读 PRD，识别所有稳定块和已标注的模块边界/测试 seams。读取 `.aiassist/global/CONTEXT.md`，统一使用项目术语；扫描 `.aiassist/global/adr/`，了解已有架构决策。快速扫一遍现有代码，了解：
 - 项目使用的语言/框架
 - 已有模块/服务分层
 - 已有设计模式（错误处理、状态管理、持久化等）
+- 已有 seams 和 CLI 命令
+
+如果发现 PRD 中的术语与 `CONTEXT.md` 冲突，先调用 `/domain-model` 统一术语再继续。
 
 ### 2. 单题对抗式提问
 
@@ -93,9 +98,10 @@ PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户�
 **测试 seams（CLI 优先）**
 - 产品 CLI 是否是默认 seam？每个稳定块能否映射到一个或多个 `myapp <command>`？
 - 哪些命令需要暴露？输入/输出/退出码/副作用分别是什么？
-- 不能用 CLI 覆盖的行为（如复杂前端交互、实时协作）才退到单元测试或浏览器 E2E。
+- 不能用 CLI 覆盖的行为（如复杂前端交互、实时协作）才退到 public 接口测试或浏览器 E2E。
 - 哪些依赖必须 mock？哪些应该保留真实实现？
 - 是否有必须浏览器 E2E 才能验证的用户流程？
+- 每个 seam 涉及哪个业务实体/能力？为后续 `/crystallize` 和 `/test-author` 标注 capability/entity。
 
 **复杂度挑战（借鉴 gstack plan-eng-review）**
 - 如果实现会触碰 8+ 文件或引入 2+ 新服务/类，提出更小的替代方案。
@@ -136,13 +142,27 @@ PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户�
 
 当方案稳定到"可以画模块图、可以切 seams"、且 PRD 已同步更新后，使用 `templates/story/tech-design.md.template` 输出。
 
-### 6. 提交给用户审查
+### 6. 判断是否生成 ADR
+
+检查本次技术方案中是否有满足以下全部条件的决策：
+
+1. **难逆转**：改变主意的成本较高
+2. **不说明会令人困惑**：未来读者会奇怪"为什么这样设计"
+3. **有真实取舍**：考虑过 genuine alternatives
+
+如果满足，生成 ADR 文件：
+
+- 文件名：`adr/NNNN-<short-title>.md`（NNNN 为顺序号，从 0001 开始）
+- 内容模板：标题、状态、上下文、决策、后果、替代方案、相关文件
+- 更新 `.aiassist/global/adr/README.md` 索引
+
+### 7. 提交给用户审查
 
 - "这是根据刚才讨论整理的技术方案。模块边界、接口契约、seams 是否准确？"
 - "PRD 已按技术方案讨论做了以下反向更新：..."
 - 用户修改后定稿。
 
-### 7. 更新 workflow-state
+### 8. 更新 workflow-state
 
 标记 TECH-DESIGN 阶段完成，下一阶段为 CRYSTALLIZE。
 
@@ -151,9 +171,10 @@ PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户�
 - **不写代码**：只到接口/模块/数据流层面，不写文件路径或具体实现。
 - **不替代 PRD**：如果讨论中发现需求本身 unclear，回流 `/to-prd`。
 - **对抗式但不抬杠**：目的是暴露盲区，不是证明用户错了。
-- ** Seam 是测试的出生地**：每个稳定块至少要有一个清晰的测试 seam。
-- **CLI 是默认 seam**：产品 CLI 是人类和 agent 共用的真实接口，优先把可验证行为暴露为 CLI 命令；不能 CLI 化的部分才退到单元/浏览器 E2E。
+- **Seam 是测试的出生地**：每个稳定块至少要有一个清晰的测试 seam。
+- **CLI 是默认 seam**：产品 CLI 是人类和 agent 共用的真实接口，优先把可验证行为暴露为 CLI 命令；不能 CLI 化的部分才退到 public 接口测试或浏览器 E2E。
 - **跨模块必须有显式契约**：输入、输出、错误、副作用，四要素缺一不可。
+- **重要决策写 ADR**：满足"难逆转、不说明会令人困惑、有真实取舍"三个条件的决策，必须写入 `adr/`。
 
 ## 与参考项目的差异
 

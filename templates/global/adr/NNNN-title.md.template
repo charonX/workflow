@@ -1,0 +1,27 @@
+# [简短标题]
+
+- 状态：`proposed` / `accepted` / `deprecated` / `superseded`
+- 日期：{{DATE}}
+- 决策编号：`{{ADR_NUMBER}}`
+- 相关 REQ：`REQ-XXX-NNN`（如有）
+- 取代：`adr/XXXX-previous-adr.md`（如状态为 superseded）
+
+## 上下文
+
+<!-- 触发这个决策的问题、约束和目标。 -->
+
+## 决策
+
+<!-- 明确"我们决定做什么"。 -->
+
+## 后果
+
+<!-- 这个决策带来的正面与负面影响。 -->
+
+## 替代方案
+
+<!-- 考虑过但没有选择的方案，以及为什么不选。 -->
+
+## 相关文件
+
+- `path/to/relevant/file`

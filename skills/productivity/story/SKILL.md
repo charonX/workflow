@@ -19,7 +19,7 @@ sources:
 
 ## 核心概念:两个循环 + story = 初衷
 
-- **外层循环 — 人控制的设计上下文**:THINK → PRD → DESIGN → TECH-DESIGN → CRYSTALLIZE → TEST → ASSERTION-SIGNOFF。人做决定、签核、改需求。
+- **外层循环 — 人控制的设计上下文**:THINK → PRD → DESIGN → DOMAIN-MODEL → TECH-DESIGN → CRYSTALLIZE → TEST → ASSERTION-SIGNOFF。人做决定、签核、改需求。
 - **内层循环 — agent 控制的实现迭代**:BUILD → QA。AI 在测试契约内自主迭代到全绿。
 - **门 1(assertion-signoff)**:外层循环的终点,把完整上下文(REQ + 测试)交给 AI。
 - **门 2(feel-signoff)**:内层循环的终点,人验收 AI 产出;不通过则回流到外层循环修设计。
@@ -57,6 +57,7 @@ sources:
 | THINK | 外层 | `/demand-insight` |
 | PRD | 外层 | `/to-prd` |
 | DESIGN | 外层 | `/design` |
+| DOMAIN-MODEL | 外层 | `/domain-model` |
 | TECH-DESIGN | 外层 | `/tech-design`（若对技术/API/库不熟，可先 `/research`） |
 | CRYSTALLIZE | 外层 | `/crystallize` |
 | TEST | 外层 | `/test-author` |
@@ -131,7 +132,7 @@ sources:
 ```yaml
 story_id: 2026-07-02-mood-tracking
 intention: <一句话痛点,非方案>
-phase: THINK              # THINK/PRD/DESIGN/TECH-DESIGN/CRYSTALLIZE/TEST/ASSERTION-SIGNOFF/BUILD/QA/FEEL-SIGNOFF/REFLECT
+phase: THINK              # THINK/PRD/DESIGN/DOMAIN-MODEL/TECH-DESIGN/CRYSTALLIZE/TEST/ASSERTION-SIGNOFF/BUILD/QA/FEEL-SIGNOFF/REFLECT
 attempt: 1
 created: 2026-07-02
 history:

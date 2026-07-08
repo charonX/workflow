@@ -27,13 +27,18 @@ sources:
 ```
 .aiassist/
 ├── global/
-│   ├── DESIGN.md              # 项目级设计系统文档（如不存在则创建模板）
-│   ├── tokens.css             # 设计 token（如不存在则创建空文件）
-│   ├── architecture.md        # 项目架构决策记录
-│   ├── engineering-lessons.md # 工程经验教训
-│   └── STANDARDS.md           # 编码与流程标准
-├── stories/                   # story 目录，初始为空
-└── hooks/                     # git hooks
+│   ├── CONTEXT.md              # 领域词汇表（由 /domain-model 维护）
+│   ├── business-capabilities.md # 业务能力地图（由 /crystallize、/reflect 维护）
+│   ├── adr/                    # 架构决策记录目录
+│   │   └── README.md           # ADR 索引
+│   ├── codegraph.json          # CodeGraph 配置（可选）
+│   ├── DESIGN.md               # 项目级设计系统文档（如不存在则创建模板）
+│   ├── tokens.css              # 设计 token（如不存在则创建空文件）
+│   ├── architecture.md         # 架构概览（不再承载具体决策）
+│   ├── engineering-lessons.md  # 工程经验教训
+│   └── STANDARDS.md            # 编码与流程标准
+├── stories/                    # story 目录，初始为空
+└── hooks/                      # git hooks
     ├── pre-commit
     └── commit-msg
 ```
@@ -41,6 +46,12 @@ sources:
 从 workflow 模板复制：
 
 - `templates/claude/project-claude-appendix.md.template` → 追加到目标项目 `CLAUDE.md`
+- `templates/global/CONTEXT.md.template` → `.aiassist/global/CONTEXT.md`
+- `templates/global/business-capabilities.md.template` → `.aiassist/global/business-capabilities.md`
+- `templates/global/adr/README.md.template` → `.aiassist/global/adr/README.md`
+- `templates/global/adr/NNNN-title.md.template` → 保留在 workflow 内，由 `/tech-design` 和 `/reflect` 使用
+- `templates/global/architecture.md.template` → `.aiassist/global/architecture.md`
+- `templates/global/codegraph.json.template` → `.aiassist/global/codegraph.json`
 - `templates/story/prd.md.template` → 保留在 workflow 内，由 `/story` 使用
 - `templates/story/requirements.md.template` → 保留在 workflow 内，由 `/story` 使用
 - `templates/story/workflow-state.yaml.template` → 保留在 workflow 内，由 `/story` 使用
@@ -89,7 +100,30 @@ sources:
 4. `signoff.md` 存在性检查（assertion 阶段签核后生成）
 5. 实现 PR 不能同时修改测试文件
 
-### 3. 配置 git hooks
+### 3. 可选：启用 CodeGraph（代码知识图谱）
+
+询问用户是否启用 CodeGraph 辅助 AI 理解代码结构：
+
+> CodeGraph 能自动构建代码知识图谱，减少 AI 实现时的 grep/read 开销。是否启用？（推荐）
+
+如果用户同意：
+
+1. 提示安装 CodeGraph CLI：
+   ```bash
+   npm i -g @colbymchenry/codegraph
+   # 或
+   curl -fsSL https://raw.githubusercontent.com/colbymchenry/codegraph/main/install.sh | sh
+   ```
+2. 运行：
+   ```bash
+   codegraph init
+   ```
+3. 将 `.aiassist/global/codegraph.json` 中的 `enabled` 改为 `true`。
+4. 提醒用户：CodeGraph 是可选加速工具，未安装时不影响工作流。
+
+如果用户拒绝，保持 `codegraph.json` 中 `enabled: false`。
+
+### 4. 配置 git hooks
 
 将项目 git hooks 路径指向 `.aiassist/hooks/`：
 
@@ -104,23 +138,27 @@ chmod +x .aiassist/hooks/commit-msg
 1. 将 `pre-commit` 和 `commit-msg` 脚本的内容合并进 husky 对应 hook；或
 2. 在 husky hook 中调用 `.aiassist/hooks/pre-commit` 和 `.aiassist/hooks/commit-msg`。
 
-### 4. 初始化全局文件模板
+### 5. 初始化全局文件模板
 
 如果文件不存在，创建：
 
+- `.aiassist/global/CONTEXT.md`
+- `.aiassist/global/business-capabilities.md`
+- `.aiassist/global/adr/README.md`
+- `.aiassist/global/codegraph.json`
 - `.aiassist/global/DESIGN.md`
 - `.aiassist/global/tokens.css`
 - `.aiassist/global/architecture.md`
 - `.aiassist/global/engineering-lessons.md`
 - `.aiassist/global/STANDARDS.md`
 
-这些文件内容由 `/design`（模式 A）、`/reflect` 等 skill 后续填充。
+这些文件内容由 `/domain-model`、`/crystallize`、`/reflect`、`/design`（模式 A）、`/tech-design` 等 skill 后续填充。
 
-### 5. 更新项目 `CLAUDE.md`
+### 6. 更新项目 `CLAUDE.md`
 
 将 `templates/claude/project-claude-appendix.md.template` 的内容追加到目标项目 `CLAUDE.md` 末尾。如果已经存在双循环附录，跳过。
 
-### 6. 提交初始化变更
+### 7. 提交初始化变更
 
 ```bash
 git add .aiassist/ .github/workflows/ CLAUDE.md
@@ -152,7 +190,8 @@ git commit -m "[bootstrap] 初始化双循环工作流基础设施"
 
 初始化完成后，向用户确认：
 
-1. `.aiassist/` 目录已创建
+1. `.aiassist/` 目录已创建（包含 CONTEXT.md、business-capabilities.md、adr/、codegraph.json 等全局文档）
 2. git hooks 已配置（或已说明 husky 兼容方案）
 3. `CLAUDE.md` 已更新
-4. 下一步可以运行 `/story` 开始第一个 story
+4. CodeGraph 状态（已启用 / 未启用）
+5. 下一步可以运行 `/story` 开始第一个 story

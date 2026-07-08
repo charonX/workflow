@@ -28,6 +28,8 @@ sources:
 - `.aiassist/stories/<id>/ux/_d_meta.json`（资产注册表 + 设计系统绑定）
 - `.aiassist/stories/<id>/ux/_ds_manifest.json`（story 级组件清单与 prop 契约，如有）
 - `.aiassist/global/_ds/<slug>/_ds_prompt.md`（设计系统使用提示）
+- `.aiassist/global/CONTEXT.md`（统一术语与实体命名）
+- `.aiassist/global/codegraph.json`（CodeGraph 配置）
 - 测试文件（项目对应位置，如 `*Tests/**/*.swift`、`test/**/*.test.ts` 等）
 - 可选：workflow-state 中的 `slices` / `tasks` 列表
 
@@ -57,7 +59,8 @@ sources:
 与原有行为一致，但增加 HTML 原型参照：
 
 1. **读取测试**：理解每个测试的输入、输出、断言。
-2. **读取 HTML UX 原型**：如果 `ux/` 目录存在，读取 `_d_meta.json` 中的 canonical 资产列表，然后读取对应 `.html` 文件，作为视觉与结构参照。同时读取 `ux/_ds_manifest.json` 与 `.aiassist/global/_ds/<slug>/_ds_prompt.md`，了解可用组件与 prop 契约。记录：
+2. **可选：查询 CodeGraph**：如果 `.aiassist/global/codegraph.json` 中 `enabled` 为 `true` 且 CLI 可用，优先用 CodeGraph 查询相关模块/函数/依赖关系，减少 grep/read 开销。CodeGraph 结果只作为导航辅助，最终代码语义以实际文件为准。如果 CodeGraph 不可用或查询失败，回退到 grep/read。
+3. **读取 HTML UX 原型**：如果 `ux/` 目录存在，读取 `_d_meta.json` 中的 canonical 资产列表，然后读取对应 `.html` 文件，作为视觉与结构参照。同时读取 `ux/_ds_manifest.json` 与 `.aiassist/global/_ds/<slug>/_ds_prompt.md`，了解可用组件与 prop 契约。记录：
    - 页面/组件层级和命名。
    - 关键元素及其顺序（按钮、表单、列表、空态等）。
    - 交互状态（loading、empty、error、success、disabled）。
@@ -130,6 +133,8 @@ for slice in remaining_slices:
    - `ux/*.html`（视觉/结构参照；子代理必须读取并对齐）
    - `ux/_ds_manifest.json`（story 级组件清单与 prop 契约）
    - `.aiassist/global/_ds/<slug>/_ds_prompt.md`（设计系统使用提示）
+   - `.aiassist/global/CONTEXT.md`（统一术语）
+   - `.aiassist/global/codegraph.json`（CodeGraph 配置；启用时优先查询图谱）
    - 测试文件路径
    - `signoff.md`
 3. **产出要求**：
@@ -186,6 +191,8 @@ xcodebuild -project BanshanJourney.xcodeproj -scheme BanshanJourneyTests -destin
 - **自动模式下不合并切片 commit**：每个切片独立 commit，便于回滚和审查。
 - **验证不能省**：子代理说完成不算，父代理必须亲自跑测试确认。
 - **业务测试优先**：如果单元测试和业务测试冲突，业务测试优先。
+- **CodeGraph 是导航辅助**：启用时优先查询图谱理解模块关系，但必须以实际代码语义为准；不可用时回退 grep/read。
+- **遵循 CONTEXT.md 术语**：实现中的实体/模块命名与全局领域词汇表保持一致。
 
 ## 与参考项目的差异
 

@@ -1,0 +1,23 @@
+# 架构概览
+
+> 本文件只保留高层模块图和 ADR 索引。
+> 具体架构决策记录在 `adr/` 目录中，由 `/tech-design` 和 `/reflect` 维护。
+
+---
+
+## 高层模块图
+
+```
+[模块 A] ──接口──▶ [模块 B]
+   │
+   └──▶ [模块 C]
+```
+
+## ADR 索引
+
+参见 [adr/README.md](./adr/README.md)。
+
+## 相关标准
+
+- `.aiassist/global/STANDARDS.md`
+- `.aiassist/global/CONTEXT.md`

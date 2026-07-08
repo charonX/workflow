@@ -35,6 +35,8 @@
 - **两道硬签核**：`/signoff --stage=assertion` = 人在实现前签核断言；`/signoff --stage=feel` = 人依据 HTML 参照验收观感。
 - **三种角色**：人（REQ/断言/HTML）、test-author agent（编写测试骨架）、implementer agent（编写代码，对测试只读）。
 - **REQ-ID 可追溯**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
+- **能力/实体可追溯**：每个 REQ 标注 `capability` 和 `entity`，测试头部声明 `// CAPABILITY-TRACE` 和 `// ENTITY-TRACE`，测试按 `tests/capabilities/<capability>/<entity>/` 组织。
+- **ADR 目录**：重要架构决策（难逆转、不说明会令人困惑、有真实取舍）写入 `.aiassist/global/adr/`，而不是堆在单文件 `architecture.md` 中。
 
 除非明确要求，否则不要修改参考仓库。把它们当作只读的灵感来源，把单个 skill 模式复制/适配到 `skills/` 中。
 
@@ -69,15 +71,16 @@
 | 1 | THINK — 需求洞察 | `/demand-insight` | 用户 | 外层 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
 | 2 | PRD 合成 | `/to-prd` | 用户 | 外层 | 把访谈笔记整理成结构化 PRD |
 | 3 | DESIGN — 设计 | `/design` | 用户 | 外层 | 统一入口：建/更新设计系统、导入设计源、迭代 HTML-native 高保真原型 |
-| 4 | TECH-DESIGN — 技术方案 | `/tech-design` | 用户 | 外层 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
-| 5 | CRYSTALLIZE — 结晶 | `/crystallize` | 模型 | 外层 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
-| 6 | TEST — 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；不能 CLI 化的退到浏览器 E2E 或 public 接口测试；为人留出占位断言 |
-| 7 | ASSERTION-SIGNOFF — 断言签核 | `/signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核所有断言；把上下文交给 AI |
-| 8 | BUILD — 实现 | `/implementer` | 模型 | 内层 | 针对测试实现代码；对业务测试只读；内部用 `/tdd` 纪律 RED → GREEN；每轮迭代跑全套业务测试 |
-| 9 | QA — 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集 |
-| 10 | FEEL-SIGNOFF — 观感签核 | `/signoff --stage=feel` | 用户 | **门 2** | 人依据 HTML 参照验收观感；偏差回流到外层循环 |
+| 4 | DOMAIN-MODEL — 领域建模 | `/domain-model` | 用户 | 外层 | 统一术语与业务实体，维护 `CONTEXT.md` |
+| 5 | TECH-DESIGN — 技术方案 | `/tech-design` | 用户 | 外层 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
+| 6 | CRYSTALLIZE — 结晶 | `/crystallize` | 模型 | 外层 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
+| 7 | TEST — 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；不能 CLI 化的退到浏览器 E2E 或 public 接口测试；为人留出占位断言 |
+| 8 | ASSERTION-SIGNOFF — 断言签核 | `/signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核所有断言；把上下文交给 AI |
+| 9 | BUILD — 实现 | `/implementer` | 模型 | 内层 | 针对测试实现代码；对业务测试只读；内部用 `/tdd` 纪律 RED → GREEN；每轮迭代跑全套业务测试 |
+| 10 | QA — 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集 |
+| 11 | FEEL-SIGNOFF — 观感签核 | `/signoff --stage=feel` | 用户 | **门 2** | 人依据 HTML 参照验收观感；偏差回流到外层循环 |
 |   | 开发者交接（可选） | `/design-handoff` | 用户 | 外层 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
-| 11 | REFLECT — 反思 | `/reflect` | 用户 | 外层 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
+| 12 | REFLECT — 反思 | `/reflect` | 用户 | 外层 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
 
 ### 两个循环的流转
 
@@ -213,6 +216,7 @@
 | 用 HTML 原型探索 UX（含编译 preview、资产版本管理、变体） | `/design` |
 | 建立或更新设计系统（含编译、预览、资产记录） | `/design` |
 | 导入设计来源（Figma/GitHub/HTML）并可选编译为设计系统 | `/design` |
+| 统一领域术语与业务实体，维护 `CONTEXT.md` | `/domain-model` |
 | 把 PRD 转成 REQ-ID | `/crystallize` |
 | 做对抗式技术方案设计，用第一性原理区分真实约束与历史包袱，确定 CLI 优先的测试 seams | `/tech-design` |
 | 从 REQ 优先生成 CLI 测试骨架，不能 CLI 化时补充浏览器 E2E 或 public 接口测试 | `/test-author` |

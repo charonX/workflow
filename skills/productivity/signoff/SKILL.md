@@ -35,27 +35,31 @@ sources:
 
 - `.aiassist/stories/<id>/requirements.md`
 - `.aiassist/stories/<id>/test-plan.md`
+- `.aiassist/global/business-capabilities.md`（检查能力覆盖）
+- `.aiassist/global/CONTEXT.md`（统一术语）
 - 测试文件
 
 ### 执行步骤
 
 1. **扫描 REQ 覆盖**：每个 REQ-ID 是否至少有一个测试？
-2. **扫描测试头部**：每个测试文件是否有 `REQ-TRACE` 和 `REQ-VERSION`？
-3. **扫描占位符**：是否还有 `// TODO: HUMAN ASSERTION`？
-4. **审查预期值来源**：向用户确认每个关键预期值是人算/真实 JSON/已签标准，而非代码输出。
-5. **展示检查清单**：让用户逐项确认。
-6. **生成/更新 signoff 文件**：填写 `signoff.md` 中 Assertion 部分的 REQ-ID 列表和断言摘要，确保所有检查清单项已勾选。
-7. **提交签核 commit**：用户确认后，执行：
+2. **扫描测试头部**：每个测试文件是否有 `REQ-TRACE`、`REQ-VERSION`、`CAPABILITY-TRACE`、`ENTITY-TRACE`？
+3. **扫描 capability/entity 覆盖**：根据 `business-capabilities.md`，检查本次 REQ 是否覆盖了计划中的能力/实体；新增 capability/entity 是否已在能力地图中登记。
+4. **扫描占位符**：是否还有 `// TODO: HUMAN ASSERTION`？
+5. **审查预期值来源**：向用户确认每个关键预期值是人算/真实 JSON/已签标准，而非代码输出。
+6. **展示检查清单**：让用户逐项确认。
+7. **生成/更新 signoff 文件**：填写 `signoff.md` 中 Assertion 部分的 REQ-ID 列表、capability/entity 覆盖摘要和断言摘要，确保所有检查清单项已勾选。
+8. **提交签核 commit**：用户确认后，执行：
    ```bash
    git add .aiassist/stories/<id>/signoff.md
    git commit -m "[test] assertion-signoff for <story-id>"
    ```
-8. **更新 workflow-state**：标记 assertion-signoff 通过，解锁 BUILD。
+9. **更新 workflow-state**：标记 assertion-signoff 通过，解锁 BUILD。
 
 ### 检查清单
 
 - [ ] 每个 REQ-ID 都有对应测试。
-- [ ] 每个测试文件都有 `REQ-TRACE` 和 `REQ-VERSION`。
+- [ ] 每个测试文件都有 `REQ-TRACE`、`REQ-VERSION`、`CAPABILITY-TRACE`、`ENTITY-TRACE`。
+- [ ] 每个 REQ 的 capability/entity 与 `business-capabilities.md` 一致。
 - [ ] 无 `// TODO: HUMAN ASSERTION` 占位。
 - [ ] 预期值来源清晰，非代码输出。
 - [ ] 无快照当判定依据。
@@ -111,4 +115,4 @@ sources:
 
 - gstack `plan-eng-review` / `design-review` 被收窄为两个签核门。
 - mattpocock `tdd` 强调测试先行；我们升级为"人签测试才算契约"。
-- 核心差异：用统一 skill 入口管理功能与视觉签核，减少用户记忆成本；用 Git commit 替代手写签名，签核证据更可靠。
+- 核心差异：用统一 skill 入口管理功能与视觉签核，减少用户记忆成本；用 Git commit 替代手写签名，签核证据更可靠；assertion 阶段同时检查 capability/entity 覆盖，确保 story 测试接入长期业务能力资产。

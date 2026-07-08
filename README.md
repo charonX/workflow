@@ -86,7 +86,8 @@
 | 3 | **DESIGN** | `/design` | 用户 | 统一入口:建/更新设计系统、导入设计源、迭代 HTML 原型 |
 | 4 | **技术方案** | `/tech-design` | 用户 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
 | 5 | **技术方案审查** | `/review --stage=tech` | 用户（手动） | 新会话视角审查技术方案（可选但建议） |
-| 6 | **结晶** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
+| 6 | **领域建模** | `/domain-model` | 用户 | 统一术语与业务实体，维护 `CONTEXT.md` |
+| 7 | **结晶** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
 | 7 | **测试** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架；不能 CLI 化的退到浏览器 E2E 或 public 接口测试；为人留占位断言 |
 | 8 | **TDD** | `/tdd` | 模型 | 内层实现纪律：RED → GREEN 写单元测试驱动代码；单元测试不进入契约 |
 | 9 | **断言签核** | `/signoff --stage=assertion` | 用户 | 人在实现前签核所有断言(门 1) |
@@ -131,9 +132,11 @@
 ```
 // REQ-TRACE: <story-id>/<req-id>
 // REQ-VERSION: <hash>
+// CAPABILITY-TRACE: <capability-name>
+// ENTITY-TRACE: <entity-name>
 ```
 
-REQ 变 → 挂它的测试标记"过时待重生"。任何失败测试都能回溯到它代表的需求。
+REQ 变 → 挂它的测试标记"过时待重生"。任何失败测试都能回溯到它代表的需求。测试按 `tests/capabilities/<capability>/<entity>/<story-id>/` 组织，作为业务能力的长期资产。
 
 ### 回流机制
 
@@ -242,6 +245,7 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 | `/demand-insight` | THINK | 对抗式需求访谈；用第一性原理剥离继承假设，适合只有模糊痛点或初步想法的阶段 |
 | `/to-prd` | PRD | 把讨论整理成 PRD |
 | `/tech-design` | TECH-DESIGN | 对抗式技术方案设计；用第一性原理区分真实约束与历史包袱，确定 CLI 优先的 seams |
+| `/domain-model` | DOMAIN-MODEL | 统一领域术语与业务实体，维护 `CONTEXT.md` |
 | `/research` | THINK/TECH | 针对技术/API/库问题做带引用的 background 调研 |
 | `/review` | REVIEW | 外层循环手动检查点；新会话视角审查 PRD/技术方案/代码 |
 | `/design` | DESIGN | 设计阶段统一入口：建/更新设计系统、导入设计源、迭代 HTML UX 原型 |
@@ -286,21 +290,26 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 │   ├── workflow-state.yaml      # phase/attempt/history/archive 状态机
 │   └── archive/                 # 归档重做时,被推翻的承诺层产物 + reason.md
 └── global/
-    ├── DESIGN.md                # 项目级设计系统文档
-    ├── tokens.css               # CSS token 入口
-    ├── styles.css               # 全局样式入口（仅 @import + 工具类）
-    ├── README.md                # 设计系统概览
-    ├── components/              # （可选）JSX 组件 + .d.ts 契约
-    ├── cards/                   # （可选）@dsCard 预览卡片
-    ├── screens/                 # （可选）@startingPoint 起始页面
-    ├── _ds_bundle.js           # （生成）编译后的组件 bundle
-    ├── _ds_manifest.json       # （生成）设计系统清单
-    ├── _adherence.oxlintrc.json# （生成）实现侧 CSS prop 白名单
-    ├── preview.html            # （生成）自包含交互预览
-    ├── _ds/<slug>/             # （生成）运行时拷贝 + _ds_prompt.md
-    ├── _d_meta.json            # （生成）设计系统绑定与资产注册
+    ├── CONTEXT.md                 # 领域词汇表与业务实体定义（由 /domain-model 维护）
+    ├── business-capabilities.md   # 业务能力地图（由 /crystallize、/reflect 维护）
+    ├── adr/                       # 架构决策记录目录（由 /tech-design、/reflect 维护）
+    │   └── README.md
+    ├── codegraph.json             # CodeGraph 配置（可选）
+    ├── DESIGN.md                  # 项目级设计系统文档
+    ├── tokens.css                 # CSS token 入口
+    ├── styles.css                 # 全局样式入口（仅 @import + 工具类）
+    ├── README.md                  # 设计系统概览
+    ├── components/                # （可选）JSX 组件 + .d.ts 契约
+    ├── cards/                     # （可选）@dsCard 预览卡片
+    ├── screens/                   # （可选）@startingPoint 起始页面
+    ├── _ds_bundle.js             # （生成）编译后的组件 bundle
+    ├── _ds_manifest.json         # （生成）设计系统清单
+    ├── _adherence.oxlintrc.json  # （生成）实现侧 CSS prop 白名单
+    ├── preview.html              # （生成）自包含交互预览
+    ├── _ds/<slug>/              # （生成）运行时拷贝 + _ds_prompt.md
+    ├── _d_meta.json              # （生成）设计系统绑定与资产注册
     ├── engineering-lessons.md
-    ├── architecture.md
+    ├── architecture.md            # 架构概览（具体决策写入 adr/）
     └── STANDARDS.md
 ```
 

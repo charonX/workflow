@@ -58,27 +58,34 @@ sources:
 
 与原有行为一致，但增加 HTML 原型参照：
 
-1. **读取测试**：理解每个测试的输入、输出、断言。
-2. **可选：查询 CodeGraph**：如果 `.aiassist/global/codegraph.json` 中 `enabled` 为 `true` 且 CLI 可用，优先用 CodeGraph 查询相关模块/函数/依赖关系，减少 grep/read 开销。CodeGraph 结果只作为导航辅助，最终代码语义以实际文件为准。如果 CodeGraph 不可用或查询失败，回退到 grep/read。
-3. **读取 HTML UX 原型**：如果 `ux/` 目录存在，读取 `_d_meta.json` 中的 canonical 资产列表，然后读取对应 `.html` 文件，作为视觉与结构参照。同时读取 `ux/_ds_manifest.json` 与 `.aiassist/global/_ds/<slug>/_ds_prompt.md`，了解可用组件与 prop 契约。记录：
+1. **读取设计上下文（必须先做）**：在写任何代码或读具体测试之前，先完整阅读：
+   - `requirements.md`：本 slice 对应的 REQ-ID、验收标准、capability/entity。
+   - `tech-design.md`：相关模块边界、数据流、接口契约、测试 seams。
+   - `prd.md`：本 slice 要解决的用户痛点和业务范围，避免只满足测试而丢失意图。
+   - `signoff.md`：人已签核的断言范围和已知约束。
+   简要记录：本 slice 的输入、输出、涉及模块、关键契约、边界 case。
+2. **读取测试**：理解每个测试的输入、输出、断言，把测试映射到上一步理解的 seams。
+3. **读取 HTML UX 原型（如有）**：如果 `ux/` 目录存在，读取 `_d_meta.json` 中的 canonical 资产列表，然后读取对应 `.html` 文件，作为视觉与结构参照。同时读取 `ux/_ds_manifest.json` 与 `.aiassist/global/_ds/<slug>/_ds_prompt.md`，了解可用组件与 prop 契约。记录：
    - 页面/组件层级和命名。
    - 关键元素及其顺序（按钮、表单、列表、空态等）。
    - 交互状态（loading、empty、error、success、disabled）。
    - 与 `tokens.css` / `DESIGN.md` / `_ds_manifest.json` 关联的样式 token。
    实现时尽量对齐；实现后记录已知偏差。
-3. **内循环实现（用 `/tdd`）**：
+4. **查询 CodeGraph 或探索代码（仅在需要时）**：如果 `.aiassist/global/codegraph.json` 中 `enabled` 为 `true` 且 CLI 可用，优先用 CodeGraph 查询相关模块/函数/依赖关系，减少 grep/read 开销。CodeGraph 结果只作为导航辅助，最终代码语义以实际文件为准。如果 CodeGraph 不可用或查询失败，回退到 grep/read。**禁止在没读设计上下文之前就大规模探索代码。**
+5. **内循环实现（用 `/tdd`）**：
    - 针对当前 slice 要满足的业务测试，识别需要实现的 seams。
    - 调用 `/tdd` 纪律：写一个失败的单元测试（RED）→ 写最小实现让它通过（GREEN）→ 必要时简单清理。
    - 单元测试是实现工具，不进入契约，可以随写随改。
    - 每个 RED/GREEN 循环后跑当前 seam 的单元测试；当前 slice 所有 seam 完成后跑 **全套业务测试**。
    - 如果业务测试回归失败，先修回归，必要时补单元测试。
    - 重复直到当前 slice 的业务测试全绿。
-4. **轮数上限**：超过 N 轮（默认 10 轮）仍未全绿，停止并升级。
-5. **升级策略**：
+6. **轮数上限**：超过 N 轮（默认 10 轮）仍未全绿，停止并升级。
+7. **升级策略**：
    - "我实现不出来，诊断如下" → 升级给人/更强模型。
    - "我怀疑断言 X 自相矛盾/不可满足，证据如下" → 回 `/signoff --stage=assertion`。
-6. **偏差记录**：提交前输出一段简短说明，列出实现与 HTML 原型的已知偏差（如无法直接复刻的动画、平台限制导致的布局差异）。
-7. **提交**：全绿后提交，commit 消息使用 `[build]` 标签。一个 commit 只包含实现代码，不能包含测试文件。
+8. **偏差记录**：提交前输出一段简短说明，列出实现与 HTML 原型的已知偏差（如无法直接复刻的动画、平台限制导致的布局差异）。
+9. **提交**：全绿后提交，commit 消息使用 `[build]` 标签。一个 commit 只包含实现代码，不能包含测试文件。
+10. **同步 CodeGraph（如启用）**：如果 `.aiassist/global/codegraph.json` 中 `enabled` 为 `true` 且 CLI 可用，运行 `codegraph sync`（或对应命令）更新代码知识图谱。如果同步失败，记录警告但不阻塞流程。
 
 ## 自动连续模式
 
@@ -113,6 +120,7 @@ for slice in remaining_slices:
     4. 如果通过：
        - 更新 workflow-state：标记该 slice 完成。
        - 在 build-progress.md 追加：`Slice X: complete (<base7>..<head7>, tests green)`
+       - 如果 CodeGraph 已启用，运行 `codegraph sync` 更新图谱（失败则记录警告）。
        - 进入下一个切片。
     5. 如果失败：
        - 子代理模式：派发 fix subagent，带上失败证据和完整 diff。
@@ -126,25 +134,24 @@ for slice in remaining_slices:
 使用 Agent 工具派发。prompt 必须包含：
 
 1. **任务定位**：这个切片在 story 中的位置，依赖哪些已完成的切片。
-2. **输入文件路径**：
-   - `requirements.md`（指出本切片对应的 REQ-ID）
-   - `tech-design.md`（相关模块/数据流/seams）
-   - `ux/_d_meta.json`（canonical 资产列表 + 设计系统绑定）
-   - `ux/*.html`（视觉/结构参照；子代理必须读取并对齐）
-   - `ux/_ds_manifest.json`（story 级组件清单与 prop 契约）
-   - `.aiassist/global/_ds/<slug>/_ds_prompt.md`（设计系统使用提示）
-   - `.aiassist/global/CONTEXT.md`（统一术语）
-   - `.aiassist/global/codegraph.json`（CodeGraph 配置；启用时优先查询图谱）
-   - 测试文件路径
-   - `signoff.md`
+2. **强制阅读顺序（写代码前必须完成）**：
+   1. `prd.md`：本 slice 要解决的用户痛点和业务范围。
+   2. `requirements.md`：指出本切片对应的 REQ-ID、验收标准、capability/entity。
+   3. `tech-design.md`：相关模块边界、数据流、接口契约、测试 seams。
+   4. `signoff.md`：人已签核的断言范围和已知约束。
+   5. 测试文件：理解输入/输出/断言。
+   6. `ux/_d_meta.json` 与 `ux/*.html`：视觉/结构参照；子代理必须读取并对齐。
+   7. `ux/_ds_manifest.json` 与 `.aiassist/global/_ds/<slug>/_ds_prompt.md`：story 级组件清单与 prop 契约。
+   8. `.aiassist/global/CONTEXT.md`：统一术语。
+   9. `.aiassist/global/codegraph.json`：CodeGraph 配置；启用时优先查询图谱（仅作为导航辅助，不能替代读文档）。
 3. **产出要求**：
    - 只写实现代码，不修改业务测试（契约）。
    - 在实现每个 seam 时使用 `/tdd` 纪律：RED → GREEN → 必要时清理。
    - 单元测试是实现工具，不进入契约，不需要持久化或签核。
    - 对照 HTML 原型实现视觉与结构，无法完全对齐时记录偏差。
    - 实现完成后跑**全套业务测试**。
-   - 全部通过后再 commit。
-   - commit 消息格式：`[build] <slice 名称>`。
+   - 全部通过后再 commit；commit 消息格式：`[build] <slice 名称>`。
+   - 如果 CodeGraph 已启用，commit 后运行 `codegraph sync` 更新图谱。
 4. **报告要求**：子代理返回：
    - 状态：`DONE` / `DONE_WITH_CONCERNS` / `BLOCKED`
    - 修改的文件列表
@@ -181,6 +188,7 @@ xcodebuild -project BanshanJourney.xcodeproj -scheme BanshanJourneyTests -destin
 
 ## 纪律
 
+- **写代码前必须先读设计上下文**：`prd.md` → `requirements.md` → `tech-design.md` → `signoff.md` → 测试 → UX HTML。禁止没读文档就探索代码或写实现。
 - **对业务测试只读**：禁止修改由 `/test-author` 生成、人已签核的业务测试文件。
 - **单元测试是 TDD 工具**：`/implementer` 可在实现过程中自由写、改、删单元测试，它们不进入契约。
 - **diff 碰业务测试 = 本轮作废**。
@@ -192,6 +200,7 @@ xcodebuild -project BanshanJourney.xcodeproj -scheme BanshanJourneyTests -destin
 - **验证不能省**：子代理说完成不算，父代理必须亲自跑测试确认。
 - **业务测试优先**：如果单元测试和业务测试冲突，业务测试优先。
 - **CodeGraph 是导航辅助**：启用时优先查询图谱理解模块关系，但必须以实际代码语义为准；不可用时回退 grep/read。
+- **CodeGraph 同步**：每个 slice 实现完成并提交后，如启用则运行 `codegraph sync`，保持图谱与代码一致。
 - **遵循 CONTEXT.md 术语**：实现中的实体/模块命名与全局领域词汇表保持一致。
 
 ## 与参考项目的差异

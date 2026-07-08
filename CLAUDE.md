@@ -1,68 +1,108 @@
 # CLAUDE.md
 
-> **语言约定**：除非用户明确要求使用其他语言，否则所有回复默认使用中文。
+> **如果你是为本仓库工作的 AI Agent，先读这一段。**
+>
+> 本仓库是 `loop-workflow`（双循环工作流）的 canonical 源码和实验沙盒。你的任务不是“帮用户实现某个功能”，而是维护/演进一套**可复用的 Claude Code skill 集合**。最昂贵的错误是：把 skill 当成一次性脚本写、直接修改 `reference/` 里的参考仓库、或者在没有 plan 的情况下改动核心工作流。不确定时，停下来用 plan mode 或 AskUserQuestion，而不是猜测。
 
-本文件为 Claude Code（claude.ai/code）在本仓库工作时的指导手册。
+---
+
+## 语言约定
+
+除非用户明确要求使用其他语言，否则所有回复默认使用**中文**。
+
+Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TRACE`、`workflow-state.yaml`）保持英文，不要翻译。
 
 ## 工作区定位
 
-这是一个一人创作者/运营者的个人工作流沙盒。`reference/` 目录存放了几个流行的开源 agent-skill 项目，用于学习和借鉴。根工作区是我整理和演进自己 Claude Code 工作流的地方。
+这是一个一人创作者/运营者的个人工作流沙盒，同时是 `loop-workflow` 插件的 canonical 源码。
 
-从 OPC（一人公司）视角看，高杠杆动作有四步：
+| 目录 | 用途 | 能否修改 |
+|---|---|---|
+| `skills/` | 我们自己的 Claude Code skill 集合（canonical） | 能，按本文件纪律 |
+| `templates/` | skill 使用的全局/ story 级模板 | 能，按本文件纪律 |
+| `design/` | 工作流理念的推导文档 | 能，但需经过反思 |
+| `reference/` | 流行开源 agent-skill 项目的只读副本 | **不能**，只供灵感 |
+| `scripts/` | 维护脚本（如 `sync-refs.sh`） | 能 |
+| `.aiassist/` | **不在本仓库**；目标项目初始化后的产物 | 不能在这里创建 |
 
-1. **需求洞察** —— 确保我们在解决一个真实存在、有人愿意付费的问题。
-2. **UI/UX 设计** —— 在写代码之前先把感觉做对。
-3. **开发计划** —— 决定做什么、按什么顺序做。
-4. **端到端验证** —— 证明交付物对真实用户有用，而不只是代码能跑通。
+真正敲代码是低杠杆的。让 agent 负责实现；人的工作是把握愿景、验证需求、审批设计、验收结果。本仓库的“产品”就是这套工作流本身。
 
-真正敲代码是低杠杆的。让 agent 负责实现；人的工作是把握愿景、验证需求、审批设计、验收结果。
+## 项目结构
 
-## 我们的工作流：双循环
+```
+.
+├── skills/
+│   ├── productivity/          # 用户触发的工作流 skill
+│   │   ├── story/             # 双循环总入口
+│   │   ├── bootstrap-workflow/# 初始化目标项目基础设施
+│   │   ├── demand-insight/
+│   │   ├── to-prd/
+│   │   ├── domain-model/      # 维护 CONTEXT.md
+│   │   ├── tech-design/
+│   │   ├── design/
+│   │   ├── review/
+│   │   ├── signoff/
+│   │   ├── design-handoff/
+│   │   ├── reflect/
+│   │   └── research/
+│   ├── engineering/           # 模型触发（agent 自治）的实现 skill
+│   │   ├── crystallize/       # PRD → REQ-ID
+│   │   ├── test-author/       # 生成业务测试骨架
+│   │   ├── implementer/       # 针对测试实现代码
+│   │   ├── qa-runner/
+│   │   └── tdd/               # 内层 RED → GREEN 纪律
+│   └── maintenance/           # 工作流维护 skill
+│       └── sync-refs/
+├── templates/
+│   ├── claude/                # 追加到目标项目 CLAUDE.md 的附录
+│   ├── global/                # .aiassist/global/ 初始化模板
+│   ├── story/                 # .aiassist/stories/<id>/ 初始化模板
+│   ├── hooks/                 # git hooks
+│   └── github/workflows/      # CI/CD contract-gate 模板
+├── design/                    # 工作流设计文档（理念的源头）
+├── reference/                 # 只读参考仓库（见下）
+├── scripts/
+│   └── sync-refs.sh
+├── README.md
+├── CLAUDE.md                  # 本文件
+└── .claude-plugin/
+    └── plugin.json            # skill 注册表
+```
 
-本工作区现在包含我们自己的 Claude Code 工作流：**双循环**（`skills/`）。它以"测试即契约"为内核，融合了参考项目各自的优点：
+## 工作纪律
 
-- **mattpocock skills** —— 传统软件工程纪律（TDD、对抗式文档审查、诊断）。
-- **gstack** —— CEO/创始人级别的需求洞察、设计决策、发布与 QA 门禁、流程编排与产物链。
-- **superpowers** —— 严谨的计划、subagent 驱动的批量执行与审查包。
+### 绝对不要
 
-核心理念：
+1. **不要修改 `reference/` 下的任何参考仓库**。它们是只读灵感来源。想把某个模式适配到我们的工作流，复制到 `skills/` 的新文件夹，并在 `SOURCES.md` 中标注来源。
+2. **不要把 skill 写成一次性脚本**。每个 skill 必须是清晰、可复用的工作流步骤，前言有 `sources:`，目录下有 `SOURCES.md`。
+3. **不要在没有 plan mode 的情况下开始非 trivial 改动**。新增 skill、重构工作流、改动签核机制等，必须先获得用户批准的 plan。
+4. **不要在一个 commit 里混实现代码和测试文件**。本工作流有 git hooks 拦截，但纪律优先于工具。
+5. **不要改完不验证**。改动 `plugin.json` 后验证 JSON；改动 skill 后确认路径存在；改动附录后检查与 `README.md` 一致。
 
-> **人持有裁决器（断言）；AI 在测试构成的契约内实现。人不直接修改实现代码 —— 他们修改需求和断言，错误逐层回流到最高层。**
+### 必须做
 
-关键机制：
-
-- **两挡**：一挡（探索期 —— PRD、HTML 原型、无测试、可随意推翻）→ 跨越线 → 二挡（测试锁定 —— REQ-ID → tests → code）。
-- **两道硬签核**：`/signoff --stage=assertion` = 人在实现前签核断言；`/signoff --stage=feel` = 人依据 HTML 参照验收观感。
-- **三种角色**：人（REQ/断言/HTML）、test-author agent（编写测试骨架）、implementer agent（编写代码，对测试只读）。
-- **REQ-ID 可追溯**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
-- **能力/实体可追溯**：每个 REQ 标注 `capability` 和 `entity`，测试头部声明 `// CAPABILITY-TRACE` 和 `// ENTITY-TRACE`，测试按 `tests/capabilities/<capability>/<entity>/` 组织。
-- **ADR 目录**：重要架构决策（难逆转、不说明会令人困惑、有真实取舍）写入 `.aiassist/global/adr/`，而不是堆在单文件 `architecture.md` 中。
-
-除非明确要求，否则不要修改参考仓库。把它们当作只读的灵感来源，把单个 skill 模式复制/适配到 `skills/` 中。
-
-| 路径 | 项目 | 借鉴重点 |
-|------|------|----------|
-| `reference/gstack/` | Garry's gstack | CEO 洞察、发布与验证：`/office-hours`、`/design-shotgun`、`/qa`、`/benchmark`、`/canary`、`/ship`、浏览器自动化 |
-| `reference/mattpocock/` | Matt Pocock's skills | 轻量日常工程技能：`/grill-me`、`/grill-with-docs`、`/tdd`、`/diagnose`、领域建模 |
-| `reference/superpowers/` | Jesse's Superpowers | 严谨计划与执行：`writing-plans`、`subagent-driven-development`、`executing-plans` |
-| `reference/baoyu-design/` | baoyu-design（Jim Liu） | Claude Design 可移植 skill：HTML 原型、设计系统、Figma 导入、PPTX 导出、starter components |
+1. **新增 skill 必须同步 `plugin.json`**，并在 skill 前言的 `sources:` 和 `SOURCES.md` 中记录参考来源。
+2. **修改核心工作流机制时，先考虑是否需要 ADR**。满足“难逆转、不说明会令人困惑、有真实取舍”的决策，写入 `.aiassist/global/adr/`（本仓库则写入 `design/` 或 `adr/` 目录，视范围而定）。
+3. **保持术语一致**。使用本工作流定义的词汇：双循环、稳定块/移动块、签核门、seam、capability/entity、回流等。
+4. **关键决策留证据**。重要的拒绝、方案选择、范围变更，应简要说明理由，不要只给结论。
 
 ## 我们的双循环工作流
 
-在实现真实功能时，直接使用 `skills/` 中的 skill，而不是直接调用参考 skill。参考项目只供灵感，`skills/` 才是 operational 工作流。
+本工作流以“测试即契约”为内核：
 
-本工作流把开发压缩为三个动作：
+> **人持有裁决器（断言）；AI 在测试构成的契约内实现。人不直接修改实现代码 —— 他们修改需求和断言，错误逐层回流到最高层。**
 
-1. **设计上下文** —— 人把想做什么、为什么、长什么样、怎么算对，说清楚到机器可验。
-2. **开发迭代** —— AI 根据上下文写代码、跑测试、改 bug，直到契约全绿。
-3. **人验收** —— 人验证功能和观感；不通过就回到设计上下文修正，再交给 AI 重新迭代。
+### 两个循环
 
-这对应两个循环：
+- **外层循环（人控制）**：需求洞察 → PRD → UX → 领域建模 → 技术方案 → REQ → 断言签核 → 验收 → 回流。
+- **内层循环（agent 控制）**：读测试 → 写代码 → 跑测试 → 改 bug → 全绿。
 
-- **外层循环（人控制）**：需求洞察 → PRD → UX → 技术方案 → REQ → 断言签核 → 验收 → 回流。人做决定、人签核、人改需求。
-- **内层循环（agent 控制）**：读测试 → 写代码 → 跑测试 → 改 bug → 全绿。AI 自主迭代，人对代码只读。
+两个循环的边界是**签核**：
 
-两个循环的边界是**签核**：门 1 把上下文交给 AI，门 2 把 AI 产出交回给人验收。
+| 门 | Skill | 作用 |
+|---|---|---|
+| 门 1 | `/signoff --stage=assertion` | 人在实现前签核断言，把上下文交给 AI |
+| 门 2 | `/signoff --stage=feel` | 人依据 HTML 参照验收观感，把 AI 产出交回人 |
 
 ### 阶段总览
 
@@ -79,43 +119,23 @@
 | 9 | BUILD — 实现 | `/implementer` | 模型 | 内层 | 针对测试实现代码；对业务测试只读；内部用 `/tdd` 纪律 RED → GREEN；每轮迭代跑全套业务测试 |
 | 10 | QA — 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集 |
 | 11 | FEEL-SIGNOFF — 观感签核 | `/signoff --stage=feel` | 用户 | **门 2** | 人依据 HTML 参照验收观感；偏差回流到外层循环 |
-|   | 开发者交接（可选） | `/design-handoff` | 用户 | 外层 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
+| — | 开发者交接（可选） | `/design-handoff` | 用户 | 外层 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
 | 12 | REFLECT — 反思 | `/reflect` | 用户 | 外层 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
 
-### 两个循环的流转
+### 关键机制
 
-```
-外层循环（人控制的设计上下文）
-  THINK → PRD → DESIGN → TECH-DESIGN → CRYSTALLIZE → TEST
-              ↑                                     │
-              └──────── FEEL-SIGNOFF 不通过,回流 ─────┘
-                                                   │
-                                            门 1: ASSERTION-SIGNOFF
-                                                   │
-                                                   ▼
-内层循环（agent 控制的实现迭代）
-  BUILD → QA  (测试不绿就自修,不许改断言)
-                                                   │
-                                            门 2: FEEL-SIGNOFF
-                                                   │
-                                                   ▼
-                                         人验收 → 通过 / 不通过回流
-```
-
-本工作流默认把**产品 CLI** 当作首要测试 seam：
-
-- CLI 是人类和 agent 共用的真实接口，测试跑的就是人可以手动跑的命令。
-- CLI 测试断言可观察行为（stdout/stderr/exit code/文件/数据库 side effect），不窥视实现细节。
-- CLI 能保持状态，测试之间无需反复启停，比浏览器 E2E 更稳定。
-- 能用 CLI 验证的行为不进浏览器 E2E；不能 CLI 化的行为退到 public 接口测试或浏览器 E2E。
-
-因此 `/tech-design` 会把"这个稳定块能否映射到产品 CLI 命令"作为默认问题；`/test-author` 会优先生成 CLI 测试，不能 CLI 化时补充浏览器 E2E 或 public 接口测试。`/implementer` 在实现过程中用 `/tdd` 纪律写单元测试驱动代码。
+- **两挡**：一挡（探索期 —— PRD、HTML 原型、无测试、可随意推翻）→ 跨越线 → 二挡（测试锁定 —— REQ-ID → tests → code）。
+- **三道角色权限互斥**：人写 REQ/断言/HTML；test-author 写测试骨架；implementer 写实现代码且对业务测试只读。
+- **REQ-ID 可追溯**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
+- **能力/实体可追溯**：每个 REQ 标注 `capability` 和 `entity`，测试头部声明 `// CAPABILITY-TRACE` 和 `// ENTITY-TRACE`，测试按 `tests/capabilities/<capability>/<entity>/` 组织。
+- **ADR 目录**：重要架构决策写入 `.aiassist/global/adr/`，原 `architecture.md` 只保留高层概览和索引。
+- **CLI 是默认 seam**：能用产品 CLI 验证的行为不进浏览器 E2E；不能 CLI 化的退到 public 接口测试或浏览器 E2E。
 
 ### 回流机制
 
-工作流承认一挡会推翻。`/story` 内置回流分支,把"推倒重来"做成显式、留证据、可学习的动作。
+工作流承认一挡会推翻。`/story` 内置回流分支。
 
-**核心：story = 初衷。** 初衷指向用户痛点，不是具体方案（`/to-prd` 强制把问题陈述写成痛点形态）。
+**核心：story = 初衷。** 初衷指向用户痛点，不是具体方案。
 
 | 情况 | 动作 |
 |---|---|
@@ -123,83 +143,8 @@
 | 初衷本身错了/痛点不成立 | 不归档，直接删 story |
 
 - **归档范围**：PRD、requirements、断言签核、代码等承诺层产物 + `reason.md`（根因+推翻理由）。UX 原型不归档（一挡思考工具，直接改）。
-- **根因诊断优先**：回流前先判"初衷在不在"。模型提议，人拍板。
-- **不算回流的情况**（走局部纠错）：REQ 漏 case → `/crystallize` 补验收标准；断言自相矛盾 → 门 1 重审；一挡内单块推翻 → 该块降级回"移动块"。
-- **健康指标**：`/reflect` 统计归档重做次数和根因层；频繁归档说明一挡的完整性体检投入不够。
-
-### 在目标项目里启动
-
-1. 确保目标项目已安装本工作流 skill。推荐通过 Claude Code Marketplace：
-   ```bash
-   /plugin marketplace add charonX/workflow
-   /plugin install loop-workflow@charonx-workflow
-   /reload-plugins
-   ```
-   也可以手动复制或软链（见 `README.md`）。
-2. 在目标项目里运行 `/bootstrap-workflow`，创建 `.aiassist/` 项目基础设施。
-3. 运行 `/story`，开始第一个 story。
-
-### 安装 skill
-
-完整的安装与更新说明见 `README.md`。
-
-### 参考工作流（旧版）
-
-下面这份详细的五步参考工作流仍有助于理解高杠杆活动，但实际操作路径已经变成上面的双循环 skill 集合。
-
-### 1. 需求洞察 —— 我们在做对的事吗？
-
-在设计和编码之前，先验证问题真实存在、解决方案有人想要。
-
-- 使用 `reference/superpowers/skills/brainstorming/SKILL.md` 或 `reference/gstack/office-hours/SKILL.md` 盘问想法。
-- 使用 `reference/skills/skills/productivity/grill-me/SKILL.md` 或 `reference/skills/skills/engineering/grill-with-docs/SKILL.md` 沿决策树每条分支走到底。
-- 进入下一阶段前必须回答：
-  - 到底是谁在感受这个痛点？
-  - 他们今天是怎么做的？
-  - 为什么会切换到我们这里？
-  - 能最先发布的最窄切口是什么？
-- 输出：一份经过验证的简短 spec。如果答案是“我不确定”，就在这里停下来，去访谈用户或做调研。
-
-### 2. UI/UX 设计 —— 它应该是什么感觉？
-
-在写实现计划之前先设计用户体验。
-
-- 使用 `reference/gstack/design-shotgun/SKILL.md` 生成多个视觉变体并比较。
-- 如果没有现有设计系统，使用 `reference/gstack/design-consultation/SKILL.md`。
-- 使用 `reference/gstack/plan-design-review/SKILL.md` 在动手前从设计维度批判计划。
-- 对于线上站点，使用 `reference/gstack/design-review/SKILL.md` 发现并修复视觉/层级问题。
-- 输出：已批准的 mockup 或设计方向，以及记录在项目文档中的设计系统决策。
-
-### 3. 开发计划 —— 我们做什么、按什么顺序做？
-
-需求和设计清晰后，写实现计划。不要跳过这一步。
-
-- 以 `reference/superpowers/skills/writing-plans/SKILL.md` 为模板。
-- 使用 `reference/gstack/plan-eng-review/SKILL.md` 锁定架构、数据流、边界情况和测试覆盖。
-- 保存计划到 `docs/plans/YYYY-MM-DD-<feature-name>.md`。
-- 每个任务都应是一个可产出可用、可测试行为的垂直切片。
-- 输出：用户批准的计划，包含精确文件路径和验证步骤。
-
-### 4. 实现 —— 让 agent 写代码
-
-有了经过验证的计划，开始执行。目标不是完美代码，而是能跑、能测、符合设计的软件。
-
-- 使用 `reference/superpowers/skills/subagent-driven-development/SKILL.md` 或 `reference/superpowers/skills/executing-plans/SKILL.md` 按任务逐步推进。
-- agent 负责编码。我在检查点审查并批准方向变更。
-- 如果任务涉及 UI，agent 应产出可运行的状态，而不只是代码。
-- 不要陷入重构循环。YAGNI。发布能验证需求的最小版本。
-
-### 5. 端到端验证 —— 它真的有用吗？
-
-这是最高杠杆的一步。验证真实用户体验，而不只是单元测试。
-
-- **功能验证**：运行 app/CLI/站点，走一遍真实用户流程。如果对真实用户不可用，就不发布。
-- **自动化测试**：运行项目的测试/ lint / typecheck 命令。发布前修复回归。
-- **QA / 自测**：使用 `reference/gstack/qa/SKILL.md` 或 `reference/gstack/qa-only/SKILL.md` 系统化测试流程并截图/收集证据。
-- **浏览器/站点验证**：使用 `reference/gstack/browse/` 对部署或本地站点进行端到端交互。
-- **性能**：如果加载时间或包大小重要，使用 `reference/gstack/benchmark/SKILL.md`。
-- **发布后**：使用 `reference/gstack/canary/SKILL.md` 在发布后监控生产环境。
-- 输出：已发布的东西，以及证明它对用户有效的证据。
+- **根因诊断优先**：回流前先判“初衷在不在”。模型提议，人拍板。
+- **不算回流的情况**（走局部纠错）：REQ 漏 case → `/crystallize` 补验收标准；断言自相矛盾 → 门 1 重审；一挡内单块推翻 → 该块降级回“移动块”。
 
 ## Skill 速查
 
@@ -208,24 +153,25 @@
 | 我想…… | 使用 |
 |--------|------|
 | 用双循环启动新功能 / 继续一个 story（路由外层/内层循环、回流） | `/story` |
-| 发现根本问题,要回流(归档重做/删 story) | `/story`(回流分支) |
+| 发现根本问题，要回流（归档重做/删 story） | `/story`（回流分支） |
 | 在目标项目初始化工作流 | `/bootstrap-workflow` |
-| 运行对抗式需求访谈，用第一性原理剥离继承假设（适合模糊痛点/初步想法） | `/demand-insight` |
-| 针对技术/API/库问题做带引用的调研 | `/research` |
+| 运行对抗式需求访谈，用第一性原理剥离继承假设 | `/demand-insight` |
 | 把讨论整理成 PRD | `/to-prd` |
 | 用 HTML 原型探索 UX（含编译 preview、资产版本管理、变体） | `/design` |
-| 建立或更新设计系统（含编译、预览、资产记录） | `/design` |
-| 导入设计来源（Figma/GitHub/HTML）并可选编译为设计系统 | `/design` |
+| 建立或更新设计系统 | `/design` |
+| 导入设计来源（Figma/GitHub/HTML） | `/design` |
 | 统一领域术语与业务实体，维护 `CONTEXT.md` | `/domain-model` |
+| 做对抗式技术方案设计 | `/tech-design` |
 | 把 PRD 转成 REQ-ID | `/crystallize` |
-| 做对抗式技术方案设计，用第一性原理区分真实约束与历史包袱，确定 CLI 优先的测试 seams | `/tech-design` |
-| 从 REQ 优先生成 CLI 测试骨架，不能 CLI 化时补充浏览器 E2E 或 public 接口测试 | `/test-author` |
-| 内层实现纪律：RED → GREEN 写单元测试驱动代码（单元测试不进入契约） | `/tdd` |
-| 在实现前签核断言（门 1，把契约交给 AI）/ 验收观感（门 2，把 AI 产出交回人） | `/signoff` |
-| 针对已签核测试实现代码（内层循环核心） | `/implementer` |
-| 运行 QA / E2E / 回归（内层循环终点验证） | `/qa-runner` |
-| 从 UX 生成开发者交接包（含机器可读 manifest） | `/design-handoff` |
-| 捕获经验教训并更新知识（外层循环反馈） | `/reflect` |
+| 从 REQ 优先生成 CLI 测试骨架 | `/test-author` |
+| 内层实现纪律：RED → GREEN 写单元测试 | `/tdd` |
+| 在实现前签核断言 / 验收观感 | `/signoff` |
+| 针对已签核测试实现代码 | `/implementer` |
+| 运行 QA / E2E / 回归 | `/qa-runner` |
+| 从 UX 生成开发者交接包 | `/design-handoff` |
+| 捕获经验教训并更新知识 | `/reflect` |
+| 针对技术/API/库问题做带引用的调研 | `/research` |
+| 手动审查 PRD/技术方案/代码 | `/review` |
 | 同步参考项目并吸收上游变更 | `/sync-refs` |
 
 ### 参考 skill（仅作灵感）
@@ -241,11 +187,81 @@
 | 写结构化实现计划 | `reference/superpowers/skills/writing-plans/` |
 | 审查架构 / 边界情况 | `reference/gstack/plan-eng-review/` |
 | 在 agent 支持下执行计划 | `reference/superpowers/skills/subagent-driven-development/` |
-| 调试 bug | `reference/skills/skills/engineering/diagnose/` 或 `reference/gstack/investigate/` |
+| 调试 bug | `reference/mattpocock/skills/engineering/diagnose/` 或 `reference/gstack/investigate/` |
 | 系统化 QA 站点 | `reference/gstack/qa/` 或 `reference/gstack/qa-only/` |
 | 检查性能 | `reference/gstack/benchmark/` |
 | 发布后监控 | `reference/gstack/canary/` |
 | 发布 / 开 PR | `reference/gstack/ship/` + `reference/gstack/review/` |
+
+## 创建与更新 skill
+
+把参考 skill 模式适配到我们工作流时：
+
+1. 只把需要的模式复制到新文件夹 `skills/<bucket>/<skill-name>/`。
+2. 把 skill 路径加到 `.claude-plugin/plugin.json`。
+3. 在 skill 前言的 `sources:` 和 `skills/<bucket>/<skill-name>/SOURCES.md` 中记录参考来源。
+4. 删掉不适合我们工作流的内容。
+5. 调整语气和示例，使其符合我们的项目。
+6. 在真实 Claude Code 会话中测试该 skill，再定稿。
+
+好的 skill 小而可组合。一个 skill = 一个清晰的职责。
+
+当参考项目更新时，使用记录的 `sources` 在本地 diff 并更新我们的 skill，然后重新安装到目标项目。
+
+## 与参考项目保持同步
+
+运行 `/sync-refs`（或 `./scripts/sync-refs.sh`）。它会：
+
+1. 对所有参考仓库执行 `git pull`
+2. 解析每个 skill 的 `SOURCES.md`，找到它依赖的参考文件
+3. 对每个依赖执行 `git log --since=<last sync>`
+4. 生成 `docs/sync-reports/YYYY-MM-DD.md`，按 skill 分组列出变更
+5. 引导你逐个判断：吸收 / 跳过 / 延后
+
+## 常用命令
+
+```bash
+# 验证插件配置
+python3 -m json.tool .claude-plugin/plugin.json
+
+# 拉取所有参考仓库（只读）
+./scripts/sync-refs.sh --pull-only
+
+# 手动安装 skill 到目标项目（见 README.md 完整说明）
+cd /path/to/your-project
+cp -R /path/to/workflow/skills/productivity/* .claude/skills/
+cp -R /path/to/workflow/skills/engineering/* .claude/skills/
+cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
+```
+
+## 声音与风格
+
+- **冷静、结构化、不推销**。skill 正文用清晰的步骤、表格、清单，避免营销式形容词。
+- **中文回复，英文术语**。如“使用 `/crystallize` 生成 REQ-ID”。
+- **关键决策显性化**。用 plan mode 或 AskUserQuestion，不替用户做重大取舍。
+- **错误向上回**。发现测试、需求、方案错了，回到最高出错层修，不在低层打补丁。
+
+## 常见错误与升级路径
+
+| 错误 | 正确做法 |
+|---|---|
+| 直接改 `reference/` | 复制模式到 `skills/`，写 `SOURCES.md` |
+| 没 plan 就改核心流程 | 先进入 plan mode，获得用户批准 |
+| 新增 skill 不同步 `plugin.json` | 同步注册，并验证 JSON |
+| 把业务逻辑写进 skill | skill 是工作流步骤，不是产品功能实现 |
+| 不确定用户意图时猜测 | 用 AskUserQuestion 澄清 |
+
+如果计划 Approved 后发现涉及跨 skill 结构性改动（例如改动签核机制、改变测试组织方式），先回到 plan mode 更新方案，而不是边做边改。
+
+## 验收测试
+
+改动本仓库后，至少验证：
+
+1. `.claude-plugin/plugin.json` 是有效 JSON。
+2. `plugin.json` 中列出的每个 skill 目录在 `skills/` 下真实存在。
+3. `CLAUDE.md` 与 `README.md` 的 skill 列表、阶段数量一致。
+4. 新增 skill 有 `SOURCES.md`。
+5. `templates/claude/project-claude-appendix.md.template` 中的产物目录与 `bootstrap-workflow/SKILL.md` 一致。
 
 ## 参考项目命令
 
@@ -265,70 +281,3 @@
 ### mattpocock skills（`reference/mattpocock/`）
 - `npx skills@latest add mattpocock/skills` —— 消费者安装
 - Skill 位于 `skills/<bucket>/<skill-name>/SKILL.md`。
-
-## 创建与更新我们的 skill
-
-`skills/` 是双循环 skill 的 canonical 集合，按 Claude Code 插件组织：
-
-- `skills/productivity/` —— 用户触发的工作流 skill
-- `skills/engineering/` —— 模型触发的实现 skill
-- `skills/maintenance/` —— 工作流维护 skill（同步 refs、更新配置等）
-
-把参考 skill 模式适配到我们工作流时：
-
-1. 只把需要的模式复制到新文件夹 `skills/<bucket>/<skill-name>/SKILL.md`。
-2. 把 skill 路径加到 `.claude-plugin/plugin.json`。
-3. 在 skill 前言的 `sources:` 和 `skills/<bucket>/<skill-name>/SOURCES.md` 中记录参考来源。
-4. 删掉不适合我们工作流的内容。
-5. 调整语气和示例，使其符合我们的项目。
-6. 在真实 Claude Code 会话中测试该 skill，再定稿。
-
-好的 skill 小而可组合。一个 skill = 一个清晰的职责。
-
-当参考项目更新时，使用记录的 `sources` 在本地 diff 并更新我们的 skill，然后重新安装到目标项目。
-
-## 与参考项目保持同步
-
-我们的 skill 借鉴自参考项目（`reference/`）。当这些项目更新时，我们需要结构化地判断吸收哪些变更。
-
-### 快速同步
-
-运行 `/sync-refs`（或 `./scripts/sync-refs.sh`）。它会：
-
-1. 对所有参考仓库执行 `git pull`
-2. 解析每个 skill 的 `SOURCES.md`，找到它依赖的参考文件
-3. 对每个依赖执行 `git log --since=<last sync>`
-4. 生成 `docs/sync-reports/YYYY-MM-DD.md`，按 skill 分组列出变更
-5. 引导你逐个判断：吸收 / 跳过 / 延后
-
-### 手动同步
-
-```bash
-# 1. 拉取所有参考仓库
-./scripts/sync-refs.sh --pull-only
-
-# 2. 查看某个参考文件的变更
-git -C reference/baoyu-design log --since="2026-06-01" -- skills/baoyu-design/system-prompt.md
-
-# 3. Diff 变更
-git -C reference/baoyu-design diff <old-commit>..HEAD -- skills/baoyu-design/system-prompt.md
-
-# 4. 如果吸收，更新 skill 及其 SOURCES.md
-```
-
-### 更新节奏
-
-- **每月**（默认）：运行 `/sync-refs`，大多数报告会是干净的
-- **大版本发布时**：gstack/superpowers/baoyu-design 发布主版本时
-- **重大工作流变更前**：检查上游是否已经解决了同样的问题
-
-### 决策框架
-
-| 参考变更类型 | 动作 |
-|-------------|------|
-| 我们不使用的新功能/skill | 跳过 |
-| 我们已借鉴部分的方法论改进 | 仔细评估，通常值得吸收 |
-| bug 修复或格式改进 | 吸收（低风险） |
-| 内部重构 | 跳过（不影响方法论） |
-| 上游文件移动/删除 | 标记 —— 检查我们的参考是否断裂 |
-| 与我们的改编冲突的变更 | 分析 —— 除非上游找到了更好的方案，否则保留我们的设计决策 |

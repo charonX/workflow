@@ -84,18 +84,18 @@
 | 1 | **THINK** | `/demand-insight` | 用户 | 对抗式访谈,暴露隐性需求、边界与矛盾 |
 | 2 | **PRD** | `/to-prd` | 用户 | 把讨论整理成结构化 PRD(问题陈述锚定痛点) |
 | 3 | **DESIGN** | `/design` | 用户 | 统一入口:建/更新设计系统、导入设计源、迭代 HTML 原型 |
-| 4 | **技术方案** | `/tech-design` | 用户 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
-| 5 | **技术方案审查** | `/review --stage=tech` | 用户（手动） | 新会话视角审查技术方案（可选但建议） |
-| 6 | **领域建模** | `/domain-model` | 用户 | 统一术语与业务实体，维护 `CONTEXT.md` |
-| 7 | **结晶** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
-| 7 | **测试** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架；不能 CLI 化的退到浏览器 E2E 或 public 接口测试；为人留占位断言 |
-| 8 | **TDD** | `/tdd` | 模型 | 内层实现纪律：RED → GREEN 写单元测试驱动代码；单元测试不进入契约 |
-| 9 | **断言签核** | `/signoff --stage=assertion` | 用户 | 人在实现前签核所有断言(门 1) |
-| 9 | **实现** | `/implementer` | 模型 | 针对测试实现代码,对测试只读,每轮跑全套测试 |
-| 10 | **代码审查** | `/review --stage=code` | 用户（手动） | 新会话视角审查实现 diff（可选但建议） |
-| 11 | **QA** | `/qa-runner` | 模型 | E2E、回归、证据收集 |
-| 12 | **观感签核** | `/signoff --stage=feel` | 用户 | 人依据 HTML 参照验收观感,偏差回流 REQ(门 2) |
-| — | **反思** | `/reflect` | 用户 | 捕获经验教训,更新全局知识 |
+| 4 | **DOMAIN-MODEL** | `/domain-model` | 用户 | 统一术语与业务实体，维护 `CONTEXT.md` |
+| 5 | **TECH-DESIGN** | `/tech-design` | 用户 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
+| 6 | **CRYSTALLIZE** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
+| 7 | **TEST** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架；不能 CLI 化的退到浏览器 E2E 或 public 接口测试；为人留占位断言 |
+| 8 | **ASSERTION-SIGNOFF** | `/signoff --stage=assertion` | 用户 | 人在实现前签核所有断言(门 1) |
+| 9 | **BUILD** | `/implementer` | 模型 | 针对测试实现代码,对测试只读,每轮跑全套测试 |
+| 10 | **QA** | `/qa-runner` | 模型 | E2E、回归、证据收集 |
+| 11 | **FEEL-SIGNOFF** | `/signoff --stage=feel` | 用户 | 人依据 HTML 参照验收观感,偏差回流 REQ(门 2) |
+| 12 | **REFLECT** | `/reflect` | 用户 | 捕获经验教训,更新全局知识 |
+| — | **技术方案审查** | `/review --stage=tech` | 用户（手动） | 新会话视角审查技术方案（可选但建议） |
+| — | **代码审查** | `/review --stage=code` | 用户（手动） | 新会话视角审查实现 diff（可选但建议） |
+| — | **开发者交接** | `/design-handoff` | 用户 | 从已批准 UX 生成开发交接包（可选） |
 
 ### 三种角色(权限互斥)
 
@@ -252,6 +252,7 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 | `/signoff` | 签核 | 两个循环的切换点；门 1 把契约交给 AI，门 2 把 AI 产出交回人验收 |
 | `/design-handoff` | 交接（可选） | 从已批准 UX 生成开发交接包（含机器可读 manifest） |
 | `/reflect` | REFLECT（可选） | 外层循环反馈；捕获经验教训，更新全局知识 |
+| `/sync-refs` | MAINTENANCE | 同步参考项目并吸收上游变更 |
 
 ### 模型触发
 

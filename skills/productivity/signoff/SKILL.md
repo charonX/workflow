@@ -1,7 +1,6 @@
 ---
 name: signoff
 description: 两个循环的切换点。--stage=assertion 是外层设计循环的终点(把契约交给 AI 实现);--stage=feel 是内层实现循环的终点(人验收 AI 产出,不通过则回流修设计)。
-disable-model-invocation: true
 sources:
   - reference/gstack/plan-eng-review/SKILL.md
   - reference/gstack/design-review/SKILL.md

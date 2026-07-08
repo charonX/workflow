@@ -1,7 +1,6 @@
 ---
 name: to-prd
 description: 把需求访谈笔记和现有上下文合成为正式 PRD，不访谈，只合成。
-disable-model-invocation: true
 sources:
   - reference/superpowers/skills/writing-plans/SKILL.md
   - reference/gstack/office-hours/SKILL.md

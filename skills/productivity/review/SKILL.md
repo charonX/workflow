@@ -1,7 +1,6 @@
 ---
 name: review
 description: 外层设计循环中的手动检查点。在 PRD 后、技术方案后或 BUILD 后，以新会话视角审查产物质量，输出 review 报告；不自动修改产物。
-disable-model-invocation: true
 sources:
   - reference/gstack/review/SKILL.md
   - reference/gstack/plan-eng-review/SKILL.md

@@ -1,7 +1,6 @@
 ---
 name: sync-refs
 description: 拉取所有 reference 项目最新代码，检查每个 skill 的参考依赖是否有上游变更，生成变更报告并引导逐项判断是否吸收。
-disable-model-invocation: true
 ---
 
 # sync-refs

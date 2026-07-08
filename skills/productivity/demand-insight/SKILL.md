@@ -1,7 +1,6 @@
 ---
 name: demand-insight
 description: 对抗式需求访谈。适合只有模糊痛点或初步想法的阶段，通过连续追问帮你找到正确方向，逼出隐含需求、边界条件和自相矛盾。
-disable-model-invocation: true
 sources:
   - reference/superpowers/skills/brainstorming/SKILL.md
   - reference/mattpocock/skills/productivity/grill-me/SKILL.md

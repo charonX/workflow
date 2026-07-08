@@ -1,7 +1,6 @@
 ---
 name: design-handoff
 description: 在 `/signoff --stage=feel` 完成后，将已批准的 UX 原型与绑定设计系统转化为结构化开发交接包——增强版 README + 机器可读 _handoff_manifest.json + 设计文件打包，开发人员可脱离设计对话独立实现。
-disable-model-invocation: true
 sources:
   - reference/baoyu-design/skills/baoyu-design/built-in-skills/handoff-to-claude-code.md
   - reference/baoyu-design/skills/baoyu-design/built-in-skills/use-design-system.md

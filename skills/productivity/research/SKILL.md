@@ -1,7 +1,6 @@
 ---
 name: research
 description: 针对一个技术/API/库/领域问题，启动 background agent 读取 primary sources，输出带引用的调研笔记到 story 的 research/ 目录。在 /tech-design 前使用，为技术方案提供事实基础。
-disable-model-invocation: true
 sources:
   - reference/mattpocock/skills/engineering/research/SKILL.md
   - workflow/design/test-as-contract-workflow.md

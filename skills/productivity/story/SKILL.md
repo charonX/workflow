@@ -1,7 +1,6 @@
 ---
 name: story
 description: "双循环工作流总入口。管理 story 生命周期:读取 workflow-state 路由到当前阶段(外层人控设计循环 / 内层 agent 实现循环),在签核门切换循环,并在发现根本问题时执行回流。"
-disable-model-invocation: true
 sources:
   - workflow/design/workflow-framework.md
   - workflow/design/test-as-contract-workflow.md

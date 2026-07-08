@@ -1,7 +1,6 @@
 ---
 name: design
 description: 设计阶段统一入口。人在上，AI 在下：设计系统由人驱动、来源优先；story 级 UX 原型在确认范围后生成。
-disable-model-invocation: true
 sources:
   - reference/baoyu-design/skills/baoyu-design/built-in-skills/design-system-authoring-guide.md
   - reference/baoyu-design/skills/baoyu-design/built-in-skills/create-design-system.md

@@ -1,7 +1,6 @@
 ---
 name: tech-design
 description: 对抗式技术方案设计。适合已有方案主干的阶段，通过拷问把 PRD 稳定块翻译成系统语言：模块边界、数据流、接口契约与 CLI 优先的测试 seams。
-disable-model-invocation: true
 sources:
   - reference/gstack/plan-eng-review/SKILL.md
   - reference/mattpocock/skills/engineering/codebase-design/SKILL.md

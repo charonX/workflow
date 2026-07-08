@@ -1,7 +1,6 @@
 ---
 name: bootstrap-workflow
 description: 在目标项目中初始化 loop-workflow 的项目级基础设施，不创建具体 story。
-disable-model-invocation: true
 sources:
   - reference/gstack/CLAUDE.md
   - workflow/design/workflow-framework.md

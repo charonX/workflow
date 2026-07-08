@@ -89,7 +89,7 @@
 | 6 | **CRYSTALLIZE** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
 | 7 | **TEST** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架；不能 CLI 化的退到浏览器 E2E 或 public 接口测试；为人留占位断言 |
 | 8 | **ASSERTION-SIGNOFF** | `/signoff --stage=assertion` | 用户 | 人在实现前签核所有断言(门 1) |
-| 9 | **BUILD** | `/implementer` | 模型 | 针对测试实现代码,对测试只读,每轮跑全套测试 |
+| 9 | **BUILD** | `/implementer` | 模型 | 默认用子代理实现切片；父代理调度验证,对测试只读,每轮跑全套测试 |
 | 10 | **QA** | `/qa-runner` | 模型 | E2E、回归、证据收集 |
 | 11 | **FEEL-SIGNOFF** | `/signoff --stage=feel` | 用户 | 人依据 HTML 参照验收观感,偏差回流 REQ(门 2) |
 | 12 | **REFLECT** | `/reflect` | 用户 | 捕获经验教训,更新全局知识 |
@@ -261,7 +261,7 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 | `/crystallize` | 结晶 | 把 PRD 转成 REQ-ID |
 | `/test-author` | TEST | 优先生成 CLI 测试骨架，不能 CLI 化时补充浏览器 E2E 或 public 接口测试，为人留占位断言 |
 | `/tdd` | BUILD | 内层实现纪律：RED → GREEN 写单元测试驱动代码；单元测试不进入契约 |
-| `/implementer` | BUILD | 内层实现循环核心；针对已签核测试写代码，对业务测试只读；内部用 `/tdd` |
+| `/implementer` | BUILD | 内层实现循环核心；默认子代理实现切片，父代理调度验证；针对已签核测试写代码，对业务测试只读；内部用 `/tdd` |
 | `/qa-runner` | QA | 内层实现循环终点验证；跑 E2E/回归，输出 QA 报告 |
 
 ## 产物目录

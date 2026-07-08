@@ -118,7 +118,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 6 | CRYSTALLIZE — 结晶 | `/crystallize` | 模型 | 外层 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
 | 7 | TEST — 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；不能 CLI 化的退到浏览器 E2E 或 public 接口测试；为人留出占位断言 |
 | 8 | ASSERTION-SIGNOFF — 断言签核 | `/signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核所有断言；把上下文交给 AI |
-| 9 | BUILD — 实现 | `/implementer` | 模型 | 内层 | 针对测试实现代码；对业务测试只读；内部用 `/tdd` 纪律 RED → GREEN；每轮迭代跑全套业务测试 |
+| 9 | BUILD — 实现 | `/implementer` | 模型 | 内层 | 默认用子代理实现每个切片；父代理读文档/调度/验证；对业务测试只读；内部用 `/tdd` 纪律 RED → GREEN；每轮迭代跑全套业务测试 |
 | 10 | QA — 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集 |
 | 11 | FEEL-SIGNOFF — 观感签核 | `/signoff --stage=feel` | 用户 | **门 2** | 人依据 HTML 参照验收观感；偏差回流到外层循环 |
 | — | 开发者交接（可选） | `/design-handoff` | 用户 | 外层 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
@@ -168,7 +168,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 从 REQ 优先生成 CLI 测试骨架 | `/test-author` |
 | 内层实现纪律：RED → GREEN 写单元测试 | `/tdd` |
 | 在实现前签核断言 / 验收观感 | `/signoff` |
-| 针对已签核测试实现代码 | `/implementer` |
+| 针对已签核测试实现代码（默认子代理实现，父代理调度验证） | `/implementer` |
 | 运行 QA / E2E / 回归 | `/qa-runner` |
 | 从 UX 生成开发者交接包 | `/design-handoff` |
 | 捕获经验教训并更新知识 | `/reflect` |

@@ -1,7 +1,7 @@
 {
   "name": "loop-workflow",
   "description": "双循环工作流：人在外层设计上下文，AI 在内层契约内迭代，断言归人、实现归 AI",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "author": {
     "name": "charonX"
   },

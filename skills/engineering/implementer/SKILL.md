@@ -1,6 +1,6 @@
 ---
 name: implementer
-description: 内层实现循环的核心。在已签核的测试契约内自主写代码、跑测试、改 bug;对测试只读,直到全套绿。支持单切片与自动连续模式。
+description: 内层实现循环的核心。在已签核的测试契约内，通过子代理实现每个切片；父代理负责读取设计上下文、调度、验证。支持显式降级到当前上下文自循环。
 sources:
   - reference/superpowers/skills/subagent-driven-development/SKILL.md
   - reference/superpowers/skills/executing-plans/SKILL.md
@@ -21,6 +21,7 @@ sources:
 ## 输入
 
 - `.aiassist/stories/<id>/workflow-state.yaml`
+- `.aiassist/stories/<id>/prd.md`
 - `.aiassist/stories/<id>/requirements.md`
 - `.aiassist/stories/<id>/tech-design.md`（如有）
 - `.aiassist/stories/<id>/signoff.md`
@@ -29,170 +30,170 @@ sources:
 - `.aiassist/stories/<id>/ux/_ds_manifest.json`（story 级组件清单与 prop 契约，如有）
 - `.aiassist/global/_ds/<slug>/_ds_prompt.md`（设计系统使用提示）
 - `.aiassist/global/CONTEXT.md`（统一术语与实体命名）
+- `.aiassist/global/business-capabilities.md`（能力地图）
+- `.aiassist/global/adr/`（已有架构决策）
 - `.aiassist/global/codegraph.json`（CodeGraph 配置）
-- 测试文件（项目对应位置，如 `*Tests/**/*.swift`、`test/**/*.test.ts` 等）
-- 可选：workflow-state 中的 `slices` / `tasks` 列表
+- 测试文件（项目对应位置）
 
 ## 输出
 
-- 实现代码（项目源码目录）
+- 实现代码（由子代理写入项目源码目录）
 - 一个或多个 `[build]` commit
-- 每轮迭代报告（隐式）
-- `.aiassist/stories/<id>/build-progress.md`（自动连续模式下）
+- `.aiassist/stories/<id>/build-progress.md`
+- 更新后的 `.aiassist/stories/<id>/workflow-state.yaml`
 
-## 执行模式选择
+## 默认模式：子代理调度模式
 
-实现开始前，先判断 story 是否包含多个切片。
+`/implementer` 的默认行为是**父代理调度 + 子代理实现**。父代理不直接写实现代码，只负责：
 
-1. 读取 `workflow-state.yaml`。
-2. 如果其中明确有 `slices` 或 `tasks` 列表，且剩余未完成的切片数 > 1，向用户呈现选择：
-   - **A. 子代理连续模式**：每个切片派一个独立子代理实现，当前代理只负责调度、验证和推进。上下文最干净，适合长距离开发。
-   - **B. 当前代理自循环模式**：当前代理依次完成所有切片，不派子代理。适合切片之间强耦合、需要连续上下文的情况。
-   - **C. 手动单切片模式**（默认）：只实现当前切片，完成后停下来，由 `/story` 决定下一步。
-3. 如果用户未指定且只有 1 个切片，默认进入单切片模式。
-4. 如果用户说"自动完成"、"全部做完"、"用子代理实现全部"，默认进入子代理连续模式。
+1. 读取并理解全局设计上下文
+2. 识别/拆分切片
+3. 逐个派发 implementer subagent
+4. 独立验证每个子代理的产出
+5. 推进到下一个切片
 
-选择 A 或 B 后，进入**自动连续模式**。
+即使只有一个切片，也走子代理。这样可以保持实现上下文干净，父代理始终保有全局视角。
 
-## 单切片模式
+### 步骤
 
-与原有行为一致，但增加 HTML 原型参照：
+#### 1. 读取设计上下文（父代理）
 
-1. **读取设计上下文（必须先做）**：在写任何代码或读具体测试之前，先完整阅读：
-   - `requirements.md`：本 slice 对应的 REQ-ID、验收标准、capability/entity。
-   - `tech-design.md`：相关模块边界、数据流、接口契约、测试 seams。
-   - `prd.md`：本 slice 要解决的用户痛点和业务范围，避免只满足测试而丢失意图。
-   - `signoff.md`：人已签核的断言范围和已知约束。
-   简要记录：本 slice 的输入、输出、涉及模块、关键契约、边界 case。
-2. **读取测试**：理解每个测试的输入、输出、断言，把测试映射到上一步理解的 seams。
-3. **读取 HTML UX 原型（如有）**：如果 `ux/` 目录存在，读取 `_d_meta.json` 中的 canonical 资产列表，然后读取对应 `.html` 文件，作为视觉与结构参照。同时读取 `ux/_ds_manifest.json` 与 `.aiassist/global/_ds/<slug>/_ds_prompt.md`，了解可用组件与 prop 契约。记录：
-   - 页面/组件层级和命名。
-   - 关键元素及其顺序（按钮、表单、列表、空态等）。
-   - 交互状态（loading、empty、error、success、disabled）。
-   - 与 `tokens.css` / `DESIGN.md` / `_ds_manifest.json` 关联的样式 token。
-   实现时尽量对齐；实现后记录已知偏差。
-4. **查询 CodeGraph 或探索代码（仅在需要时）**：如果 `.aiassist/global/codegraph.json` 中 `enabled` 为 `true` 且 CLI 可用，优先用 CodeGraph 查询相关模块/函数/依赖关系，减少 grep/read 开销。CodeGraph 结果只作为导航辅助，最终代码语义以实际文件为准。如果 CodeGraph 不可用或查询失败，回退到 grep/read。**禁止在没读设计上下文之前就大规模探索代码。**
-5. **内循环实现（用 `/tdd`）**：
-   - 针对当前 slice 要满足的业务测试，识别需要实现的 seams。
-   - 调用 `/tdd` 纪律：写一个失败的单元测试（RED）→ 写最小实现让它通过（GREEN）→ 必要时简单清理。
-   - 单元测试是实现工具，不进入契约，可以随写随改。
-   - 每个 RED/GREEN 循环后跑当前 seam 的单元测试；当前 slice 所有 seam 完成后跑 **全套业务测试**。
-   - 如果业务测试回归失败，先修回归，必要时补单元测试。
-   - 重复直到当前 slice 的业务测试全绿。
-   - **测试全绿是必要门槛，不是充分条件**。绿了之后必须回头对照 PRD、tech-design.md 和 UX HTML 检查：模块边界是否被尊重？数据流是否完整？接口契约是否实现？UX 结构/行为是否对齐？不能为了通过测试而写特判或阉割功能。
-6. **轮数上限**：超过 N 轮（默认 10 轮）仍未全绿，停止并升级。
-7. **升级策略**：
-   - "我实现不出来，诊断如下" → 升级给人/更强模型。
-   - "我怀疑断言 X 自相矛盾/不可满足，证据如下" → 回 `/signoff --stage=assertion`。
-8. **偏差记录**：提交前输出一段简短说明，列出实现与 HTML 原型的已知偏差（如无法直接复刻的动画、平台限制导致的布局差异）。
-9. **提交**：全绿后提交，commit 消息使用 `[build]` 标签。一个 commit 只包含实现代码，不能包含测试文件。
-10. **同步 CodeGraph（如启用）**：如果 `.aiassist/global/codegraph.json` 中 `enabled` 为 `true` 且 CLI 可用，运行 `codegraph sync`（或对应命令）更新代码知识图谱。如果同步失败，记录警告但不阻塞流程。
+在调度任何子代理之前，父代理必须先完整阅读：
 
-## 自动连续模式
+1. `prd.md`：story 初衷和用户痛点
+2. `requirements.md`：所有 REQ-ID、验收标准、capability/entity、seam、测试路径
+3. `tech-design.md`：模块边界、数据流、接口契约
+4. `signoff.md`：人已签核的断言范围和约束
+5. `workflow-state.yaml`：当前 phase、attempt、slices、history
+6. `ux/*.html`、`_d_meta.json`、`_ds_manifest.json`、`_ds_prompt.md`（如有 UX 原型）
+7. `.aiassist/global/CONTEXT.md`、`business-capabilities.md`、`adr/`、`codegraph.json`
 
-目标：在**断言一次性签核**的前提下，AI 连续独立完成所有剩余切片，每个切片一个 `[build]` commit。
+父代理应简要记录：
+- 本 story 涉及哪些 capability/entity
+- 各切片之间的依赖关系
+- 关键接口契约和边界 case
+- 与 HTML 原型的对齐要点
 
-### 前置检查
+#### 2. 识别切片
 
-1. **识别切片**：
-   - 优先读取 `workflow-state.yaml` 里的 `slices` 或 `tasks` 列表。
-   - 如果没有，按 `requirements.md` 中的 REQ-ID 分组，把每个稳定块作为一个切片。
-2. **检查断言签核**：
-   - 所有切片对应的测试文件必须存在且已被 `signoff.md` 覆盖。
-   - 如果还有未签核的切片：
-     - 对每个未签核切片调用 `/test-author` 生成测试骨架。
-     - 汇总所有测试清单，请用户**一次性批量签核**。
-     - 签核完成后才进入实现循环。
-3. **建立进度账本**：创建/读取 `.aiassist/stories/<id>/build-progress.md`，记录每个切片的 base commit、head commit、状态。
+- **优先使用** `workflow-state.yaml` 中已有的 `slices` 列表。
+- **如果没有**，按 `requirements.md` 自动分组：
+  - 按 capability/entity 分组；
+  - 或按 area/phase 分组；
+  - 每个切片包含一组相关的 REQ-ID 和对应的测试文件。
+- 将切片列表写入 `build-progress.md`。
 
-### 切片执行循环
+#### 3. 按依赖顺序派发 implementer subagent
 
-按依赖顺序处理每个未完成的切片：
+对每个未完成的切片：
 
-```
-for slice in remaining_slices:
-    1. 记录 slice 开始
-    2. 根据模式执行：
-       - 子代理模式：派发 implementer subagent（见下文"子代理任务简报"）
-       - 自循环模式：当前代理按"单切片模式"实现
-    3. 独立验证：
-       - 子代理报告"完成后"，父代理必须亲自跑测试命令，读取输出，确认全绿。
-       - 参考 superpowers verification-before-completion：没有验证证据就不能声称完成。
-    4. 如果通过：
-       - 更新 workflow-state：标记该 slice 完成。
-       - 在 build-progress.md 追加：`Slice X: complete (<base7>..<head7>, tests green)`
-       - 如果 CodeGraph 已启用，运行 `codegraph sync` 更新图谱（失败则记录警告）。
-       - 进入下一个切片。
-    5. 如果失败：
-       - 子代理模式：派发 fix subagent，带上失败证据和完整 diff。
-       - 自循环模式：当前上下文修复。
-       - 修复后重新验证。
-       - 超过轮数上限仍失败 → 停止，向用户报告 blocker。
-```
+1. 记录 slice 开始（写入 `build-progress.md`）。
+2. 使用 Agent 工具派发 implementer subagent（见下文"子代理任务简报"）。
+3. 子代理返回后，父代理**必须独立验证**：
+   - 亲自跑测试命令
+   - 读取输出，确认业务测试全绿
+   - 检查 diff 是否只包含实现代码、是否误改测试
+4. 如果验证通过：
+   - 更新 `workflow-state`：标记该 slice 完成。
+   - 在 `build-progress.md` 追加：`Slice X: complete (<base7>..<head7>, tests green)`
+   - 如果 CodeGraph 已启用，运行 `codegraph sync`（失败则记录警告）。
+   - 进入下一个切片。
+5. 如果验证失败：
+   - 派发 fix subagent，带上失败证据、相关 diff、测试输出。
+   - 修复后重新验证。
+   - 超过轮数上限仍失败 → 停止，向用户报告 blocker。
 
-### 子代理任务简报
-
-使用 Agent 工具派发。prompt 必须包含：
-
-1. **任务定位**：这个切片在 story 中的位置，依赖哪些已完成的切片。
-2. **强制阅读顺序（写代码前必须完成）**：
-   1. `prd.md`：本 slice 要解决的用户痛点和业务范围。
-   2. `requirements.md`：指出本切片对应的 REQ-ID、验收标准、capability/entity。
-   3. `tech-design.md`：相关模块边界、数据流、接口契约、测试 seams。
-   4. `signoff.md`：人已签核的断言范围和已知约束。
-   5. 测试文件：理解输入/输出/断言。
-   6. `ux/_d_meta.json` 与 `ux/*.html`：视觉/结构参照；子代理必须读取并对齐。
-   7. `ux/_ds_manifest.json` 与 `.aiassist/global/_ds/<slug>/_ds_prompt.md`：story 级组件清单与 prop 契约。
-   8. `.aiassist/global/CONTEXT.md`：统一术语。
-   9. `.aiassist/global/codegraph.json`：CodeGraph 配置；启用时优先查询图谱（仅作为导航辅助，不能替代读文档）。
-3. **产出要求**：
-   - 只写实现代码，不修改业务测试（契约）。
-   - 在实现每个 seam 时使用 `/tdd` 纪律：RED → GREEN → 必要时清理。
-   - 单元测试是实现工具，不进入契约，不需要持久化或签核。
-   - 对照 HTML 原型实现视觉与结构，无法完全对齐时记录偏差。
-   - 实现完成后跑**全套业务测试**。
-   - 全部通过后再 commit；commit 消息格式：`[build] <slice 名称>`。
-   - **测试全绿只是最低门槛**：子代理必须确认实现同时满足 PRD 意图、tech-design 契约、UX HTML 结构/行为，不能仅为通过测试而硬凑。
-   - 如果 CodeGraph 已启用，commit 后运行 `codegraph sync` 更新图谱。
-4. **报告要求**：子代理返回：
-   - 状态：`DONE` / `DONE_WITH_CONCERNS` / `BLOCKED`
-   - 修改的文件列表
-   - 测试命令和输出摘要
-   - 与 HTML 原型的已知偏差
-   - commit hash
-   - 任何 concerns
-
-### 当前代理自循环
-
-与单切片模式相同，只是完成后不退出，而是：
-
-1. 更新 `build-progress.md`。
-2. 读取 workflow-state，找到下一个切片。
-3. 继续。
-
-### 完成所有切片后
+### 4. 完成所有切片后
 
 1. 跑 `git log --oneline` 汇总所有 `[build]` commit。
 2. 汇报：哪些切片已完成、总测试数、是否有 concerns。
 3. 推荐下一步：`/qa-runner` → `/signoff --stage=feel`。
 4. 不要自行合并，等待 `/signoff --stage=feel` 通过。
 
+## 显式降级：当前代理自循环模式
+
+如果用户明确说"在当前上下文实现"、"不用子代理"、"我自循环"，则父代理自己按单切片方式实现所有切片。这是降级选项，仅在以下情况使用：
+
+- 切片之间强耦合，需要连续上下文
+- 子代理成本过高或项目极小
+- 用户明确要求
+
+自循环模式下，父代理仍需先读设计上下文，然后按"子代理任务简报"中的阅读顺序和实现纪律执行。
+
+## 子代理任务简报
+
+使用 Agent 工具派发。prompt 必须包含：
+
+### 1. 任务定位
+
+- 本切片在 story 中的位置
+- 本切片对应的 REQ-ID 列表
+- 依赖哪些已完成的切片
+- 本切片的输入、输出、涉及模块、关键契约
+
+### 2. 强制阅读顺序（写代码前必须完成）
+
+1. `prd.md`：本 slice 要解决的用户痛点和业务范围。
+2. `requirements.md`：本切片对应的 REQ-ID、验收标准、capability/entity。
+3. `tech-design.md`：相关模块边界、数据流、接口契约、测试 seams。
+4. `signoff.md`：人已签核的断言范围和已知约束。
+5. 测试文件：理解输入/输出/断言。
+6. `ux/_d_meta.json` 与 `ux/*.html`：视觉/结构参照；子代理必须读取并对齐。
+7. `ux/_ds_manifest.json` 与 `.aiassist/global/_ds/<slug>/_ds_prompt.md`：story 级组件清单与 prop 契约。
+8. `.aiassist/global/CONTEXT.md`：统一术语。
+9. `.aiassist/global/codegraph.json`：CodeGraph 配置；启用时优先查询图谱（仅作为导航辅助，不能替代读文档）。
+
+**禁止在没读设计上下文之前就大规模探索代码或写实现。**
+
+### 3. 产出要求
+
+- 只写实现代码，不修改业务测试（契约）。
+- 在实现每个 seam 时使用 `/tdd` 纪律：RED → GREEN → 必要时清理。
+- 单元测试是实现工具，不进入契约，不需要持久化或签核。
+- 对照 HTML 原型实现视觉与结构，无法完全对齐时记录偏差。
+- 实现完成后跑**全套业务测试**。
+- 全部通过后再 commit；commit 消息格式：`[build] <slice 名称>`。
+- **测试全绿只是最低门槛**：子代理必须确认实现同时满足 PRD 意图、tech-design 契约、UX HTML 结构/行为，不能仅为通过测试而硬凑。
+- 如果 CodeGraph 已启用，commit 后运行 `codegraph sync` 更新图谱。
+
+### 4. 报告要求
+
+子代理返回：
+
+- 状态：`DONE` / `DONE_WITH_CONCERNS` / `BLOCKED`
+- 修改的文件列表
+- 测试命令和输出摘要（证明业务测试全绿）
+- 与 HTML 原型的已知偏差
+- commit hash
+- 任何 concerns
+
+## Fix Subagent
+
+当父代理验证子代理产出失败时，派发 fix subagent：
+
+- 带上失败证据：测试命令、输出片段、失败测试名
+- 带上相关 diff
+- 带上原任务简报
+- 要求：修复失败，跑全套业务测试，返回新 commit hash
+
 ## 内循环命令
 
+实际项目中使用 `CLAUDE.md` 或项目约定中的测试命令。示例：
+
 ```bash
-cd /Users/zhanglei/charon/code/workspace/BanshanJourney
-xcodebuild -project BanshanJourney.xcodeproj -scheme BanshanJourneyTests -destination 'platform=iOS Simulator,name=iPhone 17' test 2>&1 | grep -E "(Test Suite|Executed|failures)"
+npm test
+# 或
+pytest
+# 或
+./run-tests.sh
 ```
-
-预期输出：`Executed N tests, with 0 failures (0 unexpected)`
-
-实际项目中使用 `CLAUDE.md` 或项目约定中的测试命令。
 
 ## 纪律
 
+- **父代理不写实现代码**：父代理只读文档、调度、验证、更新元数据。
 - **写代码前必须先读设计上下文**：`prd.md` → `requirements.md` → `tech-design.md` → `signoff.md` → 测试 → UX HTML。禁止没读文档就探索代码或写实现。
 - **对业务测试只读**：禁止修改由 `/test-author` 生成、人已签核的业务测试文件。
-- **单元测试是 TDD 工具**：`/implementer` 可在实现过程中自由写、改、删单元测试，它们不进入契约。
+- **单元测试是 TDD 工具**：子代理可在实现过程中自由写、改、删单元测试，它们不进入契约。
 - **diff 碰业务测试 = 本轮作废**。
 - **每轮跑全套业务测试**：停机条件是"全套业务测试绿"，但绿只是最低门槛。
 - **测试全绿 ≠ 实现正确**：绿了之后必须对照 PRD、tech-design、UX HTML 检查意图是否完整实现。禁止为绿而写特判、mock 掉真实行为、或阉割功能。
@@ -213,4 +214,4 @@ xcodebuild -project BanshanJourney.xcodeproj -scheme BanshanJourneyTests -destin
 - superpowers `verification-before-completion`：给我们"证据先于完成声明"的纪律。
 - superpowers `finishing-a-development-branch`：给我们全部任务完成后的收尾思路。
 - mattpocock `implement`：给我们"按已有上下文实现"的轻量模式。
-- 核心差异：测试只读 + 断言归人 + 轮数上限逃生口 + TAC 的两道门（`/signoff --stage=assertion` 批量签、`/signoff --stage=feel` 最后统一过）。
+- 核心差异：默认使用子代理实现每个切片，父代理专职调度与验证；测试只读 + 断言归人 + 轮数上限逃生口 + TAC 的两道门。

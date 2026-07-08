@@ -107,6 +107,7 @@
 7. **测试按 capability/entity 组织**：`tests/capabilities/<capability>/<entity>/<story-id>/...`
 8. **主观判断不进测试**：观感/美学在 `/signoff --stage=feel` 环节依据 HTML 参照验收。
 9. **story = 初衷**：初衷（痛点）不变 → 归档重做；初衷错 → 删 story。回流前先做根因诊断。
+10. **测试全绿只是最低门槛**：实现还必须对齐 PRD 意图、`tech-design.md` 模块/数据流/接口契约、以及 UX HTML 结构/行为。禁止为绿而硬凑。
 10. **ADR 是硬约束**：已有 `adr/` 中的决策，在 `/tech-design`、`/review`、`/implementer` 阶段必须检查冲突。
 
 ### commit 约定

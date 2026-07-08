@@ -94,6 +94,8 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 
 测试全绿是实现的**必要门槛，不是充分条件**。实现还必须对齐 PRD 意图、`tech-design.md` 的模块/数据流/接口契约、以及 UX HTML 的结构与行为。禁止为通过测试而写特判、mock 掉真实行为、或阉割功能。
 
+每个 REQ 必须至少有一个自动化测试。`feel-signoff` 只覆盖无法结构化的纯审美判断（颜色、间距、动效曲线）。涉及元素存在、状态变化、路由跳转、API 调用的行为，必须在进入 BUILD 前就有自动化契约。
+
 ### 两个循环
 
 - **外层循环（人控制）**：需求洞察 → PRD → UX → 领域建模 → 技术方案 → REQ → 断言签核 → 验收 → 回流。
@@ -115,8 +117,8 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 3 | DESIGN — 设计 | `/design` | 用户 | 外层 | 统一入口：建/更新设计系统、导入设计源、迭代 HTML-native 高保真原型 |
 | 4 | DOMAIN-MODEL — 领域建模 | `/domain-model` | 用户 | 外层 | 统一术语与业务实体，维护 `CONTEXT.md` |
 | 5 | TECH-DESIGN — 技术方案 | `/tech-design` | 用户 | 外层 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
-| 6 | CRYSTALLIZE — 结晶 | `/crystallize` | 模型 | 外层 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID |
-| 7 | TEST — 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；不能 CLI 化的退到浏览器 E2E 或 public 接口测试；为人留出占位断言 |
+| 6 | CRYSTALLIZE — 结晶 | `/crystallize` | 模型 | 外层 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID；每个 REQ 至少一个自动化测试 |
+| 7 | TEST — 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；不能自动化的行为才允许 feel-signoff |
 | 8 | ASSERTION-SIGNOFF — 断言签核 | `/signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核所有断言；把上下文交给 AI |
 | 9 | BUILD — 实现 | `/implementer` | 模型 | 内层 | 默认用子代理实现每个切片；父代理读文档/调度/验证；对业务测试只读；内部用 `/tdd` 纪律 RED → GREEN；每轮迭代跑全套业务测试 |
 | 10 | QA — 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集 |
@@ -164,8 +166,8 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 导入设计来源（Figma/GitHub/HTML） | `/design` |
 | 统一领域术语与业务实体，维护 `CONTEXT.md` | `/domain-model` |
 | 做对抗式技术方案设计 | `/tech-design` |
-| 把 PRD 转成 REQ-ID | `/crystallize` |
-| 从 REQ 优先生成 CLI 测试骨架 | `/test-author` |
+| 把 PRD 转成 REQ-ID（每个 REQ 至少一个自动化测试） | `/crystallize` |
+| 从 REQ 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试 | `/test-author` |
 | 内层实现纪律：RED → GREEN 写单元测试 | `/tdd` |
 | 在实现前签核断言 / 验收观感 | `/signoff` |
 | 针对已签核测试实现代码（默认子代理实现，父代理调度验证） | `/implementer` |

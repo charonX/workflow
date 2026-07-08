@@ -34,7 +34,7 @@
 1. **断言归人。** 人只持有"什么算对"这一行判断;AI 持有其余全部脚手架。AI 不得擅改断言。
 2. **PRD/REQ 是唯一裁判。** "这是 bug 还是需求变更"靠回溯 REQ 机械裁决。任何测试都生于 REQ。
 3. **主观不进测试。** 行为对错由机器判(测试),观感好坏由人判(HTML 视觉参照)。
-4. **绿灯不许撒谎。** 角色隔离 + 实现者对测试只读 + 抗特判测试 + 停机条件是"全套绿"；但**绿灯只是最低门槛**，实现还必须对齐 PRD 意图、技术方案契约与 UX 参照。
+4. **绿灯不许撒谎。** 角色隔离 + 实现者对测试只读 + 抗特判测试 + 停机条件是"全套绿"；但**绿灯只是最低门槛**，实现还必须对齐 PRD 意图、技术方案契约与 UX 参照。**每个 REQ 必须至少有一个自动化测试；feel-signoff 只覆盖无法结构化的纯审美判断。**
 5. **人的功夫上移到 spec。** PRD/UX 精度决定下游自动化上限。
 
 两条公理:
@@ -86,8 +86,8 @@
 | 3 | **DESIGN** | `/design` | 用户 | 统一入口:建/更新设计系统、导入设计源、迭代 HTML 原型 |
 | 4 | **DOMAIN-MODEL** | `/domain-model` | 用户 | 统一术语与业务实体，维护 `CONTEXT.md` |
 | 5 | **TECH-DESIGN** | `/tech-design` | 用户 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
-| 6 | **CRYSTALLIZE** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID |
-| 7 | **TEST** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架；不能 CLI 化的退到浏览器 E2E 或 public 接口测试；为人留占位断言 |
+| 6 | **CRYSTALLIZE** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID；每个 REQ 至少一个自动化测试 |
+| 7 | **TEST** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；不能自动化的才允许 feel-signoff |
 | 8 | **ASSERTION-SIGNOFF** | `/signoff --stage=assertion` | 用户 | 人在实现前签核所有断言(门 1) |
 | 9 | **BUILD** | `/implementer` | 模型 | 默认用子代理实现切片；父代理调度验证,对测试只读,每轮跑全套测试 |
 | 10 | **QA** | `/qa-runner` | 模型 | E2E、回归、证据收集 |
@@ -258,8 +258,8 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 
 | Skill | 阶段 | 用途 |
 |---|---|---|
-| `/crystallize` | 结晶 | 把 PRD 转成 REQ-ID |
-| `/test-author` | TEST | 优先生成 CLI 测试骨架，不能 CLI 化时补充浏览器 E2E 或 public 接口测试，为人留占位断言 |
+| `/crystallize` | 结晶 | 把 PRD 转成 REQ-ID；每个 REQ 至少一个自动化测试 |
+| `/test-author` | TEST | 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；不能自动化的才允许 feel-signoff |
 | `/tdd` | BUILD | 内层实现纪律：RED → GREEN 写单元测试驱动代码；单元测试不进入契约 |
 | `/implementer` | BUILD | 内层实现循环核心；默认子代理实现切片，父代理调度验证；针对已签核测试写代码，对业务测试只读；内部用 `/tdd` |
 | `/qa-runner` | QA | 内层实现循环终点验证；跑 E2E/回归，输出 QA 报告 |

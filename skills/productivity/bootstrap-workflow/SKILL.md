@@ -92,6 +92,7 @@ sources:
 3. **复制对应模板**：
 
    - Node.js → `templates/github/workflows/contract-gate.node.yml` → `.github/workflows/contract-gate.yml`
+     - Node.js 项目默认使用 **Playwright** 作为浏览器 E2E 工具；CI 模板中已包含 `npx playwright install --with-deps chromium` 和失败产物上传。
    - Python → `templates/github/workflows/contract-gate.python.yml` → `.github/workflows/contract-gate.yml`
    - Swift → `templates/github/workflows/contract-gate.swift.yml` → `.github/workflows/contract-gate.yml`
    - Go → `templates/github/workflows/contract-gate.go.yml` → `.github/workflows/contract-gate.yml`
@@ -102,6 +103,7 @@ sources:
    - Swift 项目的 scheme 名称、destination
    - coverage 阈值
    - lint / typecheck 工具
+   - **Node.js 项目**：`playwright.config.ts` 中的 `baseURL`、测试目录、`projects`（浏览器矩阵）
 
 本门禁始终包含以下检查：
 

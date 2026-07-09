@@ -95,19 +95,29 @@ sources:
    - 读取输出，确认业务测试全绿
    - 检查 diff 是否只包含实现代码、是否误改测试
 4. 如果验证通过：
+   - 使用 Agent 工具派发 **refactor subagent**（见下文"Refactor Subagent 任务简报"），对当前 slice 做一轮安全重构。
+   - refactor subagent 返回后，父代理**再次独立验证**：
+     - 业务测试仍全绿
+     - diff 只包含实现代码，没有误改测试或扩大范围
+   - 如果 refactor 导致测试失败或 diff 超出当前 slice：要求 refactor subagent 回滚，或父代理自行回滚到 refactor 前状态。
+5. 如果两次验证都通过：
    - 更新 `workflow-state`：标记该 slice 完成。
-   - 在 `build-progress.md` 追加：`Slice X: complete (<base7>..<head7>, tests green)`
+   - 在 `build-progress.md` 追加：
+     ```
+     Slice X: complete (<base7>..<head7>, tests green)
+     Slice X: refactor pass done (<head7>..<refactor7>, tests green, no rollback)
+     ```
    - 如果 CodeGraph 已启用，运行 `codegraph sync`（失败则记录警告）。
    - 进入下一个切片。
-5. 如果验证失败：
+6. 如果任一验证失败：
    - 派发 fix subagent，带上失败证据、相关 diff、测试输出。
    - 修复后重新验证。
    - 超过轮数上限仍失败 → 停止，向用户报告 blocker。
 
-### 4. 完成所有切片后
+#### 4. 完成所有切片后
 
-1. 跑 `git log --oneline` 汇总所有 `[build]` commit。
-2. 汇报：哪些切片已完成、总测试数、是否有 concerns。
+1. 跑 `git log --oneline` 汇总所有 `[build]` 和 `[refactor]` commit。
+2. 汇报：哪些切片已完成、总测试数、是否有 concerns、是否有未处理的设计问题。
 3. 推荐下一步：`/qa-runner` → `/signoff --stage=feel`。
 4. 不要自行合并，等待 `/signoff --stage=feel` 通过。
 
@@ -161,7 +171,9 @@ sources:
 ### 4. 产出要求
 
 - 只写实现代码，不修改业务测试（契约）。
-- 在实现每个 seam 时使用 `/tdd` 纪律：RED → GREEN → 必要时清理。
+- 在实现每个 seam 时使用 `/tdd` 纪律：**RED → GREEN**。
+  - `/tdd` 不负责重构；深度重构在 slice 完成后由 refactor subagent 处理。
+  - GREEN 阶段只允许最小清理（ obvious 坏命名、格式），不允许做结构性重构或引入新抽象。
 - 单元测试是实现工具，不进入契约，不需要持久化或签核。
 - 对照 HTML 原型实现视觉与结构，无法完全对齐时记录偏差。
 - 实现完成后跑**全套业务测试**。
@@ -179,6 +191,70 @@ sources:
 - 与 HTML 原型的已知偏差
 - commit hash
 - 任何 concerns
+
+## Refactor Subagent
+
+在每个 slice 的业务测试全绿后，`/implementer` 父代理派发 refactor subagent，用相对新鲜的上下文做一轮安全重构。这是为了解决"AI 在同一会话中偏爱自己刚写代码"的确认偏见问题。
+
+### 任务简报
+
+使用 Agent 工具派发。prompt 必须包含：
+
+#### 1. 任务定位
+
+- 本 slice 在 story 中的位置、对应的 REQ-ID 列表。
+- 本 slice 已修改的文件列表（严格范围锁）。
+- 原始 diff（重构前的状态）。
+- `requirements.md` 和 `tech-design.md` 中相关契约。
+- `.aiassist/global/checklists/testing.md` 作为测试纪律参考。
+
+#### 2. 输入读取顺序
+
+1. `requirements.md`：本 slice 对应的 REQ-ID、验收标准。
+2. `tech-design.md`：相关模块边界、数据流、接口契约。
+3. 当前 slice 的 diff。
+4. `.aiassist/global/checklists/testing.md`。
+
+#### 3. 重构纪律
+
+- **只做一轮**：输出报告后停止，不循环审视。
+- **范围锁**：只允许修改本 slice 已变更的文件；不允许顺手重构相邻代码、不删除不理解的注释、不改无关导入。
+- **只允许安全重构**：
+  - ✅ 重命名变量/函数/类以提高清晰度
+  - ✅ 提取当前 diff 内的重复逻辑为 helper
+  - ✅ 简化明显过长或嵌套过深的函数
+  - ✅ 消除当前 diff 内明显的代码异味
+  - ❌ 改变 public 接口契约
+  - ❌ 改变行为或引入新行为
+  - ❌ 引入未经验证的新抽象
+  - ❌ 修改业务测试文件
+- **保持可构建、可测试**：每个小重构后项目必须能构建，相关测试必须绿。
+- **测试约束**：重构完成后必须跑**全套业务测试 + 相关单元测试**。如果任何测试变红，**立即回滚到 refactor 前状态**并报告 `ROLLED_BACK`。
+- **commit 要求**：如果有修改且测试全绿，提交 `[refactor] <slice 名称>`；如果没有修改，报告 `NO_CHANGES_NEEDED`。
+
+#### 4. 输出要求
+
+子代理返回：
+
+- 状态：`REFACTORED` / `NO_CHANGES_NEEDED` / `ROLLED_BACK`
+- 修改的文件列表（如有）
+- 每项重构的简短理由
+- 发现但未处理的设计问题（留给 `/review --stage=code` 或人决策）
+- 测试命令和输出摘要（证明重构后测试仍绿）
+- 原始 commit hash 与新的 commit hash（如有）
+
+### 父代理验证
+
+refactor subagent 返回后，父代理必须：
+
+1. 再次跑全套业务测试，确认仍全绿。
+2. 检查 diff：
+   - 只允许修改实现代码，不允许碰业务测试。
+   - 不允许超出当前 slice 原始修改范围。
+3. 如果验证失败：
+   - 要求 refactor subagent 回滚，或父代理直接 `git revert` 到 refactor 前。
+   - 记录回滚原因到 `build-progress.md`。
+   - 标记 slice 仍视为"业务测试绿"状态，但不接受该 refactor。
 
 ## Fix Subagent
 

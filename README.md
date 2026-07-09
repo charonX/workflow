@@ -259,10 +259,10 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 | Skill | 阶段 | 用途 |
 |---|---|---|
 | `/crystallize` | 结晶 | 把 PRD 转成 REQ-ID；每个 REQ 至少一个自动化测试 |
-| `/test-author` | TEST | 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；不能自动化的才允许 feel-signoff |
+| `/test-author` | TEST | 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；浏览器 E2E 默认 Playwright；不能自动化的才允许 feel-signoff |
 | `/tdd` | BUILD | 内层实现纪律：RED → GREEN 写单元测试驱动代码；单元测试不进入契约 |
 | `/implementer` | BUILD | 内层实现循环核心；默认子代理实现切片，父代理调度验证；针对已签核测试写代码，对业务测试只读；内部用 `/tdd` RED → GREEN；每个 slice 绿后由 refactor subagent 做一轮安全重构 |
-| `/qa-runner` | QA | 内层实现循环终点验证；跑 E2E/回归，输出 QA 报告；浏览器项目可选调用 `/browser-verify` |
+| `/qa-runner` | QA | 内层实现循环终点验证；跑 E2E/回归（Playwright）、输出 QA 报告；浏览器项目可选调用 `/browser-verify` |
 | `/browser-verify` | QA | 用 Chrome DevTools MCP 做运行时浏览器验证（Console/DOM/Network/A11y/截图/性能），输出客观证据供 feel-signoff 参考 |
 
 ## 产物目录

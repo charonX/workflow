@@ -195,9 +195,39 @@ describe("FlowEditor", () => {
 
 ## 浏览器 E2E 测试模板
 
-浏览器 E2E 覆盖跨页面流程、真实浏览器事件、路由跳转等组件测试无法覆盖的场景。
+浏览器 E2E 覆盖跨页面流程、真实浏览器事件、路由跳转等组件测试无法覆盖的场景。默认使用 **Playwright** 作为 E2E 工具。
 
-### 模板 D：Playwright（JS/TS 项目）
+### Playwright 项目配置
+
+生成 E2E 测试前，检查项目是否已有 `playwright.config.ts`。如果没有，生成一个最小可用配置：
+
+```ts
+import { defineConfig, devices } from "@playwright/test";
+
+export default defineConfig({
+  // TODO: HUMAN ASSERTION — 根据实际测试目录调整
+  testDir: "./tests",
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: [
+    ["html", { open: "never" }],
+    ["list"],
+  ],
+  use: {
+    // TODO: HUMAN ASSERTION — 填入实际 dev server URL
+    baseURL: process.env.E2E_BASE_URL || "http://localhost:3000",
+    trace: "on-first-retry",
+    screenshot: "only-on-failure",
+  },
+  projects: [
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+  ],
+});
+```
+
+### 模板 D：Playwright 基础 E2E（JS/TS 项目）
 
 ```ts
 // REQ-TRACE: REQ-FLOW-003
@@ -209,27 +239,119 @@ import { test, expect } from "@playwright/test";
 
 test("user can open flow editor and see canvas", async ({ page }) => {
   // TODO: HUMAN ASSERTION — 填入正确的启动 URL/路由
-  await page.goto("http://localhost:3000/flows/demo");
+  await page.goto("/flows/demo");
 
   await expect(page.getByTestId("flow-canvas")).toBeVisible();
   await expect(page.getByRole("button", { name: /add node/i })).toBeVisible();
 });
 
 test("user can navigate from workspace to flow editor", async ({ page }) => {
-  await page.goto("http://localhost:3000/workspace");
-  await page.click("text=demo-flow");
+  await page.goto("/workspace");
+  await page.getByText("demo-flow").click();
 
   await expect(page).toHaveURL(/\/flows\/demo/);
   await expect(page.getByTestId("flow-canvas")).toBeVisible();
 });
 ```
 
+### 模板 E：Fixture 与认证
+
+当多个 E2E 测试需要登录态时，生成 fixture：
+
+```ts
+// tests/fixtures/auth.ts
+import { test as base, expect, Page } from "@playwright/test";
+
+export const test = base.extend<{
+  authenticatedPage: Page;
+}>({
+  authenticatedPage: async ({ page }, use) => {
+    // TODO: HUMAN ASSERTION — 填入正确的登录凭据/方式
+    await page.goto("/login");
+    await page.getByLabel("Email").fill("test@example.com");
+    await page.getByLabel("Password").fill("testpass123");
+    await page.getByRole("button", { name: /log in/i }).click();
+    await expect(page).toHaveURL("/dashboard");
+
+    await use(page);
+  },
+});
+
+export { expect };
+```
+
+使用：
+
+```ts
+// REQ-TRACE: REQ-FLOW-003
+import { test, expect } from "../fixtures/auth";
+
+test("authenticated user can create a flow", async ({ authenticatedPage }) => {
+  await authenticatedPage.goto("/flows/new");
+  await authenticatedPage.getByLabel("Flow name").fill("demo");
+  await authenticatedPage.getByRole("button", { name: /create/i }).click();
+
+  await expect(authenticatedPage).toHaveURL(/\/flows\/demo/);
+});
+```
+
+### 模板 F：API Mocking
+
+当 E2E 测试需要控制后端响应时，使用 `page.route`：
+
+```ts
+// REQ-TRACE: REQ-FLOW-004
+import { test, expect } from "@playwright/test";
+
+test("shows empty state when API returns no items", async ({ page }) => {
+  await page.route("/api/items", async (route) => {
+    await route.fulfill({ json: { items: [] } });
+  });
+
+  await page.goto("/items");
+
+  await expect(page.getByText("No items yet")).toBeVisible();
+});
+```
+
+### 模板 G：Page Object（可选）
+
+当同一页面在多个 E2E 测试中出现时，生成 page object：
+
+```ts
+// tests/pages/FlowEditorPage.ts
+import { Page, Locator, expect } from "@playwright/test";
+
+export class FlowEditorPage {
+  readonly canvas: Locator;
+  readonly addNodeButton: Locator;
+
+  constructor(private readonly page: Page, readonly flowId: string) {
+    this.canvas = page.getByTestId("flow-canvas");
+    this.addNodeButton = page.getByRole("button", { name: /add node/i });
+  }
+
+  async goto() {
+    await this.page.goto(`/flows/${this.flowId}`);
+    await expect(this.canvas).toBeVisible();
+  }
+
+  async addNode() {
+    await this.addNodeButton.click();
+  }
+}
+```
+
 ### 浏览器 E2E 纪律
 
-- E2E 只在组件测试无法覆盖的跨页面/跨进程流程时使用（缺陷下沉原则）。
+- **E2E 只在组件测试无法覆盖的跨页面/跨进程流程时使用**（缺陷下沉原则）。
 - 每个 E2E 测试必须指定：起始状态、用户操作、预期可观察结果（URL、元素可见性、文本内容）。
+- **使用 locator（`getByRole`、`getByTestId`、`getByLabel`）而非裸 CSS selector**，增强稳定性。
+- **每个 E2E 测试只验证一个用户流程/概念**，不要把多个独立流程堆在一个 `test` 里。
 - 不要验证像素级样式；观感走 feel-signoff。
-- 测试数据必须隔离，避免污染其他测试。
+- **测试数据必须隔离**：使用 fixture、独立测试账号、或 setup/teardown 重置状态，避免污染其他测试。
+- **失败时自动收集证据**：`playwright.config.ts` 中配置 `trace: "on-first-retry"` 和 `screenshot: "only-on-failure"`。
+- **遵循测试金字塔**：E2E 占比约 5%，只覆盖关键用户路径；能用组件/CLI/API 测试覆盖的，不进 E2E。
 
 ## 纪律
 

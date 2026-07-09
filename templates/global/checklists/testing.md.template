@@ -43,6 +43,17 @@ loop-workflow 中测试是契约。本清单用于 `/test-author`、`/tdd` 和 `
 - [ ] 数据绑定正确渲染有测试
 - [ ] 纯视觉审美判断才留给 feel-signoff
 
+## Playwright E2E
+
+- [ ] `playwright.config.ts` 已配置 `baseURL`、`retries`、`workers`、`trace`、`screenshot`
+- [ ] 测试使用 locator（`getByRole`、`getByTestId`、`getByLabel`）而非裸 CSS selector
+- [ ] 每个 E2E 测试只验证一个用户流程/概念
+- [ ] 测试数据已隔离（独立用户/fixture/数据库重置）
+- [ ] API 调用已用 `page.route` 或真实后端隔离
+- [ ] CI 中已安装 Playwright 浏览器二进制
+- [ ] 失败时自动生成 trace 和 screenshot 并作为产物上传
+- [ ] E2E 数量符合测试金字塔（E2E 占比 ~5%，只覆盖关键路径）
+
 ## 反模式
 
 | 反模式 | 问题 | 修复 |

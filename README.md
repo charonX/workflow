@@ -90,7 +90,7 @@
 | 7 | **TEST** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；不能自动化的才允许 feel-signoff |
 | 8 | **ASSERTION-SIGNOFF** | `/signoff --stage=assertion` | 用户 | 人在实现前签核所有断言(门 1) |
 | 9 | **BUILD** | `/implementer` | 模型 | 默认用子代理实现切片；父代理调度验证,对测试只读,每轮跑全套测试 |
-| 10 | **QA** | `/qa-runner` | 模型 | E2E、回归、证据收集 |
+| 10 | **QA** | `/qa-runner` | 模型 | E2E、回归、证据收集；浏览器项目在 E2E 通过后可选调用 `/browser-verify` 做运行时验证 |
 | 11 | **FEEL-SIGNOFF** | `/signoff --stage=feel` | 用户 | 人依据 HTML 参照验收观感,偏差回流 REQ(门 2) |
 | 12 | **REFLECT** | `/reflect` | 用户 | 捕获经验教训,更新全局知识 |
 | — | **技术方案审查** | `/review --stage=tech` | 用户（手动） | 新会话视角审查技术方案（可选但建议） |
@@ -247,7 +247,7 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 | `/tech-design` | TECH-DESIGN | 对抗式技术方案设计；用第一性原理区分真实约束与历史包袱，确定 CLI 优先的 seams |
 | `/domain-model` | DOMAIN-MODEL | 统一领域术语与业务实体，维护 `CONTEXT.md` |
 | `/research` | THINK/TECH | 针对技术/API/库问题做带引用的 background 调研 |
-| `/review` | REVIEW | 外层循环手动检查点；新会话视角审查 PRD/技术方案/代码 |
+| `/review` | REVIEW | 外层循环手动检查点；新会话视角审查 PRD/技术方案/代码，`--stage=code --mode=panel` 启用 specialist 子代理并行审查 |
 | `/design` | DESIGN | 设计阶段统一入口：建/更新设计系统、导入设计源、迭代 HTML UX 原型 |
 | `/signoff` | 签核 | 两个循环的切换点；门 1 把契约交给 AI，门 2 把 AI 产出交回人验收 |
 | `/design-handoff` | 交接（可选） | 从已批准 UX 生成开发交接包（含机器可读 manifest） |
@@ -262,7 +262,8 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 | `/test-author` | TEST | 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；不能自动化的才允许 feel-signoff |
 | `/tdd` | BUILD | 内层实现纪律：RED → GREEN 写单元测试驱动代码；单元测试不进入契约 |
 | `/implementer` | BUILD | 内层实现循环核心；默认子代理实现切片，父代理调度验证；针对已签核测试写代码，对业务测试只读；内部用 `/tdd` |
-| `/qa-runner` | QA | 内层实现循环终点验证；跑 E2E/回归，输出 QA 报告 |
+| `/qa-runner` | QA | 内层实现循环终点验证；跑 E2E/回归，输出 QA 报告；浏览器项目可选调用 `/browser-verify` |
+| `/browser-verify` | QA | 用 Chrome DevTools MCP 做运行时浏览器验证（Console/DOM/Network/A11y/截图/性能），输出客观证据供 feel-signoff 参考 |
 
 ## 产物目录
 
@@ -295,6 +296,12 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
     ├── business-capabilities.md   # 业务能力地图（由 /crystallize、/reflect 维护）
     ├── adr/                       # 架构决策记录目录（由 /tech-design、/reflect 维护）
     │   └── README.md
+    ├── checklists/                # 共享检查清单（由 /reflect 维护）
+    │   ├── testing.md
+    │   ├── security.md
+    │   ├── performance.md
+    │   ├── accessibility.md
+    │   └── observability.md
     ├── codegraph.json             # CodeGraph 配置（可选）
     ├── DESIGN.md                  # 项目级设计系统文档
     ├── tokens.css                 # CSS token 入口
@@ -311,7 +318,7 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
     ├── _d_meta.json              # （生成）设计系统绑定与资产注册
     ├── engineering-lessons.md
     ├── architecture.md            # 架构概览（具体决策写入 adr/）
-    └── STANDARDS.md
+    └── STANDARDS.md               # 编码与流程标准（索引 + 项目特定约定 + Definition of Done）
 ```
 
 模板放在 `templates/`,由 `/story` 创建新 story 时复制使用。
@@ -326,6 +333,7 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 | [gstack](https://github.com/garrytan/gstack) | CEO/创始人级需求洞察、设计决策、发布与 QA 门禁、浏览器自动化、流程编排与产物链 |
 | [superpowers](https://github.com/obra/superpowers) | 严谨计划、subagent 驱动的批量执行、审查包 |
 | [baoyu-design](https://github.com/JimLiu/baoyu-design) | Claude Design 可移植 skill：HTML 原型方法论、设计系统编译管线、Figma 导入、起始组件 |
+| [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) | 生产级工程生命周期 skill、specialist agent personas、共享检查清单、anti-rationalization 模式 |
 
 > 理念的逐条推导见 [`design/test-as-contract-workflow.md`](./design/test-as-contract-workflow.md)，端到端流程总装图见 [`design/workflow-framework.md`](./design/workflow-framework.md)。
 

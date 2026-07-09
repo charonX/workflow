@@ -12,6 +12,7 @@
 - `reference/superpowers/skills/finishing-a-development-branch/SKILL.md`
 - `reference/superpowers/skills/writing-plans/SKILL.md`
 - `reference/mattpocock/skills/engineering/implement/SKILL.md`
+- `reference/agent-skills/skills/incremental-implementation/SKILL.md`：Simplicity First、Scope Discipline、One Thing at a Time、Keep It Compilable、Feature Flags、Safe Defaults、Rollback-Friendly。
 
 ## 主要改动
 
@@ -21,13 +22,16 @@
 - 每轮跑全套业务测试，停机条件为"全套业务测试绿"。
 - 轮数上限逃生口。
 - 自动连续模式：支持子代理连续执行和当前代理自循环，运行时可选择；断言一次性签核。
+- 引入 agent-skills `incremental-implementation` 的 Rule 0–5 作为子代理任务简报中的增量实现纪律。
 
 ## 未来局部更新建议
 
 - superpowers subagent-driven-development / executing-plans 更新时，检查任务简报、审查包、模型选择策略。
 - mattpocock implement 更新时，检查轻量实现模式。
+- agent-skills `incremental-implementation` 更新时，检查 Rule 0–5、切片策略、feature flags、rollback-friendly 实践。
 
 ## 改动记录
 
 - 2026-07-03：明确提交时使用 `[build]` 标签，一个 commit 只包含实现代码，不能包含测试文件。
 - 2026-07-07：引入 `/tdd` 作为内层实现纪律；区分业务测试（契约）与单元测试（TDD 工具）。
+- 2026-07-09：引入 agent-skills `incremental-implementation` 的 Simplicity First、Scope Discipline、One Thing at a Time、Keep It Compilable、Feature Flags、Safe Defaults、Rollback-Friendly 纪律。

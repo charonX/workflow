@@ -8,6 +8,7 @@ sources:
   - reference/superpowers/skills/finishing-a-development-branch/SKILL.md
   - reference/superpowers/skills/writing-plans/SKILL.md
   - reference/mattpocock/skills/engineering/implement/SKILL.md
+  - reference/agent-skills/skills/incremental-implementation/SKILL.md
   - workflow/design/test-as-contract-workflow.md
 ---
 
@@ -145,7 +146,19 @@ sources:
 
 **禁止在没读设计上下文之前就大规模探索代码或写实现。**
 
-### 3. 产出要求
+### 3. 增量实现纪律
+
+每个切片都是一次 thin vertical slice。子代理在切片内必须遵守：
+
+- **Rule 0: Simplicity First** — 写代码前先问："最简单的可行方案是什么？" 避免为假设的未来需求构建抽象。
+- **Rule 0.5: Scope Discipline** — 只改任务需要的内容。不"顺手"重构相邻代码、不改无关文件语法/导入、不删除不理解的注释、不加范围外功能。发现值得改进的地方，记下来问用户，而不是当场改。
+- **Rule 1: One Thing at a Time** — 一个 increment 只改一个逻辑。不要把新组件、重构、构建配置混在一个 commit。
+- **Rule 2: Keep It Compilable** — 每个 increment 后项目必须能构建，现有测试必须绿。不要留下中间坏状态。
+- **Rule 3: Feature Flags for Incomplete Features** — 如果功能未就绪但需要合并，用 feature flag 隐藏，避免用户看到半成品。
+- **Rule 4: Safe Defaults** — 新代码默认安全、保守。例如通知默认关闭，新权限默认最小。
+- **Rule 5: Rollback-Friendly** — 每个 increment 可独立回滚。优先 additive 改动，修改现有代码时尽量小范围聚焦。
+
+### 4. 产出要求
 
 - 只写实现代码，不修改业务测试（契约）。
 - 在实现每个 seam 时使用 `/tdd` 纪律：RED → GREEN → 必要时清理。
@@ -156,7 +169,7 @@ sources:
 - **测试全绿只是最低门槛**：子代理必须确认实现同时满足 PRD 意图、tech-design 契约、UX HTML 结构/行为，不能仅为通过测试而硬凑。
 - 如果 CodeGraph 已启用，commit 后运行 `codegraph sync` 更新图谱。
 
-### 4. 报告要求
+### 5. 报告要求
 
 子代理返回：
 

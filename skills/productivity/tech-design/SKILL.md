@@ -27,6 +27,9 @@ PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户�
 - `.aiassist/global/adr/`（如有，了解已有架构决策）
 - `.aiassist/global/architecture.md`（如有，作为架构概览）
 - `.aiassist/global/STANDARDS.md`（如有）
+- `.aiassist/global/checklists/security.md`（安全设计输入）
+- `.aiassist/global/checklists/performance.md`（性能设计输入）
+- `.aiassist/global/checklists/observability.md`（可观测性设计输入）
 - 项目 `CLAUDE.md` 中声明的 CLI 入口（如有）
 
 如果存在 `/research` 产出的调研笔记，**优先读取**它们，把其中的事实作为技术方案设计的前提，不重复做事实调研。
@@ -111,6 +114,11 @@ PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户�
 - 哪些技术假设如果错了，会导致大幅返工？
 - 这些假设在一挡内能不能快速验证（spike、原型、查文档）？
 
+**安全、性能与可观测性**
+- 这个需求涉及哪些信任边界和资产？是否参考了 `checklists/security.md` 做威胁建模？
+- 哪些路径可能成为性能瓶颈？是否参考了 `checklists/performance.md` 设计缓存、分页、并发策略？
+- 新关键路径需要哪些 logs/metrics/traces？是否参考了 `checklists/observability.md` 预留 telemetry seams？
+
 ### 3. 根据用户回答继续追问
 
 - 每次只追一个点。把模糊词汇钉死："服务"具体指什么？"状态"存在哪？"事件"谁消费？
@@ -174,6 +182,7 @@ PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户�
 - **CLI 是默认 seam**：产品 CLI 是人类和 agent 共用的真实接口，优先把可验证行为暴露为 CLI 命令；不能 CLI 化的部分才退到 public 接口测试或浏览器 E2E。
 - **跨模块必须有显式契约**：输入、输出、错误、副作用，四要素缺一不可。
 - **重要决策写 ADR**：满足"难逆转、不说明会令人困惑、有真实取舍"三个条件的决策，必须写入 `adr/`。
+- **安全/性能/可观测性前置**：设计阶段参考 `checklists/security.md`、`checklists/performance.md`、`checklists/observability.md`，把相关 seams 和约束写进 `tech-design.md`，而不是留到实现后再补。
 
 ## 与参考项目的差异
 

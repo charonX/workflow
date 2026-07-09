@@ -9,6 +9,10 @@
 - `reference/gstack/review/SKILL.md`
 - `reference/gstack/plan-eng-review/SKILL.md`
 - `reference/mattpocock/skills/engineering/code-review/SKILL.md`
+- `reference/agent-skills/agents/code-reviewer.md`：五轴代码审查、变更尺寸、severity labels。
+- `reference/agent-skills/agents/security-auditor.md`：OWASP、输入验证、鉴权、依赖审计。
+- `reference/agent-skills/agents/test-engineer.md`：测试策略、覆盖分析、Prove-It 模式。
+- `reference/agent-skills/agents/web-performance-auditor.md`：Core Web Vitals、性能审查（我们泛化为后端+前端性能审计员）。
 
 ## 主要改动
 
@@ -16,12 +20,15 @@
 - 强调在新 Claude Code 会话中调用，避免上下文偏见。
 - 输出结构化 review 报告，但不自动修改产物。
 - 建议性而非强制性；回流决策由人做。
+- 新增 `--mode=panel`（仅 `stage=code`），并行派发 code-reviewer / security-auditor / performance-auditor / test-engineer 四个 specialist 子代理。
 
 ## 未来局部更新建议
 
 - gstack review 更新时，检查代码审查维度和报告格式。
 - gstack plan-eng-review 更新时，检查计划/架构审查清单。
+- agent-skills 任一 agent persona 更新时，检查 specialist 维度、输出格式、安全/性能/测试审查清单。
 
 ## 改动记录
 
 - 2026-07-04：创建 skill，定义三阶段手动 review 流程与报告模板。
+- 2026-07-09：新增 `--mode=panel` 与 4 个 specialist 子代理并行审查模式，报告模板新增 Panel Review 小节。

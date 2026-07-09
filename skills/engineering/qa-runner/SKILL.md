@@ -29,12 +29,14 @@ BUILD 阶段全单元绿，进入 QA 慢外门时。或被 `/story` 总入口调
 
 1. **跑单元测试**：确认仍全绿。
 2. **跑 E2E/UITests**：验证关键用户流程。
-3. **收集 coverage 报告**：对比项目 coverage 阈值，低于阈值时 QA 不通过。
-4. **手动模拟器验证**：启动 app，走一遍核心流程。
-5. **记录不稳定测试**：绿红不定的测试单独标记，开不稳定问题单。
-6. **输出 QA 报告**：
+3. **运行时浏览器验证（可选）**：如果本 story 有 `ux/` 目录且 Chrome DevTools MCP 已配置，调用 `/browser-verify` 收集 Console/DOM/Network/Accessibility/截图证据。未配置时记录为 SKIPPED。
+4. **收集 coverage 报告**：对比项目 coverage 阈值，低于阈值时 QA 不通过。
+5. **手动模拟器验证**：启动 app，走一遍核心流程。
+6. **记录不稳定测试**：绿红不定的测试单独标记，开不稳定问题单。
+7. **输出 QA 报告**：
    - 哪些 REQ 被验证
    - 哪些失败
+   - `/browser-verify` 结果摘要
    - 不稳定测试列表
    - 建议下一步（`/signoff --stage=feel` / 回 BUILD / 回 REQ）
 
@@ -50,6 +52,11 @@ BUILD 阶段全单元绿，进入 QA 慢外门时。或被 `/story` 总入口调
 ## E2E/UITests
 - 结果：PASS / FAIL
 - 失败详情：...
+
+## 运行时浏览器验证
+- 状态：PASS / WARN / FAIL / SKIPPED / BLOCKED
+- 报告：`.aiassist/stories/<id>/browser-verify-report.md`
+- 关键发现摘要：...
 
 ## Coverage
 - 行覆盖率：X%

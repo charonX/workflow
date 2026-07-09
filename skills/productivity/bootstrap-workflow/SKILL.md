@@ -30,12 +30,18 @@ sources:
 │   ├── business-capabilities.md # 业务能力地图（由 /crystallize、/reflect 维护）
 │   ├── adr/                    # 架构决策记录目录
 │   │   └── README.md           # ADR 索引
+│   ├── checklists/             # 共享检查清单
+│   │   ├── testing.md          # 测试模式
+│   │   ├── security.md         # 安全清单
+│   │   ├── performance.md      # 性能清单
+│   │   ├── accessibility.md    # 可访问性清单
+│   │   └── observability.md    # 可观测性清单
 │   ├── codegraph.json          # CodeGraph 配置（可选）
 │   ├── DESIGN.md               # 项目级设计系统文档（如不存在则创建模板）
 │   ├── tokens.css              # 设计 token（如不存在则创建空文件）
 │   ├── architecture.md         # 架构概览（不再承载具体决策）
 │   ├── engineering-lessons.md  # 工程经验教训
-│   └── STANDARDS.md            # 编码与流程标准
+│   └── STANDARDS.md            # 编码与流程标准（索引 + 项目特定约定 + Definition of Done）
 ├── stories/                    # story 目录，初始为空
 └── hooks/                      # git hooks
     ├── pre-commit
@@ -51,6 +57,12 @@ sources:
 - `templates/global/adr/NNNN-title.md.template` → 保留在 workflow 内，由 `/tech-design` 和 `/reflect` 使用
 - `templates/global/architecture.md.template` → `.aiassist/global/architecture.md`
 - `templates/global/codegraph.json.template` → `.aiassist/global/codegraph.json`
+- `templates/global/STANDARDS.md.template` → `.aiassist/global/STANDARDS.md`
+- `templates/global/checklists/testing.md.template` → `.aiassist/global/checklists/testing.md`
+- `templates/global/checklists/security.md.template` → `.aiassist/global/checklists/security.md`
+- `templates/global/checklists/performance.md.template` → `.aiassist/global/checklists/performance.md`
+- `templates/global/checklists/accessibility.md.template` → `.aiassist/global/checklists/accessibility.md`
+- `templates/global/checklists/observability.md.template` → `.aiassist/global/checklists/observability.md`
 - `templates/story/prd.md.template` → 保留在 workflow 内，由 `/story` 使用
 - `templates/story/requirements.md.template` → 保留在 workflow 内，由 `/story` 使用
 - `templates/story/workflow-state.yaml.template` → 保留在 workflow 内，由 `/story` 使用
@@ -148,10 +160,15 @@ chmod +x .aiassist/hooks/commit-msg
 - `.aiassist/global/DESIGN.md`
 - `.aiassist/global/tokens.css`
 - `.aiassist/global/architecture.md`
-- `.aiassist/global/engineering-lessons.md`
 - `.aiassist/global/STANDARDS.md`
+- `.aiassist/global/checklists/testing.md`
+- `.aiassist/global/checklists/security.md`
+- `.aiassist/global/checklists/performance.md`
+- `.aiassist/global/checklists/accessibility.md`
+- `.aiassist/global/checklists/observability.md`
+- `.aiassist/global/engineering-lessons.md`
 
-这些文件内容由 `/domain-model`、`/crystallize`、`/reflect`、`/design`（模式 A）、`/tech-design` 等 skill 后续填充。
+这些文件内容由 `/domain-model`、`/crystallize`、`/reflect`、`/design`（模式 A）、`/tech-design` 等 skill 后续填充。`STANDARDS.md` 和 `checklists/` 由 `/reflect` 根据 story 经验持续更新。
 
 ### 6. 更新项目 `CLAUDE.md`
 
@@ -167,6 +184,7 @@ git commit -m "[bootstrap] 初始化双循环工作流基础设施"
 注意：`.aiassist/` 和 `.github/workflows/` 目录本身应被纳入版本控制，但具体 story 目录下的中间产物是否提交由团队决定。建议至少提交：
 
 - `.aiassist/global/*`
+- `.aiassist/global/checklists/*`
 - `.aiassist/hooks/*`
 - `.github/workflows/contract-gate.yml`
 - `CLAUDE.md`
@@ -189,7 +207,7 @@ git commit -m "[bootstrap] 初始化双循环工作流基础设施"
 
 初始化完成后，向用户确认：
 
-1. `.aiassist/` 目录已创建（包含 CONTEXT.md、business-capabilities.md、adr/、codegraph.json 等全局文档）
+1. `.aiassist/` 目录已创建（包含 CONTEXT.md、business-capabilities.md、adr/、checklists/、STANDARDS.md、codegraph.json 等全局文档）
 2. git hooks 已配置（或已说明 husky 兼容方案）
 3. `CLAUDE.md` 已更新
 4. CodeGraph 状态（已启用 / 未启用）

@@ -22,6 +22,7 @@ sources:
 - `.aiassist/stories/<id>/ux/*.html`（如有 UX 原型，作为结构与行为测试的输入）
 - `.aiassist/global/business-capabilities.md`（能力地图，决定测试目录结构）
 - `.aiassist/global/CONTEXT.md`（统一术语与实体命名）
+- `.aiassist/global/checklists/testing.md`（测试模式与反模式参考）
 - 项目 `CLAUDE.md` 中声明的 CLI 入口（如有）
 
 ## 输出
@@ -241,6 +242,7 @@ test("user can navigate from workspace to flow editor", async ({ page }) => {
 - **组件/结构测试覆盖前端行为**：从 HTML 原型中提取元素存在性、交互状态、导航流程、API 调用，生成组件测试。只有纯审美判断才允许不生成自动化测试。
 - **浏览器 E2E 是最后手段**：能用组件测试覆盖的，不进浏览器 E2E（缺陷下沉原则）。
 - 覆盖：正常路径 + 边界 + 错误路径。
+- **遵循 `checklists/testing.md`**：测试结构、命名、断言、mock 边界、反模式参照项目检查清单。
 - **HTML 原型是测试输入**：从 HTML 中提取行为和结构，但不把主观视觉（如“间距 12px 才好看”）写进测试。
 - **测试按 capability/entity 组织**：目录结构必须反映 `business-capabilities.md` 中的能力地图。
 - **头部必须含 CAPABILITY-TRACE 和 ENTITY-TRACE**：这是连接 story 测试与长期业务能力资产的纽带。

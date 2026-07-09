@@ -5,6 +5,7 @@ sources:
   - reference/mattpocock/skills/engineering/tdd/SKILL.md
   - reference/mattpocock/skills/engineering/tdd/tests.md
   - reference/mattpocock/skills/engineering/tdd/mocking.md
+  - reference/agent-skills/skills/test-driven-development/SKILL.md
   - workflow/design/test-as-contract-workflow.md
 ---
 
@@ -55,6 +56,37 @@ sources:
 5. 回到 1，直到业务测试也绿
 ```
 
+### 测试金字塔与测试尺寸
+
+按测试金字塔分配投入：大部分测试应该是小而快的，越往上层测试越少。
+
+```
+          ╱╲
+         ╱  ╲         大型测试 ~5%   — E2E、性能基准、关键用户流程
+        ╱    ╲
+       ╱──────╲
+      ╱        ╲      中型测试 ~15%   — API/组件/集成，localhost 或测试 DB
+     ╱          ╲
+    ╱────────────╲
+   ╱              ╲   小型测试 ~80%   — 纯逻辑、无 I/O、毫秒级
+  ╱                ╲
+ ╱──────────────────╲
+```
+
+| 尺寸 | 约束 | 速度 | 示例 |
+|---|---|---|---|
+| **小型** | 单进程，无 I/O，无网络，无数据库 | 毫秒 | 纯函数、数据转换 |
+| **中型** | 多进程可接受，localhost，无外部服务 | 秒 | API 测试带测试 DB、组件测试 |
+| **大型** | 多机可接受，允许外部服务 | 分钟 | E2E 测试、性能基准、staging 集成 |
+
+**Beyonce Rule**：If you liked it, you should have put a test on it. 重构、迁移、基础设施改动不负责捕捉你的 bug —— 你的测试才负责。
+
+**选择指南：**
+
+- 纯逻辑无副作用？→ 小型单元测试
+- 跨边界（API、数据库、文件系统）？→ 中型集成测试
+- 关键用户流程必须端到端通过？→ 大型 E2E 测试（限制在关键路径）
+
 ## 循环规则
 
 ### 1. 一次一个 seam
@@ -96,6 +128,8 @@ sources:
 - 测试名是句子：`user can create project with valid name`
 - expected value 来自独立真理：spec、例子、手算结果
 - 一个失败能精确定位问题
+- 遵循 Arrange-Act-Assert 模式
+- 一个概念一个断言/测试
 
 ### ❌ 反模式
 
@@ -105,6 +139,95 @@ sources:
   - 信号：`expect(add(a,b)).toBe(a+b)`、手工 snapshot
 - **水平切片**：一次写所有测试，再写所有实现
   - 信号：测试响应迟钝，对真实变化不敏感
+
+### DAMP over DRY
+
+生产代码中 DRY（Don't Repeat Yourself）通常是正确的。在测试中，**DAMP（Descriptive And Meaningful Phrases）** 更好。
+
+每个测试应该独立可读，像一个 mini spec。共享 helper 可以提取，但不要为了让测试"不重复"而牺牲可读性。
+
+```typescript
+// DAMP：自包含、可读
+it('rejects tasks with empty titles', () => {
+  const input = { title: '', assignee: 'user-1' };
+  expect(() => createTask(input)).toThrow('Title is required');
+});
+
+it('trims whitespace from titles', () => {
+  const input = { title: '  Buy groceries  ', assignee: 'user-1' };
+  const task = createTask(input);
+  expect(task.title).toBe('Buy groceries');
+});
+```
+
+### 测试替身优先级
+
+使用最简单的测试替身，能用真实实现就不用 mock：
+
+```
+真实实现  → 最高置信度，能发现真实 bug
+Fake     → 内存版依赖（如内存 DB）
+Stub     → 返回固定数据，无行为
+Mock     → 验证方法调用 —— 谨慎使用
+```
+
+**只在以下情况 mock：** 真实实现太慢、非确定性、或有不可控副作用（外部 API、发邮件）。过度 mock 会导致"测试通过但生产崩溃"。
+
+### Arrange-Act-Assert
+
+```typescript
+it('marks overdue tasks when deadline has passed', () => {
+  // Arrange
+  const task = createTask({ title: 'Test', deadline: new Date('2025-01-01') });
+
+  // Act
+  const result = checkOverdue(task, new Date('2025-01-02'));
+
+  // Assert
+  expect(result.isOverdue).toBe(true);
+});
+```
+
+### One Assertion Per Concept
+
+```typescript
+// Good：每个测试验证一个行为
+it('rejects empty titles', () => { ... });
+it('trims whitespace from titles', () => { ... });
+it('enforces maximum title length', () => { ... });
+
+// Bad：所有验证堆在一个测试里
+it('validates titles correctly', () => {
+  expect(() => createTask({ title: '' })).toThrow();
+  expect(createTask({ title: '  hello  ' }).title).toBe('hello');
+  expect(() => createTask({ title: 'a'.repeat(256) })).toThrow();
+});
+```
+
+## Prove-It Pattern（修复 bug 时）
+
+修复 bug 时，**不要先尝试修复**。先写一个能复现 bug 的测试，让它失败，再修复，让它通过。
+
+```
+Bug 报告到达
+    │
+    ▼
+写一个展示 bug 的测试
+    │
+    ▼
+测试 FAIL（确认 bug 存在）
+    │
+    ▼
+实现修复
+    │
+    ▼
+测试 PASS（证明修复有效）
+    │
+    ▼
+跑全量业务测试（无回归）
+```
+
+这是把 bug 变成回归测试的最可靠方式。
 
 ## Seams 选择
 

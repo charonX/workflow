@@ -14,12 +14,14 @@
 - `reference/mattpocock/skills/productivity/grill-me/SKILL.md`：通用盘问技术，把 design tree 的树枝补全。
 - `reference/mattpocock/skills/engineering/grill-with-docs/SKILL.md`：带引用/上下文的对抗式追问。
 - `reference/gstack/office-hours/SKILL.md`：CEO 视角的野心/价值拷问。
+- `reference/agent-skills/skills/interview-me/SKILL.md`：一次一问、置信度 + GUESS、"想要 vs 应该想要"探测、95% 停止条件、confirmed intent 格式。
 
 ## 主要改动
 
 - 以 superpowers `brainstorming` 为总体流程骨架：确认范围 → 探索上下文 → 澄清问题 → 提出 2-3 个方向 → 呈现并确认方向 → 记录洞察。
 - 用 mattpocock `grill-me` / `grill-with-docs` 的对抗式追问技术填充"澄清问题"环节：一次一问、展示思考、追问到可验证精度、显式化假设。
 - 用 gstack `office-hours` 提供 CEO 视角的野心/价值拷问，填充"待探索维度"。
+- 用 agent-skills `interview-me` 增强开场假设、Q+GUESS 提问、"想要 vs 应该想要"探测、95% 置信度停止条件、confirmed intent 输出。
 - 输出固定为 `interview-notes.md`，作为 `/to-prd` 的输入。
 
 ## 未来局部更新建议
@@ -27,3 +29,8 @@
 - superpowers `brainstorming` 更新时，检查"探索上下文 → 澄清 → 提出方案 → 批准"流程。
 - mattpocock 若更新提问技术，检查"执行步骤"中的追问维度。
 - gstack 若更新 CEO 审查清单，检查"谁/为什么/边界/矛盾/野心"覆盖。
+- agent-skills `interview-me` 更新时，检查开场假设、Q+GUESS、停止条件、confirmed intent 格式。
+
+## 改动记录
+
+- 2026-07-09：引入 agent-skills `interview-me` 的置信度 + GUESS、"想要 vs 应该想要"探测、95% 停止条件、confirmed intent 输出格式。

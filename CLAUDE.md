@@ -50,12 +50,13 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 │   │   ├── test-author/       # 生成业务测试骨架
 │   │   ├── implementer/       # 针对测试实现代码
 │   │   ├── qa-runner/
+│   │   ├── browser-verify/    # 运行时浏览器验证（DevTools MCP）
 │   │   └── tdd/               # 内层 RED → GREEN 纪律
 │   └── maintenance/           # 工作流维护 skill
 │       └── sync-refs/
 ├── templates/
 │   ├── claude/                # 追加到目标项目 CLAUDE.md 的附录
-│   ├── global/                # .aiassist/global/ 初始化模板
+│   ├── global/                # .aiassist/global/ 初始化模板（含 checklists/）
 │   ├── story/                 # .aiassist/stories/<id>/ 初始化模板
 │   ├── hooks/                 # git hooks
 │   └── github/workflows/      # CI/CD contract-gate 模板
@@ -121,7 +122,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 7 | TEST — 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；不能自动化的行为才允许 feel-signoff |
 | 8 | ASSERTION-SIGNOFF — 断言签核 | `/signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核所有断言；把上下文交给 AI |
 | 9 | BUILD — 实现 | `/implementer` | 模型 | 内层 | 默认用子代理实现每个切片；父代理读文档/调度/验证；对业务测试只读；内部用 `/tdd` 纪律 RED → GREEN；每轮迭代跑全套业务测试 |
-| 10 | QA — 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集 |
+| 10 | QA — 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集；浏览器项目在 E2E 通过后可选调用 `/browser-verify` 做运行时验证 |
 | 11 | FEEL-SIGNOFF — 观感签核 | `/signoff --stage=feel` | 用户 | **门 2** | 人依据 HTML 参照验收观感；偏差回流到外层循环 |
 | — | 开发者交接（可选） | `/design-handoff` | 用户 | 外层 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
 | 12 | REFLECT — 反思 | `/reflect` | 用户 | 外层 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
@@ -133,6 +134,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 - **REQ-ID 可追溯**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
 - **能力/实体可追溯**：每个 REQ 标注 `capability` 和 `entity`，测试头部声明 `// CAPABILITY-TRACE` 和 `// ENTITY-TRACE`，测试按 `tests/capabilities/<capability>/<entity>/` 组织。
 - **ADR 目录**：重要架构决策写入 `.aiassist/global/adr/`，原 `architecture.md` 只保留高层概览和索引。
+- **共享检查清单**：`bootstrap-workflow` 初始化 `.aiassist/global/checklists/`（testing/security/performance/accessibility/observability），由 `/reflect` 根据 story 经验持续更新；`/tech-design`、`/review`、`/test-author` 等 skill 按需引用。
 - **CLI 是默认 seam**：能用产品 CLI 验证的行为不进浏览器 E2E；不能 CLI 化的退到 public 接口测试或浏览器 E2E。
 
 ### 回流机制
@@ -171,11 +173,12 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 内层实现纪律：RED → GREEN 写单元测试 | `/tdd` |
 | 在实现前签核断言 / 验收观感 | `/signoff` |
 | 针对已签核测试实现代码（默认子代理实现，父代理调度验证） | `/implementer` |
-| 运行 QA / E2E / 回归 | `/qa-runner` |
+| 运行 QA / E2E / 回归；浏览器项目可触发 `/browser-verify` 收集运行时证据 | `/qa-runner` |
+| 用 Chrome DevTools MCP 做运行时浏览器验证，输出客观证据供 feel-signoff 参考 | `/browser-verify` |
 | 从 UX 生成开发者交接包 | `/design-handoff` |
 | 捕获经验教训并更新知识 | `/reflect` |
 | 针对技术/API/库问题做带引用的调研 | `/research` |
-| 手动审查 PRD/技术方案/代码 | `/review` |
+| 手动审查 PRD/技术方案/代码；`--stage=code --mode=panel` 启用 specialist 子代理并行审查 | `/review` |
 | 同步参考项目并吸收上游变更 | `/sync-refs` |
 
 ### 参考 skill（仅作灵感）
@@ -184,15 +187,20 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 |--------|------|
 | 验证想法或找到切口 | `reference/superpowers/skills/brainstorming/` 或 `reference/gstack/office-hours/` |
 | 把计划盘问到锋利 | `reference/mattpocock/skills/productivity/grill-me/` 或 `reference/mattpocock/skills/engineering/grill-with-docs/` |
+| 生产级需求访谈（置信度 + GUESS） | `reference/agent-skills/skills/interview-me/` |
 | 探索 UI 变体 | `reference/gstack/design-shotgun/` |
 | 从零建立设计系统 | `reference/gstack/design-consultation/` |
 | 在编码前审查计划的设计维度 | `reference/gstack/plan-design-review/` |
 | 审计线上站点视觉设计 | `reference/gstack/design-review/` |
 | 写结构化实现计划 | `reference/superpowers/skills/writing-plans/` |
 | 审查架构 / 边界情况 | `reference/gstack/plan-eng-review/` |
+| 多维度 specialist 代码审查 | `reference/agent-skills/agents/code-reviewer/`、`security-auditor/`、`test-engineer/`、`web-performance-auditor/` |
 | 在 agent 支持下执行计划 | `reference/superpowers/skills/subagent-driven-development/` |
 | 调试 bug | `reference/mattpocock/skills/engineering/diagnose/` 或 `reference/gstack/investigate/` |
+| 内层 TDD 纪律、测试金字塔、DAMP、Prove-It | `reference/agent-skills/skills/test-driven-development/` |
+| 增量实现纪律（Simplicity First、Scope Discipline、Feature Flags） | `reference/agent-skills/skills/incremental-implementation/` |
 | 系统化 QA 站点 | `reference/gstack/qa/` 或 `reference/gstack/qa-only/` |
+| 浏览器运行时验证（DevTools MCP）| `reference/agent-skills/skills/browser-testing-with-devtools/` |
 | 检查性能 | `reference/gstack/benchmark/` |
 | 发布后监控 | `reference/gstack/canary/` |
 | 发布 / 开 PR | `reference/gstack/ship/` + `reference/gstack/review/` |

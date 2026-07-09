@@ -1,0 +1,53 @@
+# 编码与流程标准
+
+本文件由 `/bootstrap-workflow` 初始化，`/reflect` 在每次 story 后根据新共识更新。
+
+## 检查清单索引
+
+- [checklists/testing.md](./checklists/testing.md) — 测试模式与反模式
+- [checklists/security.md](./checklists/security.md) — 安全清单（OWASP、输入验证、secrets）
+- [checklists/performance.md](./checklists/performance.md) — 性能清单（CWV、N+1、bundle、渲染）
+- [checklists/accessibility.md](./checklists/accessibility.md) — 可访问性清单（WCAG 2.1 AA、键盘、屏幕阅读器）
+- [checklists/observability.md](./checklists/observability.md) — 可观测性清单（RED/USE、日志、追踪、告警）
+
+## 项目特定约定
+
+（由团队/维护者在实际项目中逐步填写，例如：命名约定、首选库、提交格式、code review 规则等。）
+
+## Definition of Done
+
+每个 increment 在标记为"完成"前必须清除以下门槛：
+
+### Correctness
+- [ ] 该任务的验收标准已满足
+- [ ] 代码已运行并表现出预期行为，不仅仅是编译/类型检查通过
+- [ ] 新行为被测试覆盖：没有改动时测试失败，有改动时测试通过
+- [ ] 现有测试仍通过，无回归
+- [ ] 边界 case 和错误路径已处理，不只覆盖 happy path
+
+### Quality
+- [ ] 代码通过命名和结构表达意图，不需要注释解释"做什么"
+- [ ] 无重复业务逻辑
+- [ ] 无死代码、调试输出、注释掉的代码块
+- [ ] 改动范围限于任务；无无关重构混入
+- [ ] Lint 和 formatting 通过
+
+### Integration
+- [ ] 改动与系统其余部分协同工作，不只孤立通过
+- [ ] 数据库迁移、配置变更、feature flags 已 accounted for
+- [ ] 任何公共接口/API 变更已考虑向后兼容
+
+### Documentation
+- [ ] 公共接口、API 和用户-facing 行为已文档化
+- [ ] 值得保留的架构决策已记录到 `adr/`
+- [ ] 文档描述当前状态，而非变更历史
+
+### Ship-readiness
+- [ ] 任何不可信输入、鉴权或数据 handling 的安全影响已 review
+- [ ] 新关键路径有可观测性（日志、metrics、traces）
+- [ ] 任何有风险的东西都有 rollback 路径
+- [ ] 合并或发布前有人 review 并批准
+
+---
+
+来源：改编自 `reference/agent-skills/references/definition-of-done.md`。

@@ -16,9 +16,10 @@
 
 - 只写业务测试骨架（验收测试），不写实现代码。
 - 不写 TDD 单元测试；单元测试是 `/implementer` 内部代码纪律。
-- seams 类型限定为 CLI、API/public 函数接口、浏览器 E2E。
+- seams 类型限定为 CLI、API/public 函数接口、组件/结构、浏览器 E2E。
 - 断言占位等人签；测试头部强制 REQ-TRACE。
 - 默认禁用快照当判定依据。
+- 引入 `.aiassist/global/checklists/testing.md` 作为测试模式/反模式参考。
 
 ## 未来局部更新建议
 
@@ -29,3 +30,4 @@
 
 - 2026-07-03：增加 `tech-design.md` 作为输入；测试设计必须基于 tech-design 中定义的 seams。
 - 2026-07-07：明确区分业务测试与 TDD 单元测试；test-author 只生成业务测试骨架，不写单元测试。
+- 2026-07-09：新增组件/结构 seam；引入 `checklists/testing.md` 作为测试模式与反模式参考。

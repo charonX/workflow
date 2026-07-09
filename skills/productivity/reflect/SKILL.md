@@ -19,10 +19,12 @@ sources:
 - `.aiassist/stories/<id>/requirements.md`
 - `.aiassist/stories/<id>/signoff.md`
 - `.aiassist/stories/<id>/qa-report.md`
+- `.aiassist/stories/<id>/browser-verify-report.md`（如有）
 - `.aiassist/global/adr/`（ADR 目录）
 - `.aiassist/global/business-capabilities.md`
 - `.aiassist/global/CONTEXT.md`
 - `.aiassist/global/architecture.md`（架构概览）
+- `.aiassist/global/checklists/`（安全/性能/可访问性/可观测性/测试清单）
 
 ## 输出
 
@@ -33,6 +35,11 @@ sources:
 - `.aiassist/global/CONTEXT.md`（更新领域术语，如有新共识）
 - `.aiassist/global/STANDARDS.md`
 - `.aiassist/global/architecture.md`（仅更新高层模块图和 ADR 索引，不承载具体决策）
+- `.aiassist/global/checklists/testing.md`
+- `.aiassist/global/checklists/security.md`
+- `.aiassist/global/checklists/performance.md`
+- `.aiassist/global/checklists/accessibility.md`
+- `.aiassist/global/checklists/observability.md`
 - `.aiassist/stories/<id>/workflow-state.yaml` 最终状态
 
 ## 执行步骤
@@ -57,6 +64,12 @@ sources:
    - `CONTEXT.md`：补充新术语/实体定义
    - `architecture.md`：仅保留高层模块图和 ADR 索引，不写入具体决策
    - `STANDARDS.md`
+   - `checklists/`：根据本次 story 的新模式/反模式更新对应清单
+     - `testing.md`：新测试模式、反模式、常用断言
+     - `security.md`：新威胁、新验证规则
+     - `performance.md`：新性能陷阱、新测量方法
+     - `accessibility.md`：新 a11y 模式
+     - `observability.md`：新 telemetry 模式
 4. **定义下一个阶段切换线（crossing-line）**：如果是多 phase 项目，明确 P2 进入二挡的条件。
 
 ## 健康指标

@@ -5,6 +5,10 @@ sources:
   - reference/gstack/review/SKILL.md
   - reference/gstack/plan-eng-review/SKILL.md
   - reference/mattpocock/skills/engineering/code-review/SKILL.md
+  - reference/agent-skills/agents/code-reviewer.md
+  - reference/agent-skills/agents/security-auditor.md
+  - reference/agent-skills/agents/test-engineer.md
+  - reference/agent-skills/agents/web-performance-auditor.md
   - workflow/design/test-as-contract-workflow.md
 ---
 
@@ -20,9 +24,30 @@ sources:
 /review --stage=code --story=<story-id>
 ```
 
+对于关键/高风险的代码变更，可使用 specialist 子代理并行审查：
+
+```
+/review --stage=code --mode=panel --story=<story-id>
+```
+
 **建议在新 Claude Code 会话中调用**，避免当前会话的上下文偏见影响审查效果。
 
 如果没有指定 `--story`，默认使用当前工作目录下 `.aiassist/stories/` 中最近更新的 story。
+
+## 两种模式
+
+### 默认模式：单会话审查
+
+- 适用：常规变更、范围小、风险低。
+- 在当前会话中读取所有输入文件，按现有维度逐项审查。
+- 输出 `review-<stage>.md`。
+
+### Panel 模式：`--mode=panel`（仅 `--stage=code`）
+
+- 适用：关键变更、涉及安全/性能/测试覆盖、需要多视角审查。
+- 父代理并行派发 4 个 specialist 子代理，每个负责一个审查维度。
+- 汇总到 `review-code.md`，保持与默认模式相同的输出格式。
+- Token 成本高于默认模式，明确建议"关键变更再用"。
 
 ## 设计原则
 
@@ -30,6 +55,46 @@ sources:
 - **新会话友好**：skill 自己读取所有需要文件，不依赖调用会话的上下文。
 - **建议性而非强制性**：输出审查报告，人不一定要修复所有问题，但必须显性决策。
 - **回流到人决定**：报告可以建议回流，但执行回流由人通过 `/story` 完成。
+
+## Panel 模式： Specialist 子代理
+
+当用户调用 `/review --stage=code --mode=panel` 时，父代理并行派发以下 4 个 specialist 子代理。默认模式（无 `--mode=panel`）不使用子代理。
+
+### Specialist 职责
+
+| 子代理 | 输入 | 审查维度 | 输出 |
+|---|---|---|---|
+| **code-reviewer** | diff + `prd.md` + `tech-design.md` + `requirements.md` | 正确性、可读性、架构、diff 范围、ADR 对齐、标准符合 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
+| **security-auditor** | diff + `checklists/security.md` + `tech-design.md` | 输入验证、鉴权/授权、secrets、依赖 CVE、OWASP Top 10、LLM 安全 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
+| **performance-auditor** | diff + `tech-design.md` + `checklists/performance.md` | N+1 查询、无界操作、bundle 大小、渲染模式、缓存、长任务 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
+| **test-engineer** | diff + 测试文件 + `requirements.md` + `checklists/testing.md` | 覆盖缺口、测试质量、边界 case、REQ-测试可追溯性 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
+
+### 协调流程
+
+```
+/review --stage=code --mode=panel
+    │
+    ├── 父代理读取 diff、requirements、tech-design、checklists
+    │
+    ├── 并行派发 4 个子代理
+    │   ├── code-reviewer
+    │   ├── security-auditor
+    │   ├── performance-auditor
+    │   └── test-engineer
+    │
+    ├── 等待所有子代理返回
+    │
+    └── 父代理合并到 review-code.md
+        - 保留原有 "审查项" 表格
+        - 新增 "Panel Review" 小节，列出每个 specialist 的发现
+        - 总体结论：全部 PASS → PASS；任意 IMPORTANT → WARN；任意 CRITICAL → FAIL
+```
+
+### 子代理约束
+
+- 每个子代理只负责本维度，不跨维度重复审查。
+- 返回结构必须包含：severity（CRITICAL/IMPORTANT/SUGGESTION）、file:line（如有）、问题描述、建议修复、是否阻塞。
+- 如果某发现涉及其他 specialist 维度，标注 "建议由 X-reviewer 进一步确认"，而不是自己下结论。
 
 ## 输入
 
@@ -108,17 +173,21 @@ sources:
 
 #### stage=code：审查实现代码
 
+默认模式审查维度：
+
 | 维度 | 检查点 |
 |---|---|
 | diff 范围 | 是否只包含预期改动？是否误改测试文件？ |
 | 对齐契约 | 实现是否与 requirements.md + tech-design.md 一致？ |
 | 代码质量 | 明显反模式：硬编码、空 catch、重复代码、过大函数、深嵌套 |
-| 标准符合 | 是否违反 `STANDARDS.md`、项目约定？ |
+| 标准符合 | 是否违反 `STANDARDS.md`、项目约定、`checklists/` 中的清单？ |
 | 范围外 | 是否顺手实现了 PRD 范围外功能？ |
 | 副作用 | 是否引入新的跨模块耦合/全局状态？ |
 | ADR 冲突 | 实现是否违反已有 ADR？是否引入了需要新 ADR 的决策？ |
 | 影响面 | 如启用 CodeGraph，可查询变更函数/模块的依赖关系，检查是否有未覆盖的影响面 |
 | 未处理项 | 是否有未处理 TODO、FIXME、临时代码？ |
+
+**Panel 模式（`--mode=panel`）**：上述维度由 4 个 specialist 子代理并行审查，父代理负责汇总。默认模式不派生子代理。
 
 ### 4. 生成 review 报告
 

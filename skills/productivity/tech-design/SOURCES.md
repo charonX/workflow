@@ -21,6 +21,7 @@
 - 吸收 mattpocock codebase-design 的 deep modules / seams / interface 词汇。
 - 用对抗式访谈（grill-with-docs + domain-modeling）驱动方案澄清，而非直接根据 PRD 推导。
 - 输出 `tech-design.md`，作为 `/crystallize` 和 `/test-author` 的输入。
+- 设计阶段引入 `checklists/security.md`、`checklists/performance.md`、`checklists/observability.md` 作为安全/性能/可观测性前置输入。
 
 ## 未来局部更新建议
 
@@ -32,3 +33,4 @@
 
 - 2026-07-03：创建 skill，定义对抗式技术方案设计流程与 `tech-design.md` 输出格式。
 - 2026-07-03：增加 PRD 反向同步步骤，技术方案讨论中发现的需求调整需同步回 `prd.md`。
+- 2026-07-09：在设计阶段引入 `checklists/security.md`、`checklists/performance.md`、`checklists/observability.md` 前置检查。

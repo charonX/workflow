@@ -15,6 +15,7 @@
 | `/domain-model` | 统一领域术语与业务实体，维护 `CONTEXT.md` | 用户 |
 | `/tech-design` | 对抗式技术方案设计 | 用户 |
 | `/design` | 设计阶段统一入口：建/更新设计系统、导入设计源、迭代 HTML UX 原型 | 用户 |
+| `/file-bug` | 在当前 story 内登记、复现、分类 bug；支持从 GitHub/GitLab issue 拉取 | 用户 |
 | `/review` | 手动审查 PRD/技术方案/代码（建议新会话）；`--stage=code --mode=panel` 启用 specialist 子代理并行审查 | 用户 |
 | `/signoff` | 两个循环的切换点：门 1 签断言、门 2 验观感 | 用户 |
 | `/reflect` | 捕获经验教训并更新全局知识、`adr/`、`checklists/` | 用户 |
@@ -25,7 +26,8 @@
 | `/test-author` | 从 REQ 生成业务测试骨架；前端需求必须生成组件/浏览器结构行为测试；浏览器 E2E 默认 Playwright | 模型 |
 | `/tdd` | 内层实现纪律：RED → GREEN 写单元测试驱动代码 | 模型 |
 | `/implementer` | 针对已签核测试实现代码；默认子代理实现切片，父代理调度验证；内部用 `/tdd` RED → GREEN；每个 slice 绿后由 refactor subagent 做一轮安全重构 | 模型 |
-| `/qa-runner` | 运行 E2E（Playwright）、回归、收集证据；浏览器项目在 E2E 通过后可选调用 `/browser-verify` | 模型 |
+| `/qa-runner` | 运行 E2E（Playwright）、回归、收集证据；失败时建议 `/file-bug`；浏览器项目在 E2E 通过后可选调用 `/browser-verify` | 模型 |
+| `/fix-bugs` | 在当前 story 内批量修复已分类 bug、跑全量回归、输出修复报告；支持同步关闭外部 issue | 模型 |
 | `/browser-verify` | 用 Chrome DevTools MCP 做运行时浏览器验证（Console/DOM/Network/A11y/截图/性能） | 模型 |
 
 ### 两个循环与两道门

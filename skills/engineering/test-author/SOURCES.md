@@ -24,6 +24,7 @@
 - 默认禁用快照当判定依据。
 - 引入 `.aiassist/global/checklists/testing.md` 作为测试模式/反模式参考。
 - **v0.10.1 起**：增强 Playwright E2E 模板，增加 config、fixture/认证、API mocking、page object 模板与纪律。
+- **v0.12.0 起**：新增回归测试模板（CLI、Playwright）和 `BUG-TRACE` 头部，支持从 `/file-bug` 生成回归测试。
 
 ## 未来局部更新建议
 
@@ -38,3 +39,4 @@
 - 2026-07-07：明确区分业务测试与 TDD 单元测试；test-author 只生成业务测试骨架，不写单元测试。
 - 2026-07-09：新增组件/结构 seam；引入 `checklists/testing.md` 作为测试模式与反模式参考。
 - 2026-07-09：增强 Playwright E2E 模板（config、fixture、mocking、page object、纪律）。
+- 2026-07-10：新增回归测试模板与 `BUG-TRACE` 头部。

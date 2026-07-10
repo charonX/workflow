@@ -20,6 +20,8 @@ sources:
 - `.aiassist/stories/<id>/signoff.md`
 - `.aiassist/stories/<id>/qa-report.md`
 - `.aiassist/stories/<id>/browser-verify-report.md`（如有）
+- `.aiassist/stories/<id>/bug-fix-report.md`（如有）
+- `.aiassist/stories/<id>/bugs/`（如有）
 - `.aiassist/global/adr/`（ADR 目录）
 - `.aiassist/global/business-capabilities.md`
 - `.aiassist/global/CONTEXT.md`
@@ -46,6 +48,7 @@ sources:
 
 1. **统计健康指标**：
    - `/signoff --stage=feel` 发现的缺陷数 / 需求变更数
+   - **本 story 内 `/file-bug` / `/fix-bugs` 统计**：bug 总数、code-defect / test-gap / req-gap 分布、平均修复轮数、回补文档数
    - 每个阶段耗时/轮数
    - 哪些 REQ 验收标准在 `/signoff --stage=feel` 被发现遗漏
    - 本 story 是否发生过归档重做(`workflow-state.yaml` 的 `archive` 记录),根因活在哪一层
@@ -78,6 +81,10 @@ sources:
 |---|---|---|
 | `/signoff --stage=feel` 缺陷率 | N/M | 随时间下降 |
 | `/signoff --stage=feel` 需求变更率 | N/M | 随时间下降 |
+| Story 内 bug 总数 | N | 随时间下降 |
+| Bug 类别分布 | code-defect / test-gap / req-gap | test-gap 和 req-gap 占比下降说明一挡更稳 |
+| Bug 平均修复轮数 | N | ≤ 2 |
+| 回补 PRD/REQ/ADR 的 bug 数 | N | 越少越好 |
 | 实现者轮数 | N | ≤ 5 |
 | 单 REQ 平均测试数 | N | ≥ 1 |
 | 归档重做次数 | N | 0;>0 说明需求洞察投入不够 |

@@ -122,10 +122,12 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 7 | TEST — 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；浏览器 E2E 默认 Playwright；不能自动化的行为才允许 feel-signoff |
 | 8 | ASSERTION-SIGNOFF — 断言签核 | `/signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核所有断言；把上下文交给 AI |
 | 9 | BUILD — 实现 | `/implementer` | 模型 | 内层 | 默认用子代理实现每个切片；父代理读文档/调度/验证；对业务测试只读；内部用 `/tdd` 纪律 RED → GREEN；每个 slice 绿后由 refactor subagent 做一轮安全重构；每轮迭代跑全套业务测试 |
-| 10 | QA — 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集；浏览器 E2E 默认 Playwright；浏览器项目在 E2E 通过后可选调用 `/browser-verify` 做运行时验证 |
-| 11 | FEEL-SIGNOFF — 观感签核 | `/signoff --stage=feel` | 用户 | **门 2** | 人依据 HTML 参照验收观感；偏差回流到外层循环 |
+| 10 | QA — 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集；浏览器 E2E 默认 Playwright；失败时建议 `/file-bug`；浏览器项目在 E2E 通过后可选调用 `/browser-verify` 做运行时验证 |
+| 11 | BUG_TRIAGE — 缺陷分类 | `/file-bug` | 用户 | 内层/外层交界 | 在当前 story 内登记、复现、分类 bug；支持从 GitHub/GitLab issue 拉取 |
+| 12 | BUG_FIX — 缺陷修复 | `/fix-bugs` | 模型 | 内层 | 在当前 story 内批量修复已分类 bug、跑全量回归、输出修复报告；支持同步关闭外部 issue |
+| 13 | FEEL-SIGNOFF — 观感签核 | `/signoff --stage=feel` | 用户 | **门 2** | 人依据 HTML 参照验收观感；偏差回流到外层循环 |
 | — | 开发者交接（可选） | `/design-handoff` | 用户 | 外层 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
-| 12 | REFLECT — 反思 | `/reflect` | 用户 | 外层 | 捕获经验教训，更新 `.aiassist/global/` 知识 |
+| 14 | REFLECT — 反思 | `/reflect` | 用户 | 外层 | 捕获经验教训，更新 `.aiassist/global/` 知识；包含 bug 循环指标 |
 
 ### 关键机制
 
@@ -166,6 +168,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 用 HTML 原型探索 UX（含编译 preview、资产版本管理、变体） | `/design` |
 | 建立或更新设计系统 | `/design` |
 | 导入设计来源（Figma/GitHub/HTML） | `/design` |
+| 在当前 story 内登记、复现、分类 bug；支持从外部 issue 拉取 | `/file-bug` |
 | 统一领域术语与业务实体，维护 `CONTEXT.md` | `/domain-model` |
 | 做对抗式技术方案设计 | `/tech-design` |
 | 把 PRD 转成 REQ-ID（每个 REQ 至少一个自动化测试） | `/crystallize` |
@@ -174,6 +177,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 在实现前签核断言 / 验收观感 | `/signoff` |
 | 针对已签核测试实现代码（默认子代理实现，父代理调度验证） | `/implementer` |
 | 运行 QA / E2E（Playwright）/ 回归；浏览器项目可触发 `/browser-verify` 收集运行时证据 | `/qa-runner` |
+| 在当前 story 内批量修复已分类 bug、跑全量回归、输出修复报告 | `/fix-bugs` |
 | 用 Chrome DevTools MCP 做运行时浏览器验证，输出客观证据供 feel-signoff 参考 | `/browser-verify` |
 | 从 UX 生成开发者交接包 | `/design-handoff` |
 | 捕获经验教训并更新知识 | `/reflect` |

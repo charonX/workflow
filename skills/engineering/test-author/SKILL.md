@@ -353,6 +353,60 @@ export class FlowEditorPage {
 - **失败时自动收集证据**：`playwright.config.ts` 中配置 `trace: "on-first-retry"` 和 `screenshot: "only-on-failure"`。
 - **遵循测试金字塔**：E2E 占比约 5%，只覆盖关键用户路径；能用组件/CLI/API 测试覆盖的，不进 E2E。
 
+## 回归测试模板
+
+当 `/file-bug` 分类为 `code-defect` 或 `test-gap` 时，从 bug 工件生成回归测试。回归测试必须能在修复前失败、修复后通过（Prove-It 模式）。
+
+### 模板 H：CLI 回归测试
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# REQ-TRACE: REQ-FLOW-003
+# BUG-TRACE: BUG-001
+# REQ-VERSION: v1-hash:a3f7d2e
+# CAPABILITY-TRACE: flow-orchestration
+# ENTITY-TRACE: flow
+
+CLI="${CLI:-./myapp}"
+TMPDIR=$(mktemp -d)
+trap 'rm -rf "$TMPDIR"' EXIT
+
+# TODO: HUMAN ASSERTION — 填入触发 bug 的输入和预期失败输出
+$CLI project create --name "" --output-dir "$TMPDIR"
+# 预期: 退出码非 0，且 stderr 包含 "name is required"
+```
+
+### 模板 I：Playwright 回归测试
+
+```ts
+// REQ-TRACE: REQ-FLOW-003
+// BUG-TRACE: BUG-001
+// REQ-VERSION: v1-hash:a3f7d2e
+// CAPABILITY-TRACE: flow-orchestration
+// ENTITY-TRACE: flow
+
+import { test, expect } from "@playwright/test";
+
+test("BUG-001: empty flow name should show validation error", async ({ page }) => {
+  await page.goto("/flows/new");
+  await page.getByLabel("Flow name").fill("");
+  await page.getByRole("button", { name: /create/i }).click();
+
+  // TODO: HUMAN ASSERTION — 确认错误提示文案
+  await expect(page.getByText("Flow name is required")).toBeVisible();
+});
+```
+
+### 回归测试纪律
+
+- **回归测试必须在修复前失败**：如果测试已经通过，说明没有复现 bug。
+- **回归测试头部必须含 `BUG-TRACE: BUG-NNN`**。
+- **回归测试同样属于业务测试契约**：需要人签核断言（或在 bug 分类时确认）。
+- **回归测试按 capability/entity 组织**，和 REQ 测试放在一起。
+- 修复完成后，回归测试应随 bug 一起通过全量回归。
+
 ## 纪律
 
 - **只写测试，不写实现代码**。

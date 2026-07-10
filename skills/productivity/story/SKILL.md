@@ -63,12 +63,27 @@ sources:
 | ASSERTION-SIGNOFF | **门 1** | `/signoff --stage=assertion` |
 | BUILD | 内层 | `/implementer` |
 | QA | 内层 | `/qa-runner` |
+| BUG_TRIAGE | 内层/外层交界 | `/file-bug` |
+| BUG_FIX | 内层 | `/fix-bugs` |
 | FEEL-SIGNOFF | **门 2** | `/signoff --stage=feel` |
 | REFLECT | 外层 | `/reflect` |
 
 3. 若 `archive` 下已有历史 attempt,提示用户:"本 story 已尝试过 N 次,最新归档原因见 `archive/attempt-N/reason.md`,这次别踩同样的坑。"
 
-### C. 手动审查（可选但建议）
+### C. Story 内的 bug 循环（可选）
+
+二挡（测试锁定）后发现 bug 时，不直接回流整个 story，而是进入 story 内的 bug 循环：
+
+```
+BUILD/QA 发现异常 → BUG_TRIAGE (/file-bug) → BUG_FIX (/fix-bugs) → QA → FEEL-SIGNOFF
+```
+
+- `/file-bug` 负责登记、复现、分类（code-defect / test-gap / req-gap / not-a-bug）。
+- `/fix-bugs` 负责批量修复当前 story 内已分类为 `code-defect` 的 bug，跑全量回归，输出修复报告。
+- `test-gap` 先补测试；`req-gap` 回流外层更新 PRD/REQ；`not-a-bug` 直接关闭。
+- bug 工件挂在 `.aiassist/stories/<id>/bugs/BUG-NNN.md`，不跨 story。
+
+### D. 手动审查（可选但建议）
 
 以下关键转换点，建议人手动触发 `/review`，最好在新会话中执行：
 

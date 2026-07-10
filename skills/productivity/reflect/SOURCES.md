@@ -14,6 +14,7 @@
 - 简化为个人/OPC 经验沉淀。
 - 与 REQ-ID 腐化指标、`/signoff --stage=feel` 发现率挂钩。
 - 新增 `checklists/` 维护职责：根据 story 经验更新 testing/security/performance/accessibility/observability 清单。
+- **v0.12.0 起**：新增 bug 循环指标（bug 总数、类别分布、平均修复轮数、回补文档数）。
 
 ## 未来局部更新建议
 
@@ -24,3 +25,4 @@
 
 - 2026-07-03：增加 design pattern 沉淀检查项，复盘时判断是否产生可复用模式并写入 `STANDARDS.md` / `engineering-lessons.md`。
 - 2026-07-09：新增 `checklists/` 维护职责；`/reflect` 根据 story 经验更新 testing/security/performance/accessibility/observability 清单。
+- 2026-07-10：新增 bug 循环健康指标。

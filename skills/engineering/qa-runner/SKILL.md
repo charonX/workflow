@@ -45,7 +45,9 @@ BUILD 阶段全单元绿，进入 QA 慢外门时。或被 `/story` 总入口调
    - 哪些失败
    - `/browser-verify` 结果摘要
    - 不稳定测试列表
-   - 建议下一步（`/signoff --stage=feel` / 回 BUILD / 回 REQ）
+   - 建议下一步（`/signoff --stage=feel` / 回 BUILD / 回 REQ / 对失败创建 `/file-bug`）
+
+当 E2E 或单元测试出现**连续失败**时，QA 报告应明确建议："该失败可能是一个 code-defect，建议调用 `/file-bug` 登记并分类。"不自动创建 bug 工件。
 
 ## QA 报告模板
 

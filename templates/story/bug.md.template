@@ -1,0 +1,55 @@
+---
+id: BUG-001
+story: story-001
+status: open
+severity: major
+category: code-defect
+source: manual
+req-trace: REQ-FLOW-003
+created-at: 2026-07-10
+closed-at:
+---
+
+## 症状
+
+<!-- 简要描述用户看到的问题 -->
+
+## 复现步骤
+
+1.
+2.
+3.
+
+## 期望行为
+
+## 实际行为
+
+## 环境
+
+- 浏览器/设备：
+- 分支/commit：
+- 相关数据/账号：
+
+## 根因
+
+<!-- /file-bug 分类后填写 -->
+
+## 路由决策
+
+- 类别：code-defect
+- 下游 skill：/fix-bugs
+
+## 关联变更
+
+- 回归测试：
+- PRD/REQ 更新：
+- 修复 commit：
+- ADR 更新：
+
+## 验证
+
+- [ ] 回归测试在修复前失败
+- [ ] 修复后回归测试通过
+- [ ] 全量回归通过
+- [ ] PRD/REQ/CONTEXT 已回补（如 category=req-gap）
+- [ ] 外部 issue 已关闭/评论（如有）

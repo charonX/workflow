@@ -25,6 +25,7 @@
 - 轮数上限逃生口。
 - 自动连续模式：支持子代理连续执行和当前代理自循环，运行时可选择；断言一次性签核。
 - 引入 agent-skills `incremental-implementation` 的 Rule 0–5 作为子代理任务简报中的增量实现纪律。
+- **v0.12.0 起**：fix subagent 支持 `/fix-bugs` 调用，接受 bug 工件和回归测试作为上下文，提交 `[bugfix]` commit。
 
 ## 未来局部更新建议
 
@@ -39,3 +40,4 @@
 - 2026-07-07：引入 `/tdd` 作为内层实现纪律；区分业务测试（契约）与单元测试（TDD 工具）。
 - 2026-07-09：引入 agent-skills `incremental-implementation` 的 Simplicity First、Scope Discipline、One Thing at a Time、Keep It Compilable、Feature Flags、Safe Defaults、Rollback-Friendly 纪律。
 - 2026-07-09：将 refactor 从 `/tdd` 移出，改为 `/implementer` 在每个 slice 后派发 refactor subagent 处理。
+- 2026-07-10：fix subagent 支持 `/fix-bugs` bug 修复模式。

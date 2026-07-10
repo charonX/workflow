@@ -249,6 +249,7 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 | `/research` | THINK/TECH | 针对技术/API/库问题做带引用的 background 调研 |
 | `/review` | REVIEW | 外层循环手动检查点；新会话视角审查 PRD/技术方案/代码，`--stage=code --mode=panel` 启用 specialist 子代理并行审查 |
 | `/design` | DESIGN | 设计阶段统一入口：建/更新设计系统、导入设计源、迭代 HTML UX 原型 |
+| `/file-bug` | BUG | 在当前 story 内登记、复现、分类 bug；支持从 GitHub/GitLab issue 拉取 |
 | `/signoff` | 签核 | 两个循环的切换点；门 1 把契约交给 AI，门 2 把 AI 产出交回人验收 |
 | `/design-handoff` | 交接（可选） | 从已批准 UX 生成开发交接包（含机器可读 manifest） |
 | `/reflect` | REFLECT（可选） | 外层循环反馈；捕获经验教训，更新全局知识 |
@@ -262,7 +263,8 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 | `/test-author` | TEST | 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；浏览器 E2E 默认 Playwright；不能自动化的才允许 feel-signoff |
 | `/tdd` | BUILD | 内层实现纪律：RED → GREEN 写单元测试驱动代码；单元测试不进入契约 |
 | `/implementer` | BUILD | 内层实现循环核心；默认子代理实现切片，父代理调度验证；针对已签核测试写代码，对业务测试只读；内部用 `/tdd` RED → GREEN；每个 slice 绿后由 refactor subagent 做一轮安全重构 |
-| `/qa-runner` | QA | 内层实现循环终点验证；跑 E2E/回归（Playwright）、输出 QA 报告；浏览器项目可选调用 `/browser-verify` |
+| `/qa-runner` | QA | 内层实现循环终点验证；跑 E2E/回归（Playwright）、输出 QA 报告；失败时建议 `/file-bug`；浏览器项目可选调用 `/browser-verify` |
+| `/fix-bugs` | BUG_FIX | 在当前 story 内批量修复已分类 bug、跑全量回归、输出修复报告；支持同步关闭外部 issue |
 | `/browser-verify` | QA | 用 Chrome DevTools MCP 做运行时浏览器验证（Console/DOM/Network/A11y/截图/性能），输出客观证据供 feel-signoff 参考 |
 
 ## 产物目录
@@ -290,6 +292,11 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 │   ├── test-plan.md
 │   ├── signoff.md             # 断言签核 + 观感签核记录
 │   ├── workflow-state.yaml      # phase/attempt/history/archive 状态机
+│   ├── bugs/                    # （可选）story 内 bug 工件
+│   │   ├── BUG-001.md
+│   │   ├── BUG-001-triage.md
+│   │   └── ...
+│   ├── bug-fix-report.md        # （可选）/fix-bugs 输出的修复报告
 │   └── archive/                 # 归档重做时,被推翻的承诺层产物 + reason.md
 └── global/
     ├── CONTEXT.md                 # 领域词汇表与业务实体定义（由 /domain-model 维护）
@@ -303,6 +310,7 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
     │   ├── accessibility.md
     │   └── observability.md
     ├── codegraph.json             # CodeGraph 配置（可选）
+    ├── issue-tracker.json         # 外部 issue tracker 配置（可选，由 /bootstrap-workflow 初始化）
     ├── DESIGN.md                  # 项目级设计系统文档
     ├── tokens.css                 # CSS token 入口
     ├── styles.css                 # 全局样式入口（仅 @import + 工具类）

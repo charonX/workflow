@@ -18,6 +18,7 @@
 - 不稳定测试处理规则：默认放行但开限时单；反复时绿时红到阈值转阻断。
 - E2E 通过后可选调用 `/browser-verify`，用 Chrome DevTools MCP 收集运行时浏览器证据。未配置时优雅降级为 SKIPPED。
 - **v0.10.1 起**：增加 Playwright 依赖检查、CI 模板、报告产物收集、重试与 flaky 分类处理。
+- **v0.12.0 起**：QA 失败时建议调用 `/file-bug` 登记 bug。
 
 ## 未来局部更新建议
 
@@ -30,3 +31,4 @@
 - 2026-07-03：增加 coverage 报告收集步骤，QA 报告模板新增 Coverage 章节，低于阈值时 QA 不通过。
 - 2026-07-09：新增运行时浏览器验证步骤，E2E 通过后调用 `/browser-verify`；QA 报告模板新增 Browser Verify 章节。
 - 2026-07-09：增加 Playwright E2E 依赖检查、CI 模板、flaky 处理。
+- 2026-07-10：QA 失败时建议调用 `/file-bug`。

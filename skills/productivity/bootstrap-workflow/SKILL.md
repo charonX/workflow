@@ -37,6 +37,7 @@ sources:
 │   │   ├── accessibility.md    # 可访问性清单
 │   │   └── observability.md    # 可观测性清单
 │   ├── codegraph.json          # CodeGraph 配置（可选）
+│   ├── issue-tracker.json      # 外部 issue tracker 配置（可选）
 │   ├── DESIGN.md               # 项目级设计系统文档（如不存在则创建模板）
 │   ├── tokens.css              # 设计 token（如不存在则创建空文件）
 │   ├── architecture.md         # 架构概览（不再承载具体决策）
@@ -57,6 +58,7 @@ sources:
 - `templates/global/adr/NNNN-title.md.template` → 保留在 workflow 内，由 `/tech-design` 和 `/reflect` 使用
 - `templates/global/architecture.md.template` → `.aiassist/global/architecture.md`
 - `templates/global/codegraph.json.template` → `.aiassist/global/codegraph.json`
+- `templates/global/issue-tracker.json.template` → `.aiassist/global/issue-tracker.json`
 - `templates/global/STANDARDS.md.template` → `.aiassist/global/STANDARDS.md`
 - `templates/global/checklists/testing.md.template` → `.aiassist/global/checklists/testing.md`
 - `templates/global/checklists/security.md.template` → `.aiassist/global/checklists/security.md`
@@ -113,7 +115,38 @@ sources:
 4. `signoff.md` 存在性检查（assertion 阶段签核后生成）
 5. 实现 PR 不能同时修改测试文件
 
-### 3. 可选：启用 CodeGraph（代码知识图谱）
+### 3. 配置外部 Issue Tracker（可选）
+
+询问用户是否连接外部 issue tracker（GitHub Issues / GitLab Issues）：
+
+> 连接后，`/file-bug` 可以从外部 issue 创建 bug 工件，`/fix-bugs` 修复后可以同步关闭 issue。
+
+选项：
+- GitHub Issues
+- GitLab Issues
+- 不使用外部 tracker
+
+如果选择 GitHub/GitLab：
+
+1. **获取权限**：
+   - GitHub：运行 `gh auth login`（推荐）或提供 PAT（`repo` scope）。
+   - GitLab：运行 `glab auth login`（推荐）或提供 PAT（`api` scope）。
+   - **token 不得写入 git**，应通过环境变量或 CLI 内置凭证管理提供。
+
+2. **填写默认仓库**：
+   - GitHub：`owner/repo`
+   - GitLab：`owner/repo` 或完整路径
+
+3. **复制模板**：
+   - `templates/global/issue-tracker.json.template` → `.aiassist/global/issue-tracker.json`
+
+4. **在目标项目 `CLAUDE.md` 中追加约定**：
+   - `/file-bug` 默认操作当前 story 的 bug。
+   - 外部 issue 仅作为通知/归档渠道，真相源是 `.aiassist/stories/<id>/bugs/BUG-NNN.md`。
+
+如果用户拒绝，创建 `.aiassist/global/issue-tracker.json` 并设置 `enabled: false`。
+
+### 5. 可选：启用 CodeGraph（代码知识图谱）
 
 询问用户是否启用 CodeGraph 辅助 AI 理解代码结构：
 
@@ -136,7 +169,7 @@ sources:
 
 如果用户拒绝，保持 `codegraph.json` 中 `enabled: false`。
 
-### 4. 配置 git hooks
+### 6. 配置 git hooks
 
 将项目 git hooks 路径指向 `.aiassist/hooks/`：
 
@@ -151,7 +184,7 @@ chmod +x .aiassist/hooks/commit-msg
 1. 将 `pre-commit` 和 `commit-msg` 脚本的内容合并进 husky 对应 hook；或
 2. 在 husky hook 中调用 `.aiassist/hooks/pre-commit` 和 `.aiassist/hooks/commit-msg`。
 
-### 5. 初始化全局文件模板
+### 7. 初始化全局文件模板
 
 如果文件不存在，创建：
 
@@ -159,6 +192,7 @@ chmod +x .aiassist/hooks/commit-msg
 - `.aiassist/global/business-capabilities.md`
 - `.aiassist/global/adr/README.md`
 - `.aiassist/global/codegraph.json`
+- `.aiassist/global/issue-tracker.json`
 - `.aiassist/global/DESIGN.md`
 - `.aiassist/global/tokens.css`
 - `.aiassist/global/architecture.md`
@@ -172,11 +206,11 @@ chmod +x .aiassist/hooks/commit-msg
 
 这些文件内容由 `/domain-model`、`/crystallize`、`/reflect`、`/design`（模式 A）、`/tech-design` 等 skill 后续填充。`STANDARDS.md` 和 `checklists/` 由 `/reflect` 根据 story 经验持续更新。
 
-### 6. 更新项目 `CLAUDE.md`
+### 8. 更新项目 `CLAUDE.md`
 
 将 `templates/claude/project-claude-appendix.md.template` 的内容追加到目标项目 `CLAUDE.md` 末尾。如果已经存在双循环附录，跳过。
 
-### 7. 提交初始化变更
+### 9. 提交初始化变更
 
 ```bash
 git add .aiassist/ .github/workflows/ CLAUDE.md
@@ -199,6 +233,7 @@ git commit -m "[bootstrap] 初始化双循环工作流基础设施"
 |---|---|---|
 | `[test]` | test-author 编写/修改测试、人签核断言 | 测试文件（`test/`、`*.test.*`、`e2e/` 等） |
 | `[build]` | implementer 编写/修改实现 | 实现代码（`src/`、`app/`、`lib/` 等） |
+| `[bugfix]` | /fix-bugs 修复 bug | 实现代码 + bug 报告文件（不修改业务测试契约文件） |
 | `[bootstrap]` | 工作流基础设施变更 | `.aiassist/`、`CLAUDE.md`、hooks 等 |
 | `[docs]` | PRD、需求、设计文档更新 | `.aiassist/stories/*/prd.md`、`.aiassist/stories/*/requirements.md` 等 |
 | `[ux]` | UX 原型更新 | `.aiassist/stories/*/ux/*.html`、`.aiassist/global/DESIGN.md` 等 |

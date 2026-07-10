@@ -97,6 +97,8 @@ sources:
   - 修复后重新跑全量。
   - 超过轮数上限仍失败 → 停止，向用户报告 blocker。
 
+全量回归通过且当前 story 无 open 的 `code-defect` bug 时，进入 `/reflect`（门 2：最终验收 + 知识沉淀）。
+
 ### 6. 输出修复报告
 
 按 `templates/story/bug-fix-report.md.template` 生成 `.aiassist/stories/<id>/bug-fix-report.md`。
@@ -118,7 +120,7 @@ sources:
 用户确认后：
 - 将 bug 工件 `status` 改为 `closed`
 - 如果启用外部 issue tracker，在外部 issue 下添加修复报告 comment，并关闭 issue
-- 更新 `workflow-state.yaml`：从 `BUG_FIX` 回到 `QA` 或 `FEEL-SIGNOFF`
+- 更新 `workflow-state.yaml`：从 `BUG_FIX` 回到 `QA`（还有未关闭 bug 或需重新 QA）或 `REFLECT`（所有 bug 已关闭且 QA 全绿）
 
 ## 命令格式
 

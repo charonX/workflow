@@ -36,7 +36,7 @@
 1. **断言归人。** 人只持有「什么算对」这一行判断；AI 持有其余全部脚手架。AI 不得擅改断言。
 2. **PRD / REQ 是唯一裁判。** 「这是 bug 还是需求变更」靠回溯 REQ 机械裁决。任何测试都生于 REQ。
 3. **主观不进测试。** 行为对错由机器判（测试），观感好坏由人判（HTML 视觉参照）。
-4. **绿灯不许撒谎。** 角色隔离 + 实现者对测试只读 + 抗特判测试 + 停机条件是「全套绿」；但**绿灯只是最低门槛**，实现还必须对齐 PRD 意图、技术方案契约与 UX 参照。**每个 REQ 必须至少有一个自动化测试；feel-signoff 只覆盖无法结构化的纯审美判断。**
+4. **绿灯不许撒谎。** 角色隔离 + 实现者对测试只读 + 抗特判测试 + 停机条件是「全套绿」；但**绿灯只是最低门槛**，实现还必须对齐 PRD 意图、技术方案契约与 UX 参照。**每个 REQ 必须至少有一个自动化测试；不能自动化的纯审美判断（颜色、间距、动效曲线）才允许进入 REFLECT 人工验收。**
 5. **人的功夫上移到 spec。** PRD / UX 精度决定下游自动化上限。
 
 两条公理：
@@ -52,20 +52,19 @@
 ┌─────────────────────────────────────────────────────────────────────┐
 │  外层循环：人控制的设计上下文                                            │
 │  THINK → PRD → DESIGN → DOMAIN-MODEL → TECH-DESIGN → TEST → ASSERTION-SIGNOFF │
-│                                              ↑                       │
-│                                       FEEL-SIGNOFF 不通过，回流到这里  │
 └─────────────────────────────────────────────────────────────────────┘
                                     │ 门 1：断言签核（人把上下文交给 AI）
                                     ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  内层循环：agent 控制的实现迭代                                  │
-│  BUILD → QA                                                   │
+│  BUILD → QA                                                  │
 │   ↑    │                                                      │
 │   └────┘ 测试不绿就自修，不许改断言                              │
+│          有缺陷 → BUG_TRIAGE → BUG_FIX ──────┘                │
 └─────────────────────────────────────────────────────────────┘
-                                    │ 门 2：观感签核（人验收 AI 产出）
+                                    │ 无 open bug，QA 全绿
                                     ▼
-                            人验收 → 通过 / 不通过回流
+                            REFLECT（门 2：最终验收 + 知识沉淀）
 ```
 
 ### 两挡模型
@@ -89,12 +88,13 @@
 | 4 | **DOMAIN-MODEL** | `/domain-model` | 用户 | 统一术语与业务实体，维护 `CONTEXT.md` |
 | 5 | **TECH-DESIGN** | `/tech-design` | 用户 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
 | 6 | **CRYSTALLIZE** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID；每个 REQ 至少一个自动化测试 |
-| 7 | **TEST** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架；前端需求强制生成组件 / 浏览器结构行为测试；不能自动化的才允许 feel-signoff |
+| 7 | **TEST** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架；前端需求强制生成组件 / 浏览器结构行为测试；不能自动化的才允许在 REFLECT 中人工验收 |
 | 8 | **ASSERTION-SIGNOFF** | `/signoff --stage=assertion` | 用户 | 人在实现前签核所有断言（门 1） |
 | 9 | **BUILD** | `/implementer` | 模型 | 默认用子代理实现切片；父代理调度验证，对测试只读，每轮跑全套测试 |
-| 10 | **QA** | `/qa-runner` | 模型 | E2E、回归、证据收集；浏览器项目在 E2E 通过后可选调用 `/browser-verify` 做运行时验证 |
-| 11 | **FEEL-SIGNOFF** | `/signoff --stage=feel` | 用户 | 人依据 HTML 参照验收观感，偏差回流 REQ（门 2） |
-| 12 | **REFLECT** | `/reflect` | 用户 | 捕获经验教训，更新全局知识 |
+| 10 | **QA** | `/qa-runner` | 模型 | E2E、回归、证据收集；有缺陷时进入 bug 循环 |
+| 11 | **BUG_TRIAGE** | `/file-bug` | 用户 | 登记、复现、分类 bug；支持从 GitHub / GitLab issue 拉取 |
+| 12 | **BUG_FIX** | `/fix-bugs` | 模型 | 批量修复已分类 code-defect，跑全量回归 |
+| 13 | **REFLECT** | `/reflect` | 用户 | QA 全绿且无 open bug 后，人做最终验收确认并沉淀知识（门 2） |
 | — | **技术方案审查** | `/review --stage=tech` | 用户（手动） | 新会话视角审查技术方案（可选但建议） |
 | — | **代码审查** | `/review --stage=code` | 用户（手动） | 新会话视角审查实现 diff（可选但建议） |
 | — | **开发者交接** | `/design-handoff` | 用户 | 从已批准 UX 生成开发交接包（可选） |
@@ -120,12 +120,26 @@
 
 因此 `/tech-design` 会默认问：「这个稳定块能否映射到产品 CLI 的某个命令？」`/test-author` 会优先生成 CLI 测试，不能 CLI 化时再补充浏览器 E2E 或 public 接口测试。`/implementer` 在实现过程中用 `/tdd` 纪律写单元测试驱动代码。
 
-### 两道硬性签核
+### 一道硬性签核 + 最终验收
 
 1. **门 1 — `/signoff --stage=assertion`**：人确认测试准确捕捉了需求。不签不准实现。
-2. **门 2 — `/signoff --stage=feel`**：人确认实现后的 UI 观感与批准的 HTML 参照一致。不签不准合并。
+2. **门 2 — `/reflect`**：QA 全绿、bug 循环结束后，人做最终验收确认并沉淀经验。不接受不合并。
 
-人在边界使劲（门 1 签断言、门 2 验观感），中段全自主；失败走逃生口（实现者轮数上限→上报，不许自己改测试）。
+人在边界使劲（门 1 签断言、门 2 最终验收），中段全自主；失败走逃生口（实现者轮数上限→上报，不许自己改测试）。
+
+### Bug 循环作为质量收敛机制
+
+二挡后发现的问题进入 bug 循环：
+
+```
+BUILD/QA 发现异常 → BUG_TRIAGE (/file-bug) → BUG_FIX (/fix-bugs) → QA
+```
+
+- `/file-bug` 负责登记、复现、分类（`code-defect` / `test-gap` / `req-gap` / `not-a-bug`）。
+- `/fix-bugs` 负责批量修复当前 story 内已分类为 `code-defect` 的 bug，跑全量回归。
+- 观感/feel 问题（实现偏离已批准 HTML UX 参照）登记为 `code-defect`，在 bug 循环中修复。
+- 已批准 HTML UX 本身要改，走 `req-gap` 回流外层循环，或人决定新建 story。
+- 当 QA 全绿且当前 story 无 open bug 时，进入 `/reflect` 最终验收。
 
 ### REQ 可追溯性
 
@@ -150,6 +164,8 @@ REQ 变 → 挂它的测试标记「过时待重生」。任何失败测试都�
 |---|---|
 | 初衷不变，实现路径错了（一挡 / 二挡都算） | 同 story 下 `archive/` 归档本次尝试，同 story 重做 |
 | 初衷本身错了 / 痛点不成立 | 不归档，直接删 story |
+| bug 循环中发现 `req-gap`（REQ/PRD 定义错误或遗漏） | 回流外层循环更新 PRD/REQ，重新签核、测试、实现 |
+| bug 循环中 HTML UX 参照本身要改 | 走 `req-gap` 回流 DESIGN，或人决定新建 story |
 
 - **归档范围**：PRD、requirements、断言签核、代码等承诺层产物 + `reason.md`（根因 + 推翻理由）。UX 原型不归档（一挡思考工具，直接改）。
 - **根因诊断优先**：回流前先判「初衷在不在」。模型提议，人拍板。
@@ -212,12 +228,12 @@ cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 | Skill | 阶段 | 用途 |
 |---|---|---|
 | `/crystallize` | 结晶 | 把 PRD 转成 REQ-ID；每个 REQ 至少一个自动化测试 |
-| `/test-author` | TEST | 优先生成 CLI 测试骨架；前端需求强制生成组件 / 浏览器结构行为测试；浏览器 E2E 默认 Playwright；不能自动化的才允许 feel-signoff |
+| `/test-author` | TEST | 优先生成 CLI 测试骨架；前端需求强制生成组件 / 浏览器结构行为测试；浏览器 E2E 默认 Playwright；不能自动化的才允许在 REFLECT 中人工验收 |
 | `/tdd` | BUILD | 内层实现纪律：RED → GREEN 写单元测试驱动代码；单元测试不进入契约 |
 | `/implementer` | BUILD | 内层实现循环核心；默认子代理实现切片，父代理调度验证；针对已签核测试写代码，对业务测试只读；内部用 `/tdd` RED → GREEN；每个 slice 绿后由 refactor subagent 做一轮安全重构 |
 | `/qa-runner` | QA | 内层实现循环终点验证；跑 E2E / 回归（Playwright）、输出 QA 报告；失败时建议 `/file-bug`；浏览器项目可选调用 `/browser-verify` |
 | `/fix-bugs` | BUG_FIX | 在当前 story 内批量修复已分类 bug、跑全量回归、输出修复报告；支持同步关闭外部 issue |
-| `/browser-verify` | QA | 用 Chrome DevTools MCP 做运行时浏览器验证（Console / DOM / Network / A11y / 截图 / 性能），输出客观证据供 feel-signoff 参考 |
+| `/browser-verify` | QA | 用 Chrome DevTools MCP 做运行时浏览器验证（Console / DOM / Network / A11y / 截图 / 性能），输出客观证据供 bug 循环和 REFLECT 参考 |
 
 ## 产物目录
 

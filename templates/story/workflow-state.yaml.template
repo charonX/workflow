@@ -5,7 +5,7 @@ story_id: {{STORY_ID}}
 intention: >-
   {{INTENTION}}   # 一句话痛点,非方案。这是 story 的初衷,方案会变,痛点不会。
 
-phase: THINK      # THINK / PRD / DESIGN / DOMAIN-MODEL / TECH-DESIGN / CRYSTALLIZE / TEST / ASSERTION-SIGNOFF / BUILD / QA / FEEL-SIGNOFF / REFLECT
+phase: THINK      # THINK / PRD / DESIGN / DOMAIN-MODEL / TECH-DESIGN / CRYSTALLIZE / TEST / ASSERTION-SIGNOFF / BUILD / QA / BUG_TRIAGE / BUG_FIX / REFLECT
 attempt: 1        # 第几次尝试。归档重做时 +1。
 created: {{DATE}}
 

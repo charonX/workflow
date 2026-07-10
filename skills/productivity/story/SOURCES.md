@@ -12,6 +12,7 @@ story = 初衷，不是具体方案。本 skill 是工作流总入口：路由�
 
 ## 改动记录
 
+- 2026-07-10：取消 FEEL-SIGNOFF 阶段；门 2 改为 `/reflect`；bug 循环结束后进入 REFLECT；新增向后兼容处理旧 `phase: FEEL-SIGNOFF`。
 - 2026-07-06：DESIGN 阶段路由统一为 `/design`，合并 `tac-design-system`、`tac-design-import`、`tac-ux-explore` 三个入口。
 - 2026-07-05：路由表更新：ASSERTION-SIGNOFF / FEEL-SIGNOFF 统一指向 `/signoff` 的对应 stage。
 - 2026-07-03：增加 `TECH-DESIGN` 阶段路由；归档范围增加 `tech-design.md`；阶段列表同步更新。
@@ -24,6 +25,6 @@ story = 初衷，不是具体方案。本 skill 是工作流总入口：路由�
   - REVIEW 阶段新增 `/design-handoff`(可选) 引导
 - 2026-06-25：基于设计文档（`workflow/design/`）实现
   - 10 阶段流程映射
-  - 双 Gate（`/signoff --stage=assertion` + `/signoff --stage=feel`）
+  - 双 Gate（`/signoff --stage=assertion` + `/reflect`）
   - 角色分离（human / test-author / implementer）
   - 阶段可跳过逻辑（无 UI 跳 DESIGN，明确需求跳 THINK）

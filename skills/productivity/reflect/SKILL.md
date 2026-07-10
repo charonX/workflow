@@ -1,6 +1,6 @@
 ---
 name: reflect
-description: 外层设计循环的反馈。feel-signoff 通过后沉淀本次 story 的经验：更新 engineering-lessons、ADR、STANDARDS，让下一个 story 的设计上下文更准确。
+description: 最终验收门 + 知识沉淀。QA 全绿且当前 story 无 open bug 后，人做最终验收确认并沉淀经验：更新 engineering-lessons、ADR、STANDARDS、checklists，让下一个 story 的设计上下文更准确。
 sources:
   - reference/gstack/retro/SKILL.md
   - reference/superpowers/skills/writing-plans/SKILL.md
@@ -11,17 +11,19 @@ sources:
 
 ## 何时调用
 
-`/signoff --stage=feel` 通过，用户说"复盘"、"/reflect"时。
+- QA 全绿且当前 story 无 open bug，自动进入 `/reflect`。
+- 用户主动说"复盘"、"/reflect"时。
 
 ## 输入
 
 - `.aiassist/stories/<id>/prd.md`
 - `.aiassist/stories/<id>/requirements.md`
-- `.aiassist/stories/<id>/signoff.md`
+- `.aiassist/stories/<id>/signoff.md`（Assertion section）
 - `.aiassist/stories/<id>/qa-report.md`
 - `.aiassist/stories/<id>/browser-verify-report.md`（如有）
 - `.aiassist/stories/<id>/bug-fix-report.md`（如有）
 - `.aiassist/stories/<id>/bugs/`（如有）
+- `.aiassist/stories/<id>/workflow-state.yaml`
 - `.aiassist/global/adr/`（ADR 目录）
 - `.aiassist/global/business-capabilities.md`
 - `.aiassist/global/CONTEXT.md`
@@ -42,24 +44,47 @@ sources:
 - `.aiassist/global/checklists/performance.md`
 - `.aiassist/global/checklists/accessibility.md`
 - `.aiassist/global/checklists/observability.md`
-- `.aiassist/stories/<id>/workflow-state.yaml` 最终状态
+- `.aiassist/stories/<id>/workflow-state.yaml` 最终状态（标记 `completed: true`）
+
+## 前置条件
+
+进入 `/reflect` 前必须满足：
+
+1. 所有 `code-defect` bug 状态为 `closed`。
+2. 所有 `test-gap` 已补测试并通过。
+3. 所有 `req-gap` 已回流外层循环并重新通过 QA。
+4. 所有 `not-a-bug` 已关闭并记录决策。
+5. 最近一次 QA 全绿（单元 + E2E）。
+
+如果不满足，先回对应阶段处理，不要开始 reflect。
 
 ## 执行步骤
 
-1. **统计健康指标**：
-   - `/signoff --stage=feel` 发现的缺陷数 / 需求变更数
-   - **本 story 内 `/file-bug` / `/fix-bugs` 统计**：bug 总数、code-defect / test-gap / req-gap 分布、平均修复轮数、回补文档数
+1. **最终验收确认**：
+   - 展示「最终验收检查清单」给用户。
+   - 展示 QA 报告摘要（单元/E2E 结果）。
+   - 展示 `browser-verify-report.md` 摘要（如有）。
+   - 展示 bug 循环总结（登记了多少 bug、分类分布、修复轮数）。
+   - 用户逐项确认检查清单。
+   - 用户明确说"接受"或"完成"。
+   - 若用户在验收中发现新的实现偏差，停止 reflect，回到 `/file-bug` 登记 bug。
+
+2. **统计健康指标**：
+   - **bug 循环指标**：bug 总数、code-defect / test-gap / req-gap / not-a-bug 分布、平均修复轮数、回补文档数
+   - **视觉/feel 缺陷占比**：实现偏离 HTML UX 参照的 code-defect 数 / 总 code-defect 数
    - 每个阶段耗时/轮数
-   - 哪些 REQ 验收标准在 `/signoff --stage=feel` 被发现遗漏
+   - 哪些 REQ 验收标准在 bug 循环中被发现遗漏
    - 本 story 是否发生过归档重做(`workflow-state.yaml` 的 `archive` 记录),根因活在哪一层
-2. **提炼经验**：
+
+3. **提炼经验**：
    - 下次应该在哪个阶段多问什么问题
    - 哪些测试模式好用/不好用
    - 哪些架构决策需要记录为 ADR（写入 `adr/`）或已取代旧 ADR（更新状态）
    - 是否有新领域术语或实体定义需要更新到 `CONTEXT.md`
    - 能力地图是否需要调整：新增 capability、合并 entity、更新测试映射
    - **是否产生了可复用的 design pattern**：错误处理、状态管理、API 客户端封装、跨模块调用模式等。如果有，写入 `STANDARDS.md` 或 `engineering-lessons.md`。
-3. **更新全局文档**：
+
+4. **更新全局文档**：
    - `engineering-lessons.md`
    - `adr/`：新增 ADR 或更新现有 ADR 状态（如 `superseded`）
    - `adr/README.md`：更新索引
@@ -73,17 +98,33 @@ sources:
      - `performance.md`：新性能陷阱、新测量方法
      - `accessibility.md`：新 a11y 模式
      - `observability.md`：新 telemetry 模式
-4. **定义下一个阶段切换线（crossing-line）**：如果是多 phase 项目，明确 P2 进入二挡的条件。
+
+5. **标记完成**：
+   - 更新 `workflow-state.yaml`：
+     - `phase: REFLECT`
+     - `completed: true`
+     - `completed_at: <date>`
+   - 可选：生成 `[accept] story <story-id> accepted` commit。
+
+## 最终验收检查清单
+
+- [ ] 产品在目标环境启动无崩溃。
+- [ ] 关键用户流程可走完。
+- [ ] 所有 `/file-bug` 登记的 bug 已关闭或已分类为 not-a-bug。
+- [ ] `browser-verify-report.md`（如有）无未处理的 FAIL。
+- [ ] QA 报告全绿（单元测试 + E2E）。
+- [ ] 实现与已签 REQ 一致（功能层面）。
+- [ ] 视觉/feel 层面：如有偏差，已通过 bug 循环处理或记录为可接受偏差。
+- [ ] 用户确认：我接受当前实现，可以合并/完成。
 
 ## 健康指标
 
 | 指标 | 本期值 | 目标 |
 |---|---|---|
-| `/signoff --stage=feel` 缺陷率 | N/M | 随时间下降 |
-| `/signoff --stage=feel` 需求变更率 | N/M | 随时间下降 |
 | Story 内 bug 总数 | N | 随时间下降 |
-| Bug 类别分布 | code-defect / test-gap / req-gap | test-gap 和 req-gap 占比下降说明一挡更稳 |
+| Bug 类别分布 | code-defect / test-gap / req-gap / not-a-bug | test-gap 和 req-gap 占比下降说明一挡更稳 |
 | Bug 平均修复轮数 | N | ≤ 2 |
+| 视觉/feel 缺陷占比 | N/M | 随时间下降 |
 | 回补 PRD/REQ/ADR 的 bug 数 | N | 越少越好 |
 | 实现者轮数 | N | ≤ 5 |
 | 单 REQ 平均测试数 | N | ≥ 1 |
@@ -95,3 +136,4 @@ sources:
 - gstack `retro` 强调团队复盘；我们简化为个人/OPC 经验沉淀。
 - superpowers 的 plan 结构给我们的 ADR 格式。
 - 核心差异：把单文件 `architecture.md` 拆分为 `adr/` 目录 + `architecture.md` 概览，并维护 `business-capabilities.md` 与 `CONTEXT.md`。
+- 本次演进：把 feel-signoff 的验收功能合并到 reflect，用 bug 循环统一处理实现偏差。

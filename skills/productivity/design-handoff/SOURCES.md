@@ -22,5 +22,5 @@
   - README 新增"机器可读清单"与"设计系统绑定"章节
 - 2026-07-01：新建
   - 基于 baoyu-design 的 handoff-to-claude-code 模式
-  - 适配 test-as-contract 流程（放在 `/signoff --stage=feel` 之后）
+  - 适配 test-as-contract 流程（放在 `/reflect` 最终验收之后）
   - README 模板：screen/view + 组件清单表 + 交互行为 + 状态管理 + token 表 + 素材清单

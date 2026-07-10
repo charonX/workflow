@@ -1,6 +1,6 @@
 ---
 name: qa-runner
-description: 内层实现循环的终点验证。BUILD 全绿后跑 E2E/回归、收集证据、输出 QA 报告,为 feel-signoff 提供客观依据。
+description: 内层实现循环的终点验证。BUILD 全绿后跑 E2E/回归、收集证据、输出 QA 报告，为 bug 循环和 REFLECT 提供客观依据。
 sources:
   - reference/gstack/qa/SKILL.md
   - reference/gstack/qa-only/SKILL.md
@@ -45,7 +45,7 @@ BUILD 阶段全单元绿，进入 QA 慢外门时。或被 `/story` 总入口调
    - 哪些失败
    - `/browser-verify` 结果摘要
    - 不稳定测试列表
-   - 建议下一步（`/signoff --stage=feel` / 回 BUILD / 回 REQ / 对失败创建 `/file-bug`）
+   - 建议下一步（进入 `/reflect` / 回 BUILD / 回 REQ / 对失败创建 `/file-bug`）
 
 当 E2E 或单元测试出现**连续失败**时，QA 报告应明确建议："该失败可能是一个 code-defect，建议调用 `/file-bug` 登记并分类。"不自动创建 bug 工件。
 
@@ -89,10 +89,10 @@ BUILD 阶段全单元绿，进入 QA 慢外门时。或被 `/story` 总入口调
 | ... | 时绿时红 | 已开单，限时修 |
 
 ## 结论
-- [ ] 可进入 `/signoff --stage=feel`
+- [ ] 可进入 `/reflect`（无 open bugs，QA 全绿）
 - [ ] 需回 BUILD
 - [ ] 需回 REQ
-```
+- [ ] 有失败，建议创建 `/file-bug`
 
 ## Playwright CI 模板
 
@@ -131,14 +131,14 @@ BUILD 阶段全单元绿，进入 QA 慢外门时。或被 `/story` 总入口调
 
 - `playwright.config.ts` 中建议 CI 环境 `retries: 2`，本地 `retries: 0`。
 - `/qa-runner` 对 Playwright 结果分类：
-  - **连续失败**：同一测试在所有 retry 中失败 → 标记为 blocker，不建议进入 feel-signoff。
+  - **连续失败**：同一测试在所有 retry 中失败 → 标记为 blocker，不建议进入 `/reflect`。
   - **Retry 后通过**：同一测试首次失败、retry 后通过 → 标记为 flaky，建议开 issue 跟踪，但可配置是否阻断。
   - **全部通过**：无需特殊处理。
 - 不自动修改 E2E 测试来消除 flaky；疑似产品竞态或测试隔离问题则回流到 `/signoff --stage=assertion` 或 REQ。
 
 ## 纪律
 
-- 行为对错由测试判；观感好坏留给 `/signoff --stage=feel` 人判。
+- 行为对错由测试判；观感/feel 问题通过 `/file-bug` 登记为 code-defect，由 bug 循环处理。
 - 不稳定测试不掩盖：默认放行但开限时单；反复时绿时红到阈值转阻断。
 - 不自动修不稳定 E2E；疑似产品竞态则回 `/signoff --stage=assertion`/REQ。
 

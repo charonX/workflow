@@ -1,6 +1,6 @@
 ---
 name: story
-description: "双循环工作流总入口。管理 story 生命周期:读取 workflow-state 路由到当前阶段(外层人控设计循环 / 内层 agent 实现循环),在签核门切换循环,并在发现根本问题时执行回流。"
+description: "循环工作流总入口。管理 story 生命周期:读取 workflow-state 路由到当前阶段(外层人控设计循环 / 内层 agent 实现循环),在签核门切换循环,并在发现根本问题时执行回流。"
 sources:
   - workflow/design/workflow-framework.md
   - workflow/design/test-as-contract-workflow.md
@@ -13,15 +13,15 @@ sources:
 本 skill 是工作流总入口,承担三件事:
 
 1. **路由**:读 `workflow-state.yaml`,把用户送进当前 story 所处的阶段。
-2. **循环切换**:在 assertion-signoff(门 1)把外层设计循环交给内层实现循环;在 feel-signoff(门 2)把内层实现循环交回外层验收/回流。
+2. **循环切换**:在 assertion-signoff(门 1)把外层设计循环交给内层实现循环;在 reflect(门 2)把内层实现循环交回外层验收与知识沉淀。
 3. **回流**:当用户发现"根本问题"时,执行归档重做或删 story。
 
 ## 核心概念:两个循环 + story = 初衷
 
 - **外层循环 — 人控制的设计上下文**:THINK → PRD → DESIGN → DOMAIN-MODEL → TECH-DESIGN → CRYSTALLIZE → TEST → ASSERTION-SIGNOFF。人做决定、签核、改需求。
-- **内层循环 — agent 控制的实现迭代**:BUILD → QA。AI 在测试契约内自主迭代到全绿。
+- **内层循环 — agent 控制的实现迭代**:BUILD → QA → BUG_TRIAGE → BUG_FIX → QA。AI 在测试契约内自主迭代,bug 循环结束后进入 REFLECT。
 - **门 1(assertion-signoff)**:外层循环的终点,把完整上下文(REQ + 测试)交给 AI。
-- **门 2(feel-signoff)**:内层循环的终点,人验收 AI 产出;不通过则回流到外层循环修设计。
+- **门 2(reflect)**:内层循环的终点,人做最终验收确认并沉淀知识。
 
 一个 story 对应一个**初衷**——用户痛点,不是具体方案。
 
@@ -65,18 +65,21 @@ sources:
 | QA | 内层 | `/qa-runner` |
 | BUG_TRIAGE | 内层/外层交界 | `/file-bug` |
 | BUG_FIX | 内层 | `/fix-bugs` |
-| FEEL-SIGNOFF | **门 2** | `/signoff --stage=feel` |
-| REFLECT | 外层 | `/reflect` |
+| REFLECT | **门 2** | `/reflect` |
 
-3. 若 `archive` 下已有历史 attempt,提示用户:"本 story 已尝试过 N 次,最新归档原因见 `archive/attempt-N/reason.md`,这次别踩同样的坑。"
+3. 向后兼容：若读取到旧版 `phase: FEEL-SIGNOFF`，向用户说明 feel-signoff 已合并到 reflect，自动迁移到 `REFLECT` 阶段，追加历史记录 `{from: FEEL-SIGNOFF, to: REFLECT, note: "自动迁移：feel-signoff 已合并到 reflect"}`，然后路由到 `/reflect`。
+
+4. 若 `archive` 下已有历史 attempt,提示用户:"本 story 已尝试过 N 次,最新归档原因见 `archive/attempt-N/reason.md`,这次别踩同样的坑。"
 
 ### C. Story 内的 bug 循环（可选）
 
 二挡（测试锁定）后发现 bug 时，不直接回流整个 story，而是进入 story 内的 bug 循环：
 
 ```
-BUILD/QA 发现异常 → BUG_TRIAGE (/file-bug) → BUG_FIX (/fix-bugs) → QA → FEEL-SIGNOFF
+BUILD/QA 发现异常 → BUG_TRIAGE (/file-bug) → BUG_FIX (/fix-bugs) → QA
 ```
+
+当 QA 全绿且当前 story 无 open bug 时，进入 `/reflect`（门 2：最终验收 + 知识沉淀）。
 
 - `/file-bug` 负责登记、复现、分类（code-defect / test-gap / req-gap / not-a-bug）。
 - `/fix-bugs` 负责批量修复当前 story 内已分类为 `code-defect` 的 bug，跑全量回归，输出修复报告。
@@ -134,7 +137,7 @@ BUILD/QA 发现异常 → BUG_TRIAGE (/file-bug) → BUG_FIX (/fix-bugs) → QA 
 
 | 情况 | 机制 | 动作 |
 |---|---|---|
-| REQ 漏了一个 case | `/signoff --stage=feel` 已有 | 回 `/crystallize` 补验收标准增量 |
+| REQ 漏了一个 case | bug 循环中 | 回 `/crystallize` 补验收标准增量 |
 | 断言自相矛盾/不可满足 | 逃生口 | 回门 1 重审断言 |
 | 实现者烧完轮数不绿 | 逃生口 | 上报,换模型或回门 1 |
 | 一挡内某块被推翻 | 按块回流 | 该块降级回"移动块",其它块不动,UX 直接改 |
@@ -146,7 +149,7 @@ BUILD/QA 发现异常 → BUG_TRIAGE (/file-bug) → BUG_FIX (/fix-bugs) → QA 
 ```yaml
 story_id: 2026-07-02-mood-tracking
 intention: <一句话痛点,非方案>
-phase: THINK              # THINK/PRD/DESIGN/DOMAIN-MODEL/TECH-DESIGN/CRYSTALLIZE/TEST/ASSERTION-SIGNOFF/BUILD/QA/FEEL-SIGNOFF/REFLECT
+phase: THINK              # THINK/PRD/DESIGN/DOMAIN-MODEL/TECH-DESIGN/CRYSTALLIZE/TEST/ASSERTION-SIGNOFF/BUILD/QA/BUG_TRIAGE/BUG_FIX/REFLECT
 attempt: 1
 created: 2026-07-02
 history:

@@ -1,6 +1,6 @@
 ---
 name: design-handoff
-description: 在 `/signoff --stage=feel` 完成后，将已批准的 UX 原型与绑定设计系统转化为结构化开发交接包——增强版 README + 机器可读 _handoff_manifest.json + 设计文件打包，开发人员可脱离设计对话独立实现。
+description: 在 `/reflect` 最终验收通过后，将已批准的 UX 原型与绑定设计系统转化为结构化开发交接包——增强版 README + 机器可读 _handoff_manifest.json + 设计文件打包，开发人员可脱离设计对话独立实现。
 sources:
   - reference/baoyu-design/skills/baoyu-design/built-in-skills/handoff-to-claude-code.md
   - reference/baoyu-design/skills/baoyu-design/built-in-skills/use-design-system.md
@@ -12,14 +12,14 @@ sources:
 
 ## 何时调用
 
-- `/signoff --stage=feel` 完成，用户对 HTML 原型的视觉和交互感到满意。
+- `/reflect` 最终验收通过，用户对 HTML 原型的视觉和交互感到满意。
 - 需要将设计移交给开发人员（或自己的开发阶段）实现。
 - 用户明确说"生成开发交接文档"、"/design-handoff"。
 
 ## 前置条件
 
 - `/design` 已完成（模式 C），HTML 原型存在于 `.aiassist/stories/<id>/ux/`
-- `/signoff --stage=feel` 已完成，用户确认了原型的感觉
+- `/reflect` 已完成，用户确认了原型的感觉
 
 ## 输入
 
@@ -225,7 +225,7 @@ sources:
 
 ## 纪律
 
-- 交接包是**交付物**，不是迭代工具——只在 `/signoff --stage=feel` 后生成。
+- 交接包是**交付物**，不是迭代工具——只在 `/reflect` 最终验收后生成。
 - 描述精确到像素——"约 16px"不行，要"16px"。
 - 状态覆盖完整——加载、空态、错误、边界情况。
 - 不添加设计中不存在的内容。

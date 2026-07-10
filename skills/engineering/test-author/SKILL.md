@@ -49,7 +49,7 @@ sources:
    - 数据驱动的列表/卡片结构。
    - 前端调用 `/api/*` 的参数/时机（可用 mock server / MSW / stub）。
    - 与 token.css 关联的 class/style 是否被正确引用（不验证具体像素值）。
-   把这些可验证项映射到对应 REQ-ID，生成组件测试或浏览器 E2E 测试。**禁止以“这是 feel-signoff 项”为由跳过自动化。** 只有纯审美判断（颜色、间距、动效曲线）才允许不生成测试，且需在 `test-plan.md` 中明确标注。
+   把这些可验证项映射到对应 REQ-ID，生成组件测试或浏览器 E2E 测试。**禁止以“这是 REFLECT 人工验收项”为由跳过自动化。** 只有纯审美判断（颜色、间距、动效曲线）才允许不生成测试，且需在 `test-plan.md` 中明确标注。
 5. **写测试文件头部**：必须包含 `REQ-TRACE`、`REQ-VERSION`、`CAPABILITY-TRACE`、`ENTITY-TRACE`、`TEST-AUTHOR`、`ASSERTIONS-SIGNED`。
 6. **按 seam 类型搭建脚手架**：
    - **CLI seam**：生成调用产品 CLI 的测试，断言 stdout/stderr/exit code/文件 side effect。参考[CLI 测试模板](#cli-测试模板)。
@@ -63,7 +63,7 @@ sources:
    - seam 类型
    - capability/entity
    - 哪些测试来自 HTML 原型映射
-   - 哪些内容留给 `feel-signoff`（仅限纯审美判断，需说明理由）
+   - 哪些内容留给 `REFLECT` 人工验收（仅限纯审美判断，需说明理由）
 10. **回溯检查**：扫描所有 REQ-ID，确认每个 REQ 至少有一个自动化测试。如果某个 REQ 只有 `人工(仅视觉)` 测试，检查 `/crystallize` 的分类是否合法；不合法则回流 `/crystallize`。
 11. **不修改 business-capabilities.md**：能力地图由 `/crystallize` 生成，`/test-author` 只读取并按其结构组织测试。如果发现能力地图与 REQ 不一致，回流 `/crystallize`。
 
@@ -146,7 +146,7 @@ describe("project create", () => {
 - 每个 CLI 测试必须指定：命令、输入（参数/stdin/环境变量）、预期输出（stdout/stderr/退出码）、副作用（文件/DB/网络）。
 - 测试之间必须隔离状态：使用临时目录、独立 DB、或 CLI 提供的 `--reset-state`。
 - 不测试实现细节，只测试可观察行为。
-- 不要把主观视觉判断放进 CLI 测试；观感走 feel-signoff。
+- 不要把主观视觉判断放进 CLI 测试；观感走 REFLECT 人工验收或 `/file-bug`。
 
 ## 组件测试模板
 
@@ -189,7 +189,7 @@ describe("FlowEditor", () => {
 
 - 每个组件测试必须对应一个 REQ 中的结构或行为验收标准。
 - 使用 `data-testid` 或 ARIA role 定位元素，不要依赖 CSS 类名或 DOM 层级。
-- 不验证具体样式值（color、font-size、margin），这些走 feel-signoff。
+- 不验证具体样式值（color、font-size、margin），这些走 REFLECT 人工验收或 `/file-bug`。
 - 必须验证交互后的状态变化（props、context、data-attribute、localStorage、fetch 调用等）。
 - API 调用可用 MSW 或简单 stub/mock，但断言必须验证调用参数/时机。
 
@@ -348,7 +348,7 @@ export class FlowEditorPage {
 - 每个 E2E 测试必须指定：起始状态、用户操作、预期可观察结果（URL、元素可见性、文本内容）。
 - **使用 locator（`getByRole`、`getByTestId`、`getByLabel`）而非裸 CSS selector**，增强稳定性。
 - **每个 E2E 测试只验证一个用户流程/概念**，不要把多个独立流程堆在一个 `test` 里。
-- 不要验证像素级样式；观感走 feel-signoff。
+- 不要验证像素级样式；观感走 REFLECT 人工验收或 `/file-bug`。
 - **测试数据必须隔离**：使用 fixture、独立测试账号、或 setup/teardown 重置状态，避免污染其他测试。
 - **失败时自动收集证据**：`playwright.config.ts` 中配置 `trace: "on-first-retry"` 和 `screenshot: "only-on-failure"`。
 - **遵循测试金字塔**：E2E 占比约 5%，只覆盖关键用户路径；能用组件/CLI/API 测试覆盖的，不进 E2E。

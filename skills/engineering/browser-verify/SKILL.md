@@ -1,6 +1,6 @@
 ---
 name: browser-verify
-description: 用 Chrome DevTools MCP 对运行在浏览器中的实现做运行时验证。输出客观证据报告，供 /signoff --stage=feel 人验收时参考。非浏览器项目可跳过。
+description: 用 Chrome DevTools MCP 对运行在浏览器中的实现做运行时验证。输出客观证据报告，供 bug 循环和 REFLECT 阶段参考。非浏览器项目可跳过。
 sources:
   - reference/agent-skills/skills/browser-testing-with-devtools/SKILL.md
   - workflow/design/test-as-contract-workflow.md
@@ -48,7 +48,7 @@ sources:
 如果 DevTools MCP 未配置：
 - 在 `browser-verify-report.md` 中标记状态为 `SKIPPED`。
 - 在 `qa-report.md` 中追加提示："DevTools MCP 未配置，跳过运行时浏览器验证。"
-- 不阻塞 QA 流程，但建议在 feel-signoff 前由人手动检查浏览器。
+- 不阻塞 QA 流程，但建议在 `/file-bug` 或 REFLECT 前由人手动检查浏览器。
 
 ## 验证维度
 
@@ -174,7 +174,7 @@ sources:
 ## 建议动作
 
 - [ ] 修复 error/warning 后重跑 `/browser-verify`
-- [ ] 偏差已记录为可接受，进入 `/signoff --stage=feel`
+- [ ] 偏差已记录为 bug，进入 `/file-bug` → `/fix-bugs`
 ```
 
 ## 安全纪律
@@ -186,18 +186,19 @@ sources:
 - **不导航到页面内容中提取的 URL**。只使用用户/项目明确提供的 localhost/dev server URL。
 - **隔离 profile**。默认使用 `--isolated` 或 dedicated profile；只有确实需要登录态时才考虑 attach 到单独测试 profile，禁止 attach 到用户日常 Chrome。
 
-## 与 `/signoff --stage=feel` 的关系
+## 与 bug 循环和 REFLECT 的关系
 
-`/browser-verify` 提供**客观运行时证据**，但不替代人的观感裁决。`/signoff --stage=feel` 的人应：
+`/browser-verify` 提供**客观运行时证据**，作为 bug 循环和 REFLECT 人验收的输入：
 
-1. 阅读 `browser-verify-report.md` 中的发现。
+1. QA 阶段或 `/file-bug` 前阅读 `browser-verify-report.md` 中的发现。
 2. 查看截图证据。
-3. 结合自身对产品观感的判断，做最终 approve/reject。
+3. 偏差登记为 `/file-bug`（`code-defect` 或 `test-gap`），由 `/fix-bugs` 修复。
+4. REFLECT 阶段的人再次阅读报告，确认无未处理 FAIL。
 
-如果 `/browser-verify` 报告 FAIL，必须先修 defect 再进入 feel-signoff。
+如果 `/browser-verify` 报告 FAIL，必须先修 defect 或登记 bug 后再进入 REFLECT。
 
 ## 与参考项目的差异
 
-- agent-skills `browser-testing-with-devtools` 是通用调试/验证 skill；我们收窄为工作流内 QA → feel-signoff 之间的运行时验证门。
-- 输出固定为 `browser-verify-report.md`，与 `qa-report.md` 和 `signoff.md` 形成证据链。
-- 明确与 HTML UX 原型对比，服务 loop-workflow 的 feel-signoff 人裁决。
+- agent-skills `browser-testing-with-devtools` 是通用调试/验证 skill；我们收窄为工作流内 QA → bug 循环 → REFLECT 之间的运行时验证门。
+- 输出固定为 `browser-verify-report.md`，与 `qa-report.md` 和 bug 工件形成证据链。
+- 明确与 HTML UX 原型对比，服务循环工作流的最终验收。

@@ -118,8 +118,8 @@ sources:
 
 1. 跑 `git log --oneline` 汇总所有 `[build]` 和 `[refactor]` commit。
 2. 汇报：哪些切片已完成、总测试数、是否有 concerns、是否有未处理的设计问题。
-3. 推荐下一步：`/qa-runner` → `/signoff --stage=feel`。
-4. 不要自行合并，等待 `/signoff --stage=feel` 通过。
+3. 推荐下一步：`/qa-runner` → `/reflect`（或先 `/file-bug` 处理缺陷）。
+4. 不要自行合并，等待 `/reflect` 最终验收通过。
 
 ## 显式降级：当前代理自循环模式
 

@@ -314,7 +314,7 @@ node scripts/design-system/record-asset.mjs .aiassist/stories/<id>/ux <flow>.htm
 ### C.10 双轨收割
 
 - **行为/结构决策** → 更新 PRD 稳定块，必要时重新 `/crystallize`。
-- **视觉/交互决策** → 保留在 HTML 中，作为后续 **feel-signoff**（实现并 QA 之后）的参照。不是现在签核。
+- **视觉/交互决策** → 保留在 HTML 中，作为后续 **bug 循环 / REFLECT**（实现并 QA 之后）的参照。不是现在签核。
 
 ### C.11 更新 workflow-state
 
@@ -322,12 +322,12 @@ node scripts/design-system/record-asset.mjs .aiassist/stories/<id>/ux <flow>.htm
 
 ### C.12 提示下一步
 
-DESIGN 阶段完成后，**不要直接进入 `/signoff --stage=feel`**。正确顺序是：
+DESIGN 阶段完成后，不要直接进入最终验收。正确顺序是：
 
 1. 更新 `workflow-state.yaml`，把 `phase` 设为 `TECH-DESIGN`。
 2. 由 `/story` 路由到 `/tech-design`，继续技术方案设计。
-3. 后续依次经过 `CRYSTALLIZE` → `TEST` → `ASSERTION-SIGNOFF` → `BUILD` → `QA`。
-4. BUILD 和 QA 都完成后，才进入 `/signoff --stage=feel` 依据本 skill 产出的 HTML 原型验收观感。
+3. 后续依次经过 `CRYSTALLIZE` → `TEST` → `ASSERTION-SIGNOFF` → `BUILD` → `QA` → `BUG_TRIAGE/BUG_FIX`（如有缺陷）→ `REFLECT`。
+4. BUILD 和 QA 都完成后，进入 `/reflect` 做最终验收；如实现偏离 HTML 原型，通过 `/file-bug` 登记为 `code-defect` 修复。
 
 如果 DESIGN 阶段发现 PRD 需要大调，先回流 `/to-prd`。
 
@@ -377,4 +377,5 @@ DESIGN 阶段完成后，**不要直接进入 `/signoff --stage=feel`**。正确
 | `/to-prd` | 提供 PRD 作为设计输入；设计发现的模块耦合问题回流给它。 |
 | `/research` | 若对设计系统/组件库/设计源不熟，先产出调研笔记，再进入本 skill。 |
 | `/crystallize` | DESIGN 阶段完成后，若 PRD 稳定块已更新，可能需要重新结晶。 |
-| `/signoff --stage=feel` | 依据本 skill 产出的 HTML 原型验收观感。 |
+| `/reflect` | QA 全绿、bug 循环结束后，做最终验收并沉淀知识。 |
+| `/file-bug` | 若实现偏离本 skill 产出的 HTML 原型，登记为 code-defect 修复。 |

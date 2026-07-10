@@ -17,6 +17,7 @@ sources:
 
 - 用户在 story 内说"发现 bug"、"这里有问题"、"/file-bug"。
 - `/qa-runner` 建议"是否为该失败创建 bug 工件"。
+- QA 通过后，用户发现实现与已批准 HTML UX 参照有偏差（观感/视觉/行为）。
 - 用户想从外部 issue tracker 拉取 issue 到当前 story。
 
 ## 输入
@@ -72,12 +73,25 @@ sources:
 
 | 类别 | 判定标准 | 路由 |
 |---|---|---|
-| **code-defect** | 实现偏离已签核 REQ；或当前测试本应暴露但该 case 未覆盖 | 更新 bug 状态为 `triaged` → 路由到 `/fix-bugs` |
+| **code-defect** | 实现偏离已签核 REQ（包括功能缺陷和视觉/feel 偏差）；或当前测试本应暴露但该 case 未覆盖 | 更新 bug 状态为 `triaged` → 路由到 `/fix-bugs` |
 | **test-gap** | 行为符合当前 REQ，但测试未覆盖该边界/路径 | 调用 `/test-author` 补充测试；如测试暴露实现缺陷，再转 `code-defect` |
 | **req-gap** | REQ/PRD 未定义或定义错误 | 回流到外层循环：更新 PRD/REQ → 重新签核 → `/fix-bugs` |
 | **not-a-bug** | 实际行为符合 REQ，只是用户预期不同 | 关闭 bug，记录决策 |
 
 分类时必须明确说明理由，引用相关 REQ-ID 或 PRD 段落。
+
+### 视觉/feel 缺陷的分类规则
+
+当 bug 涉及颜色、间距、排版、动效、交互反馈等观感问题时，按以下规则分类：
+
+| 情况 | 分类 | 路由 |
+|---|---|---|
+| 实现偏离已批准的 HTML UX 参照 | `code-defect` | `/fix-bugs` |
+| HTML UX 参照本身需要修改（设计决策在实现后被推翻） | `req-gap` | 回流 DESIGN → 更新 HTML → 重新 QA；或人决定新建 story |
+| 纯主观审美偏好，无 REQ/HTML 依据 | `not-a-bug` | 关闭并记录决策 |
+| 视觉/feel 场景缺少测试覆盖（如响应式断点、暗色模式） | `test-gap` | 补测试 → 如暴露缺陷则转 `code-defect` |
+
+> 注意：已批准的 HTML UX 参照是最终权威。代码写完后不再在 bug-fix 中推翻设计；如需推翻，走 `req-gap` 回流或新建 story。
 
 ### 6. 更新 bug 工件
 

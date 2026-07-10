@@ -27,7 +27,7 @@
 | `/tdd` | 内层实现纪律：RED → GREEN 写单元测试驱动代码 | 模型 |
 | `/implementer` | 针对已签核测试实现代码；默认子代理实现切片，父代理调度验证；内部用 `/tdd` RED → GREEN；每个 slice 绿后由 refactor subagent 做一轮安全重构 | 模型 |
 | `/qa-runner` | 运行 E2E（Playwright）、回归、收集证据；失败时建议 `/file-bug`；浏览器项目在 E2E 通过后可选调用 `/browser-verify` | 模型 |
-| `/fix-bugs` | 在当前 story 内批量修复已分类 bug、跑全量回归、输出修复报告；支持同步关闭外部 issue | 模型 |
+| `/fix-bugs` | 在当前 story 内批量修复已分类 bug、跑全量回归、输出修复报告；修复后在外部 issue 添加中文评论（不关闭），用户确认后由 `/file-bug --close` 关闭 | 模型 |
 | `/browser-verify` | 用 Chrome DevTools MCP 做运行时浏览器验证（Console/DOM/Network/A11y/截图/性能） | 模型 |
 
 ### 两个循环与门

@@ -119,7 +119,7 @@ sources:
 
 询问用户是否连接外部 issue tracker（GitHub Issues / GitLab Issues）：
 
-> 连接后，`/file-bug` 可以从外部 issue 创建 bug 工件，`/fix-bugs` 修复后可以同步关闭 issue。
+> 连接后，`/file-bug` 可以从外部 issue 创建 bug 工件（保留图片与评论），`/fix-bugs` 修复后在外部 issue 添加中文评论（不关闭），用户确认后由 `/file-bug --close` 关闭。issue 是对话通道，不是一次性通知。
 
 选项：
 - GitHub Issues
@@ -142,7 +142,9 @@ sources:
 
 4. **在目标项目 `CLAUDE.md` 中追加约定**：
    - `/file-bug` 默认操作当前 story 的 bug。
-   - 外部 issue 仅作为通知/归档渠道，真相源是 `.aiassist/stories/<id>/bugs/BUG-NNN.md`。
+   - 外部 issue 是**对话通道**：修复后评论不关，用户在 issue 评论反馈，`/file-bug --sync-comments` 拉取新评论，用户确认后 `/file-bug --close` 关闭。
+   - issue body 和评论用中文（`issue-tracker.json` 的 `language: "zh"`）。
+   - 真相源是 `.aiassist/stories/<id>/bugs/BUG-NNN.md`，外部 issue 是同步通道。
 
 如果用户拒绝，创建 `.aiassist/global/issue-tracker.json` 并设置 `enabled: false`。
 

@@ -1,6 +1,6 @@
 ---
 name: fix-bugs
-description: 在当前 story 内批量拉取已分类的 code-defect bug，统一修复、跑全量回归、输出修复报告，并同步关闭外部 issue。
+description: 在当前 story 内批量拉取已分类的 code-defect bug，统一修复、跑全量回归、输出修复报告。修复后在外部 issue 添加中文评论（不关闭），用户确认后由 /file-bug --close 关闭。
 sources:
   - reference/gstack/investigate/SKILL.md
   - reference/agent-skills/skills/debugging-and-error-recovery/SKILL.md
@@ -33,8 +33,8 @@ sources:
 
 - 修复 commit（`[bugfix] BUG-NNN: <summary>`）
 - `.aiassist/stories/<id>/bug-fix-report.md`
-- 更新后的 bug 工件（状态 `fixed` 或 `closed`）
-- 外部 issue 评论/关闭（如果启用）
+- 更新后的 bug 工件（状态 `fixed`，等用户确认后由 `/file-bug --close` 改为 `closed`）
+- 外部 issue 中文评论（不关闭，等用户确认）
 
 ## 执行步骤
 
@@ -51,8 +51,11 @@ sources:
 
 如果用户指定 `--bug=...`：
 - 检查每个 bug 是否属于当前 story；不属于则拒绝并提示切换 story。
+- 也接受 `status: fixed` 的 bug（用户在 issue 追加评论后要再修一轮）。
 
 如果用户指定 `--severity=critical,major`：只拉取对应 severity。
+
+**同步外部 issue 新评论**：对每个待修 bug，若 frontmatter 有 `external-issue`，先 `gh issue view <n> --json comments` 拉取 `last-synced-comment-id` 之后的新评论，追加到 bug 工件「外部 issue 评论同步」section，作为本轮修复的补充信息（用户可能在 issue 上补充了复现细节、新现象）。更新 `last-synced-comment-id`。
 
 ### 3. 排序
 
@@ -97,7 +100,7 @@ sources:
   - 修复后重新跑全量。
   - 超过轮数上限仍失败 → 停止，向用户报告 blocker。
 
-全量回归通过且当前 story 无 open 的 `code-defect` bug 时，进入 `/reflect`（门 2：最终验收 + 知识沉淀）。
+全量回归通过后，bug 工件 `status` 为 `fixed`，在外部 issue 添加中文评论（不关闭），等用户确认。用户用 `/file-bug --close` 确认后 `status` 改为 `closed`。**所有 code-defect bug 都 `closed` 且 QA 全绿时**，进入 `/reflect`（门 2：最终验收 + 知识沉淀）；`fixed`（等确认）的 bug 不算 `closed`，不进入 REFLECT。
 
 ### 6. 输出修复报告
 
@@ -107,7 +110,7 @@ sources:
 - 修复列表（BUG-ID、类别、严重程度、摘要、commit、状态）
 - 全量回归结果
 - 需要回补的文档清单（针对 test-gap / req-gap 的发现）
-- 已关闭/评论的外部 issue
+- 外部 issue 状态（已评论等确认 / 已关闭 / 待同步评论）
 
 ### 7. BACKFILL 提示
 
@@ -115,12 +118,17 @@ sources:
 - 提示用户是否需要更新 PRD/REQ/CONTEXT/ADR。
 - 不自动修改这些文档；由 `/to-prd`、 `/crystallize`、 `/domain-model` 等外层 skill 处理。
 
-### 8. 关闭 bug
+### 8. 评论外部 issue（不关闭）
 
-用户确认后：
-- 将 bug 工件 `status` 改为 `closed`
-- 如果启用外部 issue tracker，在外部 issue 下添加修复报告 comment，并关闭 issue
-- 更新 `workflow-state.yaml`：从 `BUG_FIX` 回到 `QA`（还有未关闭 bug 或需重新 QA）或 `REFLECT`（所有 bug 已关闭且 QA 全绿）
+修复完成且全量回归通过后，对每个 `status: fixed` 的 bug：
+- 如果 frontmatter 有 `external-issue` 且 `issue-tracker.json` 的 `sync.onFixBugsComment` 为 true：
+  - `gh issue comment <n> --body "..."` 添加**中文**修复说明，内容包含：修复摘要、修复 commit、请用户验证。
+  - **不执行 `gh issue close`**--issue 保持 open，等用户在 issue 或会话中确认。
+- 本地 bug 工件 `status` 保持 `fixed`（不是 `closed`）。
+- 「关闭」是独立动作，由用户确认后用 `/file-bug --close=BUG-001` 执行。
+- 更新 `workflow-state.yaml`：从 `BUG_FIX` 回到 `QA`（还有未关闭 bug 或需重新 QA）或 `REFLECT`（所有 bug 已 `closed` 且 QA 全绿）。
+
+> `fixed`（修复完成，等用户确认）和 `closed`（用户确认）是两个状态。`fixed` 的 bug 仍算「未关闭」，不进入 `REFLECT`。
 
 ## 命令格式
 
@@ -138,7 +146,8 @@ sources:
 - **一个 bug 一个 commit**：便于回滚和审查。
 - **不修改业务测试契约**：fix subagent 对业务测试只读。
 - **全量回归通过才算完成**：单个 bug 的测试绿不等于整个修复完成。
-- **关闭 bug 需人确认**：不自动关闭外部 issue。
+- **修复后评论不关 issue**：`gh issue comment` 添加中文修复说明，**不执行 `gh issue close`**；关闭由用户确认后 `/file-bug --close` 执行。
+- **`fixed` ≠ `closed`**：修复完成是 `fixed`，用户确认才是 `closed`；`fixed` 的 bug 不算关闭，不进入 REFLECT。
 
 ## 与 `/file-bug` 的关系
 
@@ -149,7 +158,12 @@ sources:
 triaged code-defect bugs
   │
   ▼ /fix-bugs
-逐个修复 → 全量回归 → 报告 → 关闭
+逐个修复 → 全量回归 → issue 中文评论（不关闭）→ 报告
+  │
+  ▼ status: fixed
+用户在 issue / 会话反馈
+  │
+  ▼ /file-bug --sync-comments（拉新评论）→ /fix-bugs 再修  或  /file-bug --close（确认关闭）
 ```
 
 ## 与参考项目的差异

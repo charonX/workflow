@@ -18,7 +18,9 @@
 - 一个 bug 一个 `[bugfix]` commit。
 - 修复后必须跑全量回归，而不只是单个测试。
 - 输出结构化 `bug-fix-report.md`。
-- 支持同步关闭 GitHub/GitLab issue。
+- 修复后在外部 issue 添加**中文评论**（不关闭），用户确认后由 `/file-bug --close` 关闭。
+- 修复前先同步外部 issue 新评论，作为 bug 补充信息。
+- `fixed`（修复完成等确认）与 `closed`（用户确认）分离。
 - test-gap / req-gap 不在这里修复，而是回流到外层循环。
 
 ## 未来局部更新建议
@@ -29,4 +31,5 @@
 
 ## 改动记录
 
+- 2026-07-10：外部 issue 改为对话通道：修复后评论不关、修复前同步新评论、`fixed`/`closed` 分离；统一原 description/执行步骤/纪律的关闭语义矛盾。
 - 2026-07-10：创建 `/fix-bugs`，定义 story 内批量 bug 修复、全量回归、报告、关闭流程。

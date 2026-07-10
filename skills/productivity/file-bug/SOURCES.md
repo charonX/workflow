@@ -17,8 +17,9 @@ bug 治理需要与调试修复分离。`/file-bug` 不负责 root cause fix，�
 - `/file-bug` 只登记、复现、分类、路由，不写修复代码。
 - bug 工件挂在当前 story 下，避免跨 story 上下文丢失。
 - 引入 code-defect / test-gap / req-gap / not-a-bug 四分类。
-- 支持从 GitHub/GitLab issue 拉取，但本地工件为真相源。
+- 支持从 GitHub/GitLab issue 拉取（保留 body 图片 markdown 与评论），本地工件为真相源。
 - 强制要求 code-defect 先补充/确认回归测试，再进入修复。
+- 外部 issue 作为**对话通道**：中文 body；`--sync-comments` 拉取新评论；`--close` 用户确认后关闭。
 
 ## 未来局部更新建议
 
@@ -28,4 +29,5 @@ bug 治理需要与调试修复分离。`/file-bug` 不负责 root cause fix，�
 
 ## 改动记录
 
+- 2026-07-10：外部 issue 改为对话通道：中文 body、保留图片、`--sync-comments` 同步评论、`--close` 用户确认后关闭；bug 工件加 `external-issue` / `last-synced-comment-id` 字段。
 - 2026-07-10：创建 `/file-bug`，定义 story 内 bug 登记、分类、路由流程。

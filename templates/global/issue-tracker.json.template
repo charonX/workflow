@@ -2,8 +2,11 @@
   "provider": "github",
   "defaultRepo": "owner/repo",
   "enabled": true,
+  "language": "zh",
   "sync": {
     "onFileBugCreate": true,
-    "onFixBugsClose": true
+    "onFixBugsComment": true,
+    "onFixBugsClose": false,
+    "onUserConfirmClose": true
   }
 }

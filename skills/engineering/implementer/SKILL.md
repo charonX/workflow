@@ -118,7 +118,7 @@ sources:
 
 1. 跑 `git log --oneline` 汇总所有 `[build]` 和 `[refactor]` commit。
 2. 汇报：哪些切片已完成、总测试数、是否有 concerns、是否有未处理的设计问题。
-3. 推荐下一步：`/qa-runner` → `/reflect`（或先 `/file-bug` 处理缺陷）。
+3. 推荐下一步：`/qa-runner` → `/reflect`（或先 `/bug` 处理缺陷）。
 4. 不要自行合并，等待 `/reflect` 最终验收通过。
 
 ## 显式降级：当前代理自循环模式
@@ -258,7 +258,7 @@ refactor subagent 返回后，父代理必须：
 
 ## Fix Subagent
 
-当父代理验证子代理产出失败时，或 `/fix-bugs` 调用时，派发 fix subagent。
+当父代理验证子代理产出失败时，或 `/bug` 调用时，派发 fix subagent。
 
 ### 普通修复（BUILD 阶段验证失败）
 
@@ -267,17 +267,17 @@ refactor subagent 返回后，父代理必须：
 - 带上原任务简报
 - 要求：修复失败，跑全套业务测试，返回新 commit hash
 
-### Bug 修复（由 `/fix-bugs` 调用）
+### Bug 修复（由 `/bug` 调用）
 
 fix subagent 的任务简报还必须包含 bug 上下文：
 
-- `.aiassist/stories/<id>/bugs/BUG-NNN.md`：症状、复现步骤、根因假设、关联 REQ-ID
+- bug 上下文（由 `/bug` 在会话中传入）：症状、复现步骤、根因假设、关联 REQ-ID
 - 回归测试路径：必须能在修复前失败、修复后通过
 - 修复范围：只修改实现代码，不修改业务测试契约
 - commit 消息格式：`[bugfix] BUG-NNN: <summary>`
 
 fix subagent 在 bug 修复中：
-- 先读 bug 工件和回归测试，确认理解失败场景。
+- 先读 bug 上下文和回归测试，确认理解失败场景。
 - 用 `/tdd` 纪律写最小实现让回归测试通过。
 - 跑全套业务测试，确保没有回归。
 - 禁止顺手重构相邻代码（重构走 refactor subagent）。

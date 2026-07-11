@@ -45,9 +45,9 @@ BUILD 阶段全单元绿，进入 QA 慢外门时。或被 `/story` 总入口调
    - 哪些失败
    - `/browser-verify` 结果摘要
    - 不稳定测试列表
-   - 建议下一步（进入 `/reflect` / 回 BUILD / 回 REQ / 对失败创建 `/file-bug`）
+   - 建议下一步（进入 `/reflect` / 回 BUILD / 回 REQ / 对失败调用 `/bug`）
 
-当 E2E 或单元测试出现**连续失败**时，QA 报告应明确建议："该失败可能是一个 code-defect，建议调用 `/file-bug` 登记并分类。"不自动创建 bug 工件。
+当 E2E 或单元测试出现**连续失败**时，QA 报告应明确建议："该失败可能是一个 code-defect，建议调用 `/bug` 诊断并分类。"不创建 bug 工件。
 
 ## QA 报告模板
 
@@ -92,7 +92,7 @@ BUILD 阶段全单元绿，进入 QA 慢外门时。或被 `/story` 总入口调
 - [ ] 可进入 `/reflect`（无 open bugs，QA 全绿）
 - [ ] 需回 BUILD
 - [ ] 需回 REQ
-- [ ] 有失败，建议创建 `/file-bug`
+- [ ] 有失败，建议调用 `/bug`
 
 ## Playwright CI 模板
 
@@ -138,7 +138,7 @@ BUILD 阶段全单元绿，进入 QA 慢外门时。或被 `/story` 总入口调
 
 ## 纪律
 
-- 行为对错由测试判；观感/feel 问题通过 `/file-bug` 登记为 code-defect，由 bug 循环处理。
+- 行为对错由测试判；观感/feel 问题通过 `/bug` 处理为 code-defect。
 - 不稳定测试不掩盖：默认放行但开限时单；反复时绿时红到阈值转阻断。
 - 不自动修不稳定 E2E；疑似产品竞态则回 `/signoff --stage=assertion`/REQ。
 

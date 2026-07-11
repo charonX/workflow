@@ -1,7 +1,7 @@
 {
   "name": "loop-workflow",
   "description": "循环工作流：人在外层设计上下文，AI 在内层契约内迭代，断言归人、实现归 AI",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "author": {
     "name": "charonX"
   },
@@ -27,7 +27,7 @@
     "./skills/productivity/tech-design",
     "./skills/productivity/review",
     "./skills/productivity/design",
-    "./skills/productivity/file-bug",
+    "./skills/productivity/bug",
     "./skills/productivity/signoff",
     "./skills/productivity/design-handoff",
     "./skills/productivity/reflect",
@@ -36,7 +36,6 @@
     "./skills/engineering/crystallize",
     "./skills/engineering/implementer",
     "./skills/engineering/qa-runner",
-    "./skills/engineering/fix-bugs",
     "./skills/engineering/browser-verify",
     "./skills/engineering/tdd",
     "./skills/engineering/test-author"

@@ -40,18 +40,19 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 │   │   ├── domain-model/      # 维护 CONTEXT.md
 │   │   ├── tech-design/
 │   │   ├── design/
+│   │   ├── bug/               # 单 bug 人机协同处理
 │   │   ├── review/
 │   │   ├── signoff/
 │   │   ├── design-handoff/
 │   │   ├── reflect/
 │   │   └── research/
 │   ├── engineering/           # 模型触发（agent 自治）的实现 skill
-│   │   ├── crystallize/       # PRD → REQ-ID
+│   │   ├── crystallize/       # PRD -> REQ-ID
 │   │   ├── test-author/       # 生成业务测试骨架
 │   │   ├── implementer/       # 针对测试实现代码
 │   │   ├── qa-runner/
 │   │   ├── browser-verify/    # 运行时浏览器验证（DevTools MCP）
-│   │   └── tdd/               # 内层 RED → GREEN 纪律
+│   │   └── tdd/               # 内层 RED -> GREEN 纪律
 │   └── maintenance/           # 工作流维护 skill
 │       └── sync-refs/
 ├── templates/
@@ -91,7 +92,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 
 本工作流以“测试即契约”为内核：
 
-> **人持有裁决器（断言）；AI 在测试构成的契约内实现。人不直接修改实现代码 —— 他们修改需求和断言，错误逐层回流到最高层。**
+> **人持有裁决器（断言）；AI 在测试构成的契约内实现。人不直接修改实现代码 -- 他们修改需求和断言，错误逐层回流到最高层。**
 
 测试全绿是实现的**必要门槛，不是充分条件**。实现还必须对齐 PRD 意图、`tech-design.md` 的模块/数据流/接口契约、以及 UX HTML 的结构与行为。禁止为通过测试而写特判、mock 掉真实行为、或阉割功能。
 
@@ -99,8 +100,8 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 
 ### 两个循环
 
-- **外层循环（人控制）**：需求洞察 → PRD → UX → 领域建模 → 技术方案 → REQ → 断言签核 → (BUILD → QA → bug 循环) → REFLECT → 回流。
-- **内层循环（agent 控制）**：读测试 → 写代码 → 跑测试 → 改 bug → 全绿。
+- **外层循环（人控制）**：需求洞察 -> PRD -> UX -> 领域建模 -> 技术方案 -> REQ -> 断言签核 -> (BUILD -> QA -> bug 循环) -> REFLECT -> 回流。
+- **内层循环（agent 控制）**：读测试 -> 写代码 -> 跑测试 -> 改 bug -> 全绿。
 
 两个循环的边界是**签核**：
 
@@ -113,30 +114,30 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 
 | # | 阶段 | Skill | 触发者 | 所属循环 | 目的 |
 |---|---|---|---|---|---|
-| 1 | THINK — 需求洞察 | `/demand-insight` | 用户 | 外层 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
+| 1 | THINK - 需求洞察 | `/demand-insight` | 用户 | 外层 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
 | 2 | PRD 合成 | `/to-prd` | 用户 | 外层 | 把访谈笔记整理成结构化 PRD |
-| 3 | DESIGN — 设计 | `/design` | 用户 | 外层 | 统一入口：建/更新设计系统、导入设计源、迭代 HTML-native 高保真原型 |
-| 4 | DOMAIN-MODEL — 领域建模 | `/domain-model` | 用户 | 外层 | 统一术语与业务实体，维护 `CONTEXT.md` |
-| 5 | TECH-DESIGN — 技术方案 | `/tech-design` | 用户 | 外层 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
-| 6 | CRYSTALLIZE — 结晶 | `/crystallize` | 模型 | 外层 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID；每个 REQ 至少一个自动化测试 |
-| 7 | TEST — 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；浏览器 E2E 默认 Playwright；不能自动化的行为才允许在 REFLECT 中人工验收 |
-| 8 | ASSERTION-SIGNOFF — 断言签核 | `/signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核所有断言；把上下文交给 AI |
-| 9 | BUILD — 实现 | `/implementer` | 模型 | 内层 | 默认用子代理实现每个切片；父代理读文档/调度/验证；对业务测试只读；内部用 `/tdd` 纪律 RED → GREEN；每个 slice 绿后由 refactor subagent 做一轮安全重构；每轮迭代跑全套业务测试 |
-| 10 | QA — 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集；浏览器 E2E 默认 Playwright；失败时建议 `/file-bug`；浏览器项目在 E2E 通过后可选调用 `/browser-verify` 做运行时验证；无 open bug 后进入 REFLECT |
-| 11 | BUG_TRIAGE — 缺陷分类 | `/file-bug` | 用户 | 内层/外层交界 | 在当前 story 内登记、复现、分类 bug；支持从 GitHub/GitLab issue 拉取 |
-| 12 | BUG_FIX — 缺陷修复 | `/fix-bugs` | 模型 | 内层 | 在当前 story 内批量修复已分类 bug、跑全量回归、输出修复报告；支持同步关闭外部 issue |
-| 13 | REFLECT — 反思 | `/reflect` | 用户 | **门 2** | QA 全绿、bug 循环结束后，人做最终验收确认并沉淀知识 |
-| — | 开发者交接（可选） | `/design-handoff` | 用户 | 外层 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
+| 3 | DESIGN - 设计 | `/design` | 用户 | 外层 | 统一入口：建/更新设计系统、导入设计源、迭代 HTML-native 高保真原型 |
+| 4 | DOMAIN-MODEL - 领域建模 | `/domain-model` | 用户 | 外层 | 统一术语与业务实体，维护 `CONTEXT.md` |
+| 5 | TECH-DESIGN - 技术方案 | `/tech-design` | 用户 | 外层 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
+| 6 | CRYSTALLIZE - 结晶 | `/crystallize` | 模型 | 外层 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID；每个 REQ 至少一个自动化测试 |
+| 7 | TEST - 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；浏览器 E2E 默认 Playwright；不能自动化的行为才允许在 REFLECT 中人工验收 |
+| 8 | ASSERTION-SIGNOFF - 断言签核 | `/signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核所有断言；把上下文交给 AI |
+| 9 | BUILD - 实现 | `/implementer` | 模型 | 内层 | 默认用子代理实现每个切片；父代理读文档/调度/验证；对业务测试只读；内部用 `/tdd` 纪律 RED -> GREEN；每个 slice 绿后由 refactor subagent 做一轮安全重构；每轮迭代跑全套业务测试 |
+| 10 | QA - 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集；浏览器 E2E 默认 Playwright；失败时建议 `/bug`；浏览器项目在 E2E 通过后可选调用 `/browser-verify` 做运行时验证；无 open bug 后进入 REFLECT |
+| 11 | BUG - 缺陷处理 | `/bug` | 用户 | 内层/外层交界 | 单 bug 人机协同：诊断根因 -> 分类（人确认）-> 修/补测试/就地补全/关闭；三道闸门（3-strike/blast-radius/req-gap）；不落 bug 工件；支持从外部 issue 实时拉取 |
+| 12 | REFLECT - 反思 | `/reflect` | 用户 | **门 2** | QA 全绿、bug 处理结束后，人做最终验收确认并沉淀知识 |
+| - | 开发者交接（可选） | `/design-handoff` | 用户 | 外层 | 从已批准的 UX 原型生成结构化开发交接包（含机器可读 manifest） |
 
 ### 关键机制
 
-- **两挡**：一挡（探索期 —— PRD、HTML 原型、无测试、可随意推翻）→ 跨越线 → 二挡（测试锁定 —— REQ-ID → tests → code）。
+- **两挡**：一挡（探索期 -- PRD、HTML 原型、无测试、可随意推翻）-> 跨越线 -> 二挡（测试锁定 -- REQ-ID -> tests -> code）。
 - **三道角色权限互斥**：人写 REQ/断言/HTML；test-author 写测试骨架；implementer 写实现代码且对业务测试只读。
 - **REQ-ID 可追溯**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
 - **能力/实体可追溯**：每个 REQ 标注 `capability` 和 `entity`，测试头部声明 `// CAPABILITY-TRACE` 和 `// ENTITY-TRACE`，测试按 `tests/capabilities/<capability>/<entity>/` 组织。
 - **ADR 目录**：重要架构决策写入 `.aiassist/global/adr/`，原 `architecture.md` 只保留高层概览和索引。
 - **共享检查清单**：`bootstrap-workflow` 初始化 `.aiassist/global/checklists/`（testing/security/performance/accessibility/observability），由 `/reflect` 根据 story 经验持续更新；`/tech-design`、`/review`、`/test-author` 等 skill 按需引用。
 - **CLI 是默认 seam**：能用产品 CLI 验证的行为不进浏览器 E2E；不能 CLI 化的退到 public 接口测试或浏览器 E2E。
+- **bug 处理单 bug 人机协同**：`/bug` 一次一个，诊断根因 -> 分类（人确认）-> 三道闸门 -> commit -> 停下。不批量、不落 bug 工件（见 `design/adr/0002-single-bug-fix-loop.md`）。
 
 ### 回流机制
 
@@ -148,11 +149,10 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 |---|---|
 | 初衷不变，实现路径错了（一挡/二挡都算） | 同 story 下 `archive/` 归档本次尝试，同 story 重做 |
 | 初衷本身错了/痛点不成立 | 不归档，直接删 story |
-| bug 循环中发现 `req-gap`（REQ/PRD 定义错误或遗漏，包括 HTML UX 本身要改） | 回流外层循环更新 PRD/REQ/HTML；或人决定新建 story |
 
 - **归档范围**：PRD、requirements、断言签核、代码等承诺层产物 + `reason.md`（根因+推翻理由）。UX 原型不归档（一挡思考工具，直接改）。
 - **根因诊断优先**：回流前先判“初衷在不在”。模型提议，人拍板。
-- **不算回流的情况**（走局部纠错）：REQ 漏 case → `/crystallize` 补验收标准；断言自相矛盾 → 门 1 重审；一挡内单块推翻 → 该块降级回“移动块”。
+- **不算回流的情况**（走局部纠错）：bug 中 req-gap（REQ/PRD/tech 漏或错、缺测试 seam、HTML 参照小改）-> `/bug` 就地补全 PRD/tech/测试（REQ 漏 case 走 `/crystallize`），继续修；断言自相矛盾 -> 门 1 重审；一挡内单块推翻 -> 该块降级回“移动块”。
 
 ## Skill 速查
 
@@ -168,16 +168,15 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 用 HTML 原型探索 UX（含编译 preview、资产版本管理、变体） | `/design` |
 | 建立或更新设计系统 | `/design` |
 | 导入设计来源（Figma/GitHub/HTML） | `/design` |
-| 在当前 story 内登记、复现、分类 bug；支持从外部 issue 拉取 | `/file-bug` |
+| 在当前 story 内单 bug 人机协同处理：诊断根因 -> 分类（人确认）-> 修/补测试/就地补全/关闭；支持从外部 issue 拉取 | `/bug` |
 | 统一领域术语与业务实体，维护 `CONTEXT.md` | `/domain-model` |
 | 做对抗式技术方案设计 | `/tech-design` |
 | 把 PRD 转成 REQ-ID（每个 REQ 至少一个自动化测试） | `/crystallize` |
 | 从 REQ 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；浏览器 E2E 默认 Playwright | `/test-author` |
-| 内层实现纪律：RED → GREEN 写单元测试 | `/tdd` |
+| 内层实现纪律：RED -> GREEN 写单元测试 | `/tdd` |
 | 在实现前签核断言 | `/signoff` |
 | 针对已签核测试实现代码（默认子代理实现，父代理调度验证） | `/implementer` |
 | 运行 QA / E2E（Playwright）/ 回归；浏览器项目可触发 `/browser-verify` 收集运行时证据 | `/qa-runner` |
-| 在当前 story 内批量修复已分类 bug、跑全量回归、输出修复报告 | `/fix-bugs` |
 | 用 Chrome DevTools MCP 做运行时浏览器验证，输出客观证据供 bug 循环和 REFLECT 参考 | `/browser-verify` |
 | 从 UX 生成开发者交接包 | `/design-handoff` |
 | 捕获经验教训并更新知识 | `/reflect` |
@@ -284,16 +283,16 @@ cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 这些命令要在对应 `reference/` 子目录下运行，不要在工作区根目录运行。
 
 ### gstack（`reference/gstack/`）
-- `bun install` —— 安装依赖
-- `bun test` —— 免费测试
-- `bun run test:evals` —— 付费 evals，基于 diff
-- `bun run build` —— 生成文档 + 编译二进制
-- `bun run gen:skill-docs` —— 从模板重新生成 SKILL.md
-- `bun run slop` / `bun run slop:diff` —— AI 代码质量扫描
+- `bun install` -- 安装依赖
+- `bun test` -- 免费测试
+- `bun run test:evals` -- 付费 evals，基于 diff
+- `bun run build` -- 生成文档 + 编译二进制
+- `bun run gen:skill-docs` -- 从模板重新生成 SKILL.md
+- `bun run slop` / `bun run slop:diff` -- AI 代码质量扫描
 
 ### superpowers（`reference/superpowers/`）
 - 没有根构建。在创建或编辑 skill 前，先阅读 `skills/writing-skills/SKILL.md`。
 
 ### mattpocock skills（`reference/mattpocock/`）
-- `npx skills@latest add mattpocock/skills` —— 消费者安装
+- `npx skills@latest add mattpocock/skills` -- 消费者安装
 - Skill 位于 `skills/<bucket>/<skill-name>/SKILL.md`。

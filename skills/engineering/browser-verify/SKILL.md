@@ -48,7 +48,7 @@ sources:
 如果 DevTools MCP 未配置：
 - 在 `browser-verify-report.md` 中标记状态为 `SKIPPED`。
 - 在 `qa-report.md` 中追加提示："DevTools MCP 未配置，跳过运行时浏览器验证。"
-- 不阻塞 QA 流程，但建议在 `/file-bug` 或 REFLECT 前由人手动检查浏览器。
+- 不阻塞 QA 流程，但建议在 `/bug` 或 REFLECT 前由人手动检查浏览器。
 
 ## 验证维度
 
@@ -133,7 +133,7 @@ sources:
 ## 报告格式
 
 ```markdown
-# Browser Verify Report — <story-id>
+# Browser Verify Report - <story-id>
 
 ## 摘要
 
@@ -174,7 +174,7 @@ sources:
 ## 建议动作
 
 - [ ] 修复 error/warning 后重跑 `/browser-verify`
-- [ ] 偏差已记录为 bug，进入 `/file-bug` → `/fix-bugs`
+- [ ] 偏差已用 `/bug` 处理
 ```
 
 ## 安全纪律
@@ -190,15 +190,15 @@ sources:
 
 `/browser-verify` 提供**客观运行时证据**，作为 bug 循环和 REFLECT 人验收的输入：
 
-1. QA 阶段或 `/file-bug` 前阅读 `browser-verify-report.md` 中的发现。
+1. QA 阶段或 `/bug` 前阅读 `browser-verify-report.md` 中的发现。
 2. 查看截图证据。
-3. 偏差登记为 `/file-bug`（`code-defect` 或 `test-gap`），由 `/fix-bugs` 修复。
+3. 偏差用 `/bug` 处理（`code-defect` 修复或 `test-gap` 补测试）。
 4. REFLECT 阶段的人再次阅读报告，确认无未处理 FAIL。
 
-如果 `/browser-verify` 报告 FAIL，必须先修 defect 或登记 bug 后再进入 REFLECT。
+如果 `/browser-verify` 报告 FAIL，必须先用 `/bug` 处理 defect 后再进入 REFLECT。
 
 ## 与参考项目的差异
 
-- agent-skills `browser-testing-with-devtools` 是通用调试/验证 skill；我们收窄为工作流内 QA → bug 循环 → REFLECT 之间的运行时验证门。
-- 输出固定为 `browser-verify-report.md`，与 `qa-report.md` 和 bug 工件形成证据链。
+- agent-skills `browser-testing-with-devtools` 是通用调试/验证 skill；我们收窄为工作流内 QA -> bug 循环 -> REFLECT 之间的运行时验证门。
+- 输出固定为 `browser-verify-report.md`，与 `qa-report.md` 形成证据链。
 - 明确与 HTML UX 原型对比，服务循环工作流的最终验收。

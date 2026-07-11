@@ -21,8 +21,6 @@ sources:
 - `.aiassist/stories/<id>/signoff.md`（Assertion section）
 - `.aiassist/stories/<id>/qa-report.md`
 - `.aiassist/stories/<id>/browser-verify-report.md`（如有）
-- `.aiassist/stories/<id>/bug-fix-report.md`（如有）
-- `.aiassist/stories/<id>/bugs/`（如有）
 - `.aiassist/stories/<id>/workflow-state.yaml`
 - `.aiassist/global/adr/`（ADR 目录）
 - `.aiassist/global/business-capabilities.md`
@@ -50,10 +48,10 @@ sources:
 
 进入 `/reflect` 前必须满足：
 
-1. 所有 `code-defect` bug 状态为 `closed`。
-2. 所有 `test-gap` 已补测试并通过。
-3. 所有 `req-gap` 已回流外层循环并重新通过 QA。
-4. 所有 `not-a-bug` 已关闭并记录决策。
+1. 所有 code-defect bug 已通过 `/bug` 修复并验证。
+2. 所有 test-gap 已补测试并通过。
+3. 所有 req-gap 已就地补全（PRD/tech/测试）并重新通过 QA。
+4. 所有 not-a-bug 已记录决策。
 5. 最近一次 QA 全绿（单元 + E2E）。
 
 如果不满足，先回对应阶段处理，不要开始 reflect。
@@ -64,16 +62,14 @@ sources:
    - 展示「最终验收检查清单」给用户。
    - 展示 QA 报告摘要（单元/E2E 结果）。
    - 展示 `browser-verify-report.md` 摘要（如有）。
-   - 展示 bug 循环总结（登记了多少 bug、分类分布、修复轮数）。
+   - 展示 bug 处理总结（从 `[bugfix]` commit log 回顾本次修了哪些 bug、根因、是否有 req-gap 就地补全）。
    - 用户逐项确认检查清单。
    - 用户明确说"接受"或"完成"。
-   - 若用户在验收中发现新的实现偏差，停止 reflect，回到 `/file-bug` 登记 bug。
+   - 若用户在验收中发现新的实现偏差，停止 reflect，回到 `/bug` 处理。
 
 2. **统计健康指标**：
-   - **bug 循环指标**：bug 总数、code-defect / test-gap / req-gap / not-a-bug 分布、平均修复轮数、回补文档数
-   - **视觉/feel 缺陷占比**：实现偏离 HTML UX 参照的 code-defect 数 / 总 code-defect 数
+   - **bug 处理回顾**（从 `[bugfix]` commit log + 人口述）：本次 bug 数、根因分布、是否有 req-gap 就地补全、哪些 REQ 验收标准在 bug 处理中被发现遗漏
    - 每个阶段耗时/轮数
-   - 哪些 REQ 验收标准在 bug 循环中被发现遗漏
    - 本 story 是否发生过归档重做(`workflow-state.yaml` 的 `archive` 记录),根因活在哪一层
 
 3. **提炼经验**：
@@ -110,7 +106,7 @@ sources:
 
 - [ ] 产品在目标环境启动无崩溃。
 - [ ] 关键用户流程可走完。
-- [ ] 所有 `/file-bug` 登记的 bug 已关闭或已分类为 not-a-bug。
+- [ ] 所有发现的 bug 已通过 `/bug` 处理完毕（修复 / 就地补全 / 判定 not-a-bug）。
 - [ ] `browser-verify-report.md`（如有）无未处理的 FAIL。
 - [ ] QA 报告全绿（单元测试 + E2E）。
 - [ ] 实现与已签 REQ 一致（功能层面）。
@@ -121,19 +117,18 @@ sources:
 
 | 指标 | 本期值 | 目标 |
 |---|---|---|
-| Story 内 bug 总数 | N | 随时间下降 |
-| Bug 类别分布 | code-defect / test-gap / req-gap / not-a-bug | test-gap 和 req-gap 占比下降说明一挡更稳 |
-| Bug 平均修复轮数 | N | ≤ 2 |
-| 视觉/feel 缺陷占比 | N/M | 随时间下降 |
+| Story 内 bug 数 | N（从 `[bugfix]` commit log 统计） | 随时间下降 |
 | 回补 PRD/REQ/ADR 的 bug 数 | N | 越少越好 |
 | 实现者轮数 | N | ≤ 5 |
 | 单 REQ 平均测试数 | N | ≥ 1 |
 | 归档重做次数 | N | 0;>0 说明需求洞察投入不够 |
 | 归档根因层 | THINK/PRD/DESIGN | 越靠前越说明一挡体检不够 |
 
+> bug 类别分布、平均修复轮数、视觉/feel 缺陷占比等指标需 bug 工件，彻底轻量下不采集（见 ADR 0002），靠 REFLECT 时人口述。
+
 ## 与参考项目的差异
 
 - gstack `retro` 强调团队复盘；我们简化为个人/OPC 经验沉淀。
 - superpowers 的 plan 结构给我们的 ADR 格式。
 - 核心差异：把单文件 `architecture.md` 拆分为 `adr/` 目录 + `architecture.md` 概览，并维护 `business-capabilities.md` 与 `CONTEXT.md`。
-- 本次演进：把 feel-signoff 的验收功能合并到 reflect，用 bug 循环统一处理实现偏差。
+- 本次演进：把 feel-signoff 的验收功能合并到 reflect，用 `/bug` 单 bug 人机协同处理实现偏差（见 `design/adr/0002-single-bug-fix-loop.md`）。

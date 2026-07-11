@@ -18,17 +18,17 @@ sources:
 
 ## 核心概念:两个循环 + story = 初衷
 
-- **外层循环 — 人控制的设计上下文**:THINK → PRD → DESIGN → DOMAIN-MODEL → TECH-DESIGN → CRYSTALLIZE → TEST → ASSERTION-SIGNOFF。人做决定、签核、改需求。
-- **内层循环 — agent 控制的实现迭代**:BUILD → QA → BUG_TRIAGE → BUG_FIX → QA。AI 在测试契约内自主迭代,bug 循环结束后进入 REFLECT。
+- **外层循环 - 人控制的设计上下文**:THINK -> PRD -> DESIGN -> DOMAIN-MODEL -> TECH-DESIGN -> CRYSTALLIZE -> TEST -> ASSERTION-SIGNOFF。人做决定、签核、改需求。
+- **内层循环 - agent 控制的实现迭代**:BUILD -> QA -> BUG。AI 在测试契约内自主迭代，bug 处理后进入 REFLECT。
 - **门 1(assertion-signoff)**:外层循环的终点,把完整上下文(REQ + 测试)交给 AI。
 - **门 2(reflect)**:内层循环的终点,人做最终验收确认并沉淀知识。
 
-一个 story 对应一个**初衷**——用户痛点,不是具体方案。
+一个 story 对应一个**初衷**--用户痛点,不是具体方案。
 
-- 初衷在,story 就在。实现路径错了(无论一挡二挡),换实现,story 不换 → **归档重做**。
-- 初衷本身错了/痛点不成立,story 没存在意义 → **删 story**,不归档。
+- 初衷在,story 就在。实现路径错了(无论一挡二挡),换实现,story 不换 -> **归档重做**。
+- 初衷本身错了/痛点不成立,story 没存在意义 -> **删 story**,不归档。
 
-初衷的锚点是 PRD 的"问题陈述"——`/to-prd` 强制把它写成痛点形态。
+初衷的锚点是 PRD 的"问题陈述"--`/to-prd` 强制把它写成痛点形态。
 
 ## 输入
 
@@ -42,7 +42,7 @@ sources:
 1. 与用户确认初衷(一句话痛点,不是方案)。
 2. 生成 story-id(日期+短描述,如 `2026-07-02-mood-tracking`)。
 3. 从模板创建:
-   - `templates/story/workflow-state.yaml.template` → `.aiassist/stories/<id>/workflow-state.yaml`
+   - `templates/story/workflow-state.yaml.template` -> `.aiassist/stories/<id>/workflow-state.yaml`
 4. 把 phase 设为 `THINK`,attempt 记为 1。
 5. 调用 `/demand-insight` 进入需求洞察。
 
@@ -63,28 +63,29 @@ sources:
 | ASSERTION-SIGNOFF | **门 1** | `/signoff --stage=assertion` |
 | BUILD | 内层 | `/implementer` |
 | QA | 内层 | `/qa-runner` |
-| BUG_TRIAGE | 内层/外层交界 | `/file-bug` |
-| BUG_FIX | 内层 | `/fix-bugs` |
+| BUG | 内层/外层交界 | `/bug` |
 | REFLECT | **门 2** | `/reflect` |
 
 3. 向后兼容：若读取到旧版 `phase: FEEL-SIGNOFF`，向用户说明 feel-signoff 已合并到 reflect，自动迁移到 `REFLECT` 阶段，追加历史记录 `{from: FEEL-SIGNOFF, to: REFLECT, note: "自动迁移：feel-signoff 已合并到 reflect"}`，然后路由到 `/reflect`。
 
-4. 若 `archive` 下已有历史 attempt,提示用户:"本 story 已尝试过 N 次,最新归档原因见 `archive/attempt-N/reason.md`,这次别踩同样的坑。"
+4. 向后兼容：若读取到旧版 `phase: BUG_TRIAGE` 或 `BUG_FIX`，向用户说明 bug 循环已合并为单 skill `/bug`，自动迁移到 `BUG` 阶段，追加历史记录 `{from: BUG_TRIAGE|BUG_FIX, to: BUG, note: "自动迁移：file-bug+fix-bugs 已合并为 /bug"}`，然后路由到 `/bug`。
 
-### C. Story 内的 bug 循环（可选）
+5. 若 `archive` 下已有历史 attempt,提示用户:"本 story 已尝试过 N 次,最新归档原因见 `archive/attempt-N/reason.md`,这次别踩同样的坑。"
 
-二挡（测试锁定）后发现 bug 时，不直接回流整个 story，而是进入 story 内的 bug 循环：
+### C. Story 内的 bug 处理（可选）
+
+二挡（测试锁定）后发现 bug 时，不直接回流整个 story，而是用 `/bug` 单 bug 人机协同处理：
 
 ```
-BUILD/QA 发现异常 → BUG_TRIAGE (/file-bug) → BUG_FIX (/fix-bugs) → QA
+BUILD/QA 发现异常 -> BUG (/bug) -> QA
 ```
 
 当 QA 全绿且当前 story 无 open bug 时，进入 `/reflect`（门 2：最终验收 + 知识沉淀）。
 
-- `/file-bug` 负责登记、复现、分类（code-defect / test-gap / req-gap / not-a-bug）。
-- `/fix-bugs` 负责批量修复当前 story 内已分类为 `code-defect` 的 bug，跑全量回归，输出修复报告。
-- `test-gap` 先补测试；`req-gap` 回流外层更新 PRD/REQ；`not-a-bug` 直接关闭。
-- bug 工件挂在 `.aiassist/stories/<id>/bugs/BUG-NNN.md`，不跨 story。
+- `/bug` 一次处理一个 bug：诊断根因 -> 分类（人确认：code-defect / test-gap / req-gap / not-a-bug）-> 修 / 补测试 / 就地补全 / 关闭 -> 三道闸门（3-strike / blast-radius / req-gap）-> commit -> 停下，人决定下一个。
+- 不落本地 bug 工件；追溯靠 `// REQ-TRACE` + commit `[bugfix] BUG-NNN`（见 `design/adr/0002-single-bug-fix-loop.md`）。
+- `test-gap` 补测试；`req-gap` 就地补全 PRD/tech/REQ/HTML + 补测试；`not-a-bug` 关闭记录。
+- 全量回归不在 `/bug` 内跑，由 `/qa-runner` 收尾时跑。
 
 ### D. 手动审查（可选但建议）
 
@@ -104,13 +105,13 @@ BUILD/QA 发现异常 → BUG_TRIAGE (/file-bug) → BUG_FIX (/fix-bugs) → QA
 
 任何回流前,先和用户一起判定**错误假设活在哪一层**。模型提议,人拍板。
 
-- 错误在用户需求/痛点本身 → 走"删 story"。
-- 错误在实现路径(方案/REQ/UX 方向) → 走"归档重做"。
-- 错误只是 REQ 漏了个 case / 断言自相矛盾 → **不算回流**,走局部纠错(`/crystallize` 补验收标准,或门 1 重审,或逃生口)。见下文"不算回流的情况"。
+- 错误在用户需求/痛点本身 -> 走"删 story"。
+- 错误在实现路径(方案/REQ/UX 方向) -> 走"归档重做"。
+- 错误只是 REQ 漏了个 case / 断言自相矛盾 -> **不算回流**,走局部纠错(`/crystallize` 补验收标准,或门 1 重审,或逃生口)。见下文"不算回流的情况"。
 
 判定标准:初衷(问题陈述里的痛点)还成立吗?
-- 成立 → 归档重做。
-- 不成立 → 删 story。
+- 成立 -> 归档重做。
+- 不成立 -> 删 story。
 
 ### 第二步:执行
 
@@ -123,21 +124,21 @@ BUILD/QA 发现异常 → BUG_TRIAGE (/file-bug) → BUG_FIX (/fix-bugs) → QA
 2. **写归档原因**:`archive/attempt-<N>/reason.md`,记录根因(错误假设活在哪一层)+ 推翻理由 + 下次该避开什么。这是下次 `/demand-insight` 的关键输入。
 3. **更新 workflow-state**:
    - `attempt` +1。
-   - `phase` 回到根因层对应阶段:根因在需求层 → `THINK`;在方案层 → `PRD`;在技术方案层 → `TECH-DESIGN`;在 UX 暴露的约束层 → `DESIGN`。
+   - `phase` 回到根因层对应阶段:根因在需求层 -> `THINK`;在方案层 -> `PRD`;在技术方案层 -> `TECH-DESIGN`;在 UX 暴露的约束层 -> `DESIGN`。
    - `history` 追加一条:`{from, to, reason, date}`。
 4. **同 story 重做**:从回退后的 phase 起跑。UX 原型留在 `ux/` 直接改,不搬。
 
 #### 删 story(初衷本身错了)
 
 1. 与用户确认:痛点不成立,不是"换个实现能救"的。
-2. 整个 `.aiassist/stories/<id>/` 删除,**不归档**——没有初衷可参考,留证据无意义。
+2. 整个 `.aiassist/stories/<id>/` 删除,**不归档**--没有初衷可参考,留证据无意义。
 3. 从 `.aiassist/stories/` 索引(如有)移除。
 
 ### 不算回流的情况(走局部纠错,不动 story 结构)
 
 | 情况 | 机制 | 动作 |
 |---|---|---|
-| REQ 漏了一个 case | bug 循环中 | 回 `/crystallize` 补验收标准增量 |
+| bug 中 req-gap（REQ/PRD/tech 漏或错、缺测试 seam、HTML 参照小改） | bug 处理中就地补全 | `/bug` 就地补全 PRD/tech/测试（REQ 漏 case 走 `/crystallize`），继续修 |
 | 断言自相矛盾/不可满足 | 逃生口 | 回门 1 重审断言 |
 | 实现者烧完轮数不绿 | 逃生口 | 上报,换模型或回门 1 |
 | 一挡内某块被推翻 | 按块回流 | 该块降级回"移动块",其它块不动,UX 直接改 |
@@ -149,8 +150,9 @@ BUILD/QA 发现异常 → BUG_TRIAGE (/file-bug) → BUG_FIX (/fix-bugs) → QA
 ```yaml
 story_id: 2026-07-02-mood-tracking
 intention: <一句话痛点,非方案>
-phase: THINK              # THINK/PRD/DESIGN/DOMAIN-MODEL/TECH-DESIGN/CRYSTALLIZE/TEST/ASSERTION-SIGNOFF/BUILD/QA/BUG_TRIAGE/BUG_FIX/REFLECT
+phase: THINK              # THINK/PRD/DESIGN/DOMAIN-MODEL/TECH-DESIGN/CRYSTALLIZE/TEST/ASSERTION-SIGNOFF/BUILD/QA/BUG/REFLECT
 attempt: 1
+bug-counter: 0            # story 内 bug 计数，/bug 每次修复 +1
 created: 2026-07-02
 history:
   - {at: 2026-07-02, from: THINK, to: PRD, note: "完成需求洞察"}
@@ -163,7 +165,7 @@ archive:
 
 - **初衷锚定痛点**:`intention` 字段和 PRD 问题陈述必须是用户痛点,不是方案。方案会变,痛点不会。
 - **根因诊断优先**:回流前必判"初衷在不在"。模型提议,人拍板。不跳过。
-- **归档不删,删不归档**:初衷在 → 归档(留证据);初衷错 → 删(不留)。
+- **归档不删,删不归档**:初衷在 -> 归档(留证据);初衷错 -> 删(不留)。
 - **UX 不归档**:一挡思考工具,直接改。
 - **按块回流不建 attempt**:一挡内单块推翻,只挪 PRD 的稳定/移动块标记。
 - **回流是人触发的重大判断**:模型可提议,但不自动执行归档或删除。

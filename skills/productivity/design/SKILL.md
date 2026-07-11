@@ -326,8 +326,8 @@ DESIGN 阶段完成后，不要直接进入最终验收。正确顺序是：
 
 1. 更新 `workflow-state.yaml`，把 `phase` 设为 `TECH-DESIGN`。
 2. 由 `/story` 路由到 `/tech-design`，继续技术方案设计。
-3. 后续依次经过 `CRYSTALLIZE` → `TEST` → `ASSERTION-SIGNOFF` → `BUILD` → `QA` → `BUG_TRIAGE/BUG_FIX`（如有缺陷）→ `REFLECT`。
-4. BUILD 和 QA 都完成后，进入 `/reflect` 做最终验收；如实现偏离 HTML 原型，通过 `/file-bug` 登记为 `code-defect` 修复。
+3. 后续依次经过 `CRYSTALLIZE` → `TEST` → `ASSERTION-SIGNOFF` → `BUILD` → `QA` → `BUG`（如有缺陷）→ `REFLECT`。
+4. BUILD 和 QA 都完成后，进入 `/reflect` 做最终验收；如实现偏离 HTML 原型，通过 `/bug` 登记为 `code-defect` 修复。
 
 如果 DESIGN 阶段发现 PRD 需要大调，先回流 `/to-prd`。
 
@@ -378,4 +378,4 @@ DESIGN 阶段完成后，不要直接进入最终验收。正确顺序是：
 | `/research` | 若对设计系统/组件库/设计源不熟，先产出调研笔记，再进入本 skill。 |
 | `/crystallize` | DESIGN 阶段完成后，若 PRD 稳定块已更新，可能需要重新结晶。 |
 | `/reflect` | QA 全绿、bug 循环结束后，做最终验收并沉淀知识。 |
-| `/file-bug` | 若实现偏离本 skill 产出的 HTML 原型，登记为 code-defect 修复。 |
+| `/bug` | 若实现偏离本 skill 产出的 HTML 原型，登记为 code-defect 修复。 |

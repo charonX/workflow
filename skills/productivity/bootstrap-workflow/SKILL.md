@@ -119,7 +119,7 @@ sources:
 
 询问用户是否连接外部 issue tracker（GitHub Issues / GitLab Issues）：
 
-> 连接后，`/file-bug` 可以从外部 issue 创建 bug 工件（保留图片与评论），`/fix-bugs` 修复后在外部 issue 添加中文评论（不关闭），用户确认后由 `/file-bug --close` 关闭。issue 是对话通道，不是一次性通知。
+> 连接后，`/bug --from-issue=N` 可以从外部 issue 拉取症状（保留 body 图片 markdown 与评论），修复后在外部 issue 添加中文评论（不关闭），用户确认后 `/bug --close-issue=N` 关闭。issue 是对话通道，不是一次性通知；不落本地 bug 工件，issue 即外部记录。
 
 选项：
 - GitHub Issues
@@ -141,10 +141,9 @@ sources:
    - `templates/global/issue-tracker.json.template` → `.aiassist/global/issue-tracker.json`
 
 4. **在目标项目 `CLAUDE.md` 中追加约定**：
-   - `/file-bug` 默认操作当前 story 的 bug。
-   - 外部 issue 是**对话通道**：修复后评论不关，用户在 issue 评论反馈，`/file-bug --sync-comments` 拉取新评论，用户确认后 `/file-bug --close` 关闭。
+   - `/bug` 默认处理当前 story 的 bug，一次一个。
+   - 外部 issue 是**对话通道**：`/bug --from-issue=N` 实时读取 issue（含图片），修复后 `gh issue comment` 评论（不关），用户确认后 `/bug --close-issue=N` 关闭。无本地同步状态，每次重读 issue 评论。
    - issue body 和评论用中文（`issue-tracker.json` 的 `language: "zh"`）。
-   - 真相源是 `.aiassist/stories/<id>/bugs/BUG-NNN.md`，外部 issue 是同步通道。
 
 如果用户拒绝，创建 `.aiassist/global/issue-tracker.json` 并设置 `enabled: false`。
 
@@ -235,7 +234,7 @@ git commit -m "[bootstrap] 初始化双循环工作流基础设施"
 |---|---|---|
 | `[test]` | test-author 编写/修改测试、人签核断言 | 测试文件（`test/`、`*.test.*`、`e2e/` 等） |
 | `[build]` | implementer 编写/修改实现 | 实现代码（`src/`、`app/`、`lib/` 等） |
-| `[bugfix]` | /fix-bugs 修复 bug | 实现代码 + bug 报告文件（不修改业务测试契约文件） |
+| `[bugfix]` | /bug 修复 bug | 实现代码（不修改业务测试契约文件） |
 | `[bootstrap]` | 工作流基础设施变更 | `.aiassist/`、`CLAUDE.md`、hooks 等 |
 | `[docs]` | PRD、需求、设计文档更新 | `.aiassist/stories/*/prd.md`、`.aiassist/stories/*/requirements.md` 等 |
 | `[ux]` | UX 原型更新 | `.aiassist/stories/*/ux/*.html`、`.aiassist/global/DESIGN.md` 等 |

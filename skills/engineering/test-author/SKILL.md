@@ -146,7 +146,7 @@ describe("project create", () => {
 - 每个 CLI 测试必须指定：命令、输入（参数/stdin/环境变量）、预期输出（stdout/stderr/退出码）、副作用（文件/DB/网络）。
 - 测试之间必须隔离状态：使用临时目录、独立 DB、或 CLI 提供的 `--reset-state`。
 - 不测试实现细节，只测试可观察行为。
-- 不要把主观视觉判断放进 CLI 测试；观感走 REFLECT 人工验收或 `/file-bug`。
+- 不要把主观视觉判断放进 CLI 测试；观感走 REFLECT 人工验收或 `/bug`。
 
 ## 组件测试模板
 
@@ -189,7 +189,7 @@ describe("FlowEditor", () => {
 
 - 每个组件测试必须对应一个 REQ 中的结构或行为验收标准。
 - 使用 `data-testid` 或 ARIA role 定位元素，不要依赖 CSS 类名或 DOM 层级。
-- 不验证具体样式值（color、font-size、margin），这些走 REFLECT 人工验收或 `/file-bug`。
+- 不验证具体样式值（color、font-size、margin），这些走 REFLECT 人工验收或 `/bug`。
 - 必须验证交互后的状态变化（props、context、data-attribute、localStorage、fetch 调用等）。
 - API 调用可用 MSW 或简单 stub/mock，但断言必须验证调用参数/时机。
 
@@ -348,14 +348,14 @@ export class FlowEditorPage {
 - 每个 E2E 测试必须指定：起始状态、用户操作、预期可观察结果（URL、元素可见性、文本内容）。
 - **使用 locator（`getByRole`、`getByTestId`、`getByLabel`）而非裸 CSS selector**，增强稳定性。
 - **每个 E2E 测试只验证一个用户流程/概念**，不要把多个独立流程堆在一个 `test` 里。
-- 不要验证像素级样式；观感走 REFLECT 人工验收或 `/file-bug`。
+- 不要验证像素级样式；观感走 REFLECT 人工验收或 `/bug`。
 - **测试数据必须隔离**：使用 fixture、独立测试账号、或 setup/teardown 重置状态，避免污染其他测试。
 - **失败时自动收集证据**：`playwright.config.ts` 中配置 `trace: "on-first-retry"` 和 `screenshot: "only-on-failure"`。
 - **遵循测试金字塔**：E2E 占比约 5%，只覆盖关键用户路径；能用组件/CLI/API 测试覆盖的，不进 E2E。
 
 ## 回归测试模板
 
-当 `/file-bug` 分类为 `code-defect` 或 `test-gap` 时，从 bug 工件生成回归测试。回归测试必须能在修复前失败、修复后通过（Prove-It 模式）。
+当 `/bug` 分类为 `code-defect` 或 `test-gap` 时，从会话 bug 上下文生成回归测试。回归测试必须能在修复前失败、修复后通过（Prove-It 模式）。
 
 ### 模板 H：CLI 回归测试
 

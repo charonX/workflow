@@ -40,7 +40,7 @@ sources:
 
 - 实现代码（由子代理写入项目源码目录）
 - 一个或多个 `[build]` commit
-- `.aiassist/stories/<id>/build-progress.md`
+- `.aiassist/stories/<id>/build-progress.md`（含每个 slice 的 PRD→代码 可追溯性声明）
 - 更新后的 `.aiassist/stories/<id>/workflow-state.yaml`
 
 ## 默认模式：子代理调度模式
@@ -94,22 +94,30 @@ sources:
    - 亲自跑测试命令
    - 读取输出，确认业务测试全绿
    - 检查 diff 是否只包含实现代码、是否误改测试
-4. 如果验证通过：
+4. 如果测试与 diff 验证通过，继续 PRD 意图对齐检查：
+   - 读取子代理在 `build-progress.md` 中写入的 **PRD→代码 可追溯性表**，父代理对照 `prd.md`、`requirements.md`、当前 diff、测试文件逐项审查，确认每个 PRD 意图项都有实现文件和测试覆盖。
+   - 使用 Agent 工具派发 **PRD 对齐子代理**（见下文"PRD 对齐子代理"），对抗式检查 PRD 操作流、验证规则、错误状态是否已在实现中完整表达。
+   - 如果可追溯性审查或 PRD 对齐子代理发现缺口：
+     - 不派发 refactor subagent，不标记 slice 完成，不进入下一个 slice。
+     - 将缺口按 `/bug` 做初步分类（缺实现 / 缺测试 / PRD 或 tech-design 错误等）。
+     - 向用户报告 blocker，建议先补缺口（继续 `/implementer` 或回流 `/to-prd` / `/tech-design`）。
+     - 停止当前 `/implementer` 调用。
+5. 如果 PRD 意图对齐检查也通过：
    - 使用 Agent 工具派发 **refactor subagent**（见下文"Refactor Subagent 任务简报"），对当前 slice 做一轮安全重构。
    - refactor subagent 返回后，父代理**再次独立验证**：
      - 业务测试仍全绿
      - diff 只包含实现代码，没有误改测试或扩大范围
    - 如果 refactor 导致测试失败或 diff 超出当前 slice：要求 refactor subagent 回滚，或父代理自行回滚到 refactor 前状态。
-5. 如果两次验证都通过：
+6. 如果两次验证都通过：
    - 更新 `workflow-state`：标记该 slice 完成。
    - 在 `build-progress.md` 追加：
      ```
-     Slice X: complete (<base7>..<head7>, tests green)
+     Slice X: complete (<base7>..<head7>, tests green, PRD alignment passed)
      Slice X: refactor pass done (<head7>..<refactor7>, tests green, no rollback)
      ```
    - 如果 CodeGraph 已启用，运行 `codegraph sync`（失败则记录警告）。
    - 进入下一个切片。
-6. 如果任一验证失败：
+7. 如果任一验证失败：
    - 派发 fix subagent，带上失败证据、相关 diff、测试输出。
    - 修复后重新验证。
    - 超过轮数上限仍失败 → 停止，向用户报告 blocker。
@@ -179,6 +187,8 @@ sources:
 - 实现完成后跑**全套业务测试**。
 - 全部通过后再 commit；commit 消息格式：`[build] <slice 名称>`。
 - **测试全绿只是最低门槛**：子代理必须确认实现同时满足 PRD 意图、tech-design 契约、UX HTML 结构/行为，不能仅为通过测试而硬凑。
+- **PRD→代码 可追溯性表**：子代理必须在 `build-progress.md` 中为本 slice 写入一张表，逐条列出本 slice 涉及的 PRD 意图（操作流步骤、验证规则、错误状态、UX 结构/行为等），并给出对应的实现文件、测试文件和状态（`COVERED` / `PARTIAL` / `GAP`）。不允许全部留白或用模糊描述填充。
+- **禁止以测试通过为由跳过 PRD 定义的行为**：错误状态、表单校验、分支流程、副作用/回滚必须按 PRD 实现，不能因现有测试未覆盖就忽略。
 - 如果 CodeGraph 已启用，commit 后运行 `codegraph sync` 更新图谱。
 
 ### 5. 报告要求
@@ -188,6 +198,7 @@ sources:
 - 状态：`DONE` / `DONE_WITH_CONCERNS` / `BLOCKED`
 - 修改的文件列表
 - 测试命令和输出摘要（证明业务测试全绿）
+- **PRD→代码 可追溯性表（已写入 `build-progress.md`）**
 - 与 HTML 原型的已知偏差
 - commit hash
 - 任何 concerns
@@ -293,6 +304,62 @@ pytest
 ./run-tests.sh
 ```
 
+## PRD 对齐子代理
+
+`/implementer` 父代理在每个 slice 的**业务测试全绿且 diff 验证通过后**，必须派发 PRD 对齐子代理，用相对独立的上下文做一轮对抗式 PRD 意图检查。这是为了捕捉"测试通过但 PRD 错误状态/验证/分支未实现"的偏差。
+
+### 任务简报
+
+使用 Agent 工具派发。prompt 必须包含：
+
+#### 1. 任务定位
+
+- 本 slice 在 story 中的位置、对应的 REQ-ID 列表。
+- 本 slice 声称覆盖的 PRD 意图项（来自 `build-progress.md` 中的 PRD→代码 可追溯性表）。
+- 当前 slice 的 diff（实现代码）。
+- 本 slice 涉及的业务测试文件路径。
+- `prd.md` 第 6-8 节相关条目（操作流、验证规则、错误状态）。
+
+#### 2. 输入读取顺序
+
+1. `prd.md`：重点读第 6-8 节，明确本 slice 应实现的 PRD 意图。
+2. `requirements.md`：本 slice 对应的 REQ-ID、验收标准。
+3. `tech-design.md`：相关模块边界、数据流、接口契约。
+4. 当前 slice 的 diff（实现代码）。
+5. 相关业务测试文件。
+6. `build-progress.md` 中的 PRD→代码 可追溯性表（子代理此前写入）。
+
+#### 3. 检查维度
+
+- **操作流完整性**：PRD 第 6 节的 happy path 步骤和分支/异常是否都在实现中有对应路径？是否遗漏分支触发条件或结果？
+- **验证规则完整性**：PRD 第 7 节的字段级验证、跨字段/业务规则是否在实现中执行？错误提示、触发时机、错误状态是否与 PRD 一致？
+- **错误状态完整性**：PRD 第 8 节的失败场景（含外部依赖/网络/权限/超时等）是否在实现中处理？错误码/消息、用户可见状态、副作用/回滚是否与 PRD 一致？
+- **UX 结构/行为一致性**：如涉及 `ux/*.html`，检查关键元素、状态变化、导航流程是否与 PRD 意图一致；偏差是否有显式记录。
+- **可追溯性表真实性**：检查表中列出的"实现文件"和"测试文件"是否真实存在、是否确实覆盖对应 PRD 意图；不允许根据假设填充。
+
+#### 4. 输出要求
+
+子代理返回：
+
+- 状态：`ALIGNED` / `MISALIGNMENT_FOUND` / `UNCERTAIN`
+- 对齐项清单（逐条说明 PRD 意图 → 实现文件 → 测试覆盖，状态为 `COVERED`）
+- 缺口项清单（PRD 意图 → 发现的问题 → 建议分类）
+  - 分类建议：`missing-implementation`（实现漏了）、`missing-test`（测试没覆盖但实现可能有）、`prd-error`（PRD 自身矛盾或不清晰）、`tech-design-gap`（技术方案缺 seam 或契约）
+- 任何 `UNCERTAIN` 项必须说明需要人确认什么
+
+### 父代理处理
+
+PRD 对齐子代理返回后，父代理必须：
+
+1. 阅读对齐报告，确认缺口是否真实。
+2. 若状态为 `ALIGNED`：允许进入 refactor subagent 阶段。
+3. 若状态为 `MISALIGNMENT_FOUND`：
+   - 不标记 slice 完成，不进入 refactor，不进入下一个 slice。
+   - 按缺口分类建议，选择继续由 `/implementer` 补实现、`/test-author` 补测试，或回流 `/to-prd` / `/tech-design`。
+   - 若缺口是具体可定位的代码缺陷，也可转 `/bug` 处理。
+   - 将缺口和处理决定记录到 `build-progress.md`。
+4. 若状态为 `UNCERTAIN`：向用户展示不确定项，请人确认后再决定。
+
 ## 纪律
 
 - **父代理不写实现代码**：父代理只读文档、调度、验证、更新元数据。
@@ -302,6 +369,7 @@ pytest
 - **diff 碰业务测试 = 本轮作废**。
 - **每轮跑全套业务测试**：停机条件是"全套业务测试绿"，但绿只是最低门槛。
 - **测试全绿 ≠ 实现正确**：绿了之后必须对照 PRD、tech-design、UX HTML 检查意图是否完整实现。禁止为绿而写特判、mock 掉真实行为、或阉割功能。
+- **PRD 意图对齐是 slice 完成的必要条件**：只有 PRD 对齐子代理报告 `ALIGNED`，slice 才能标记完成。
 - **不擅自放宽断言**。
 - **不跳过看起来"无关"的失败**。
 - **HTML 原型是参照不是规范**：实现时尽量对齐 HTML 原型，但偏差必须显式记录，不能悄悄忽略。
@@ -311,6 +379,7 @@ pytest
 - **CodeGraph 是导航辅助**：启用时优先查询图谱理解模块关系，但必须以实际代码语义为准；不可用时回退 grep/read。
 - **CodeGraph 同步**：每个 slice 实现完成并提交后，如启用则运行 `codegraph sync`，保持图谱与代码一致。
 - **遵循 CONTEXT.md 术语**：实现中的实体/模块命名与全局领域词汇表保持一致。
+- **每个 slice 必须留下 PRD→代码 可追溯性声明**：`build-progress.md` 中的表格是后续 `/signoff`（BUILD 后复查）和 `/reflect` 人工验收的输入。
 
 ## 与参考项目的差异
 

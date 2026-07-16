@@ -21,11 +21,17 @@
 
 ### 检查清单
 
+- [ ] 不存在未关闭的 `prd-gap-report.md`。
+- [ ] PRD 第 6 节“用户操作流”已覆盖或已声明 N/A。
+- [ ] PRD 第 7 节“表单与输入验证”已覆盖或已声明 N/A。
+- [ ] PRD 第 8 节“错误状态与失败响应”已覆盖或已声明 N/A。
 - [ ] 每个 REQ-ID 都有对应测试。
 - [ ] 每个测试文件都有 `// REQ-TRACE` 和 `// REQ-VERSION`。
 - [ ] 无 `// TODO: HUMAN ASSERTION` 占位。
 - [ ] expected 值来源清晰（人手算 / 已签标准 / 真实 JSON）。
 - [ ] 无 snapshot 当测试预言。
 - [ ] 边界/错误场景已覆盖。
+
+> BUILD 完成后，将复查 `build-progress.md` 中的 PRD-to-code 可追溯性声明。
 
 ⏸ **BUILD 阶段在 `[test] assertion-signoff for {{STORY_ID}}` commit 前不得开始。**

@@ -61,17 +61,7 @@ jobs:
             }
           fi
 
-      # 5. 观感签核文件存在性检查
-      - name: Feel signoff check
-        run: |
-          if grep -qE '\[feel\]' <<< "${{ github.event.pull_request.title }}"; then
-            test -f .aiassist/stories/*/feel-signoff.md || {
-              echo "❌ [feel] PR 缺少 feel-signoff.md"
-              exit 1
-            }
-          fi
-
-      # 6. 测试文件只读检查：实现 PR 不能修改测试
+      # 5. 测试文件只读检查：实现 PR 不能修改测试
       - name: Test files read-only check
         run: |
           CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)

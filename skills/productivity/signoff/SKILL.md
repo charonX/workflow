@@ -39,22 +39,25 @@ sources:
 
 ### 执行步骤
 
-1. **扫描 REQ 覆盖**：每个 REQ-ID 是否至少有一个测试？
-2. **扫描测试头部**：每个测试文件是否有 `REQ-TRACE`、`REQ-VERSION`、`CAPABILITY-TRACE`、`ENTITY-TRACE`？
-3. **扫描 capability/entity 覆盖**：根据 `business-capabilities.md`，检查本次 REQ 是否覆盖了计划中的能力/实体；新增 capability/entity 是否已在能力地图中登记。
-4. **扫描占位符**：是否还有 `// TODO: HUMAN ASSERTION`？
-5. **审查预期值来源**：向用户确认每个关键预期值是人算/真实 JSON/已签标准，而非代码输出。
-6. **展示检查清单**：让用户逐项确认。
-7. **生成/更新 signoff 文件**：填写 `signoff.md` 中 Assertion 部分的 REQ-ID 列表、capability/entity 覆盖摘要和断言摘要，确保所有检查清单项已勾选。
-8. **提交签核 commit**：用户确认后，执行：
+1. **检查 PRD 完整性状态**：确认不存在 `.aiassist/stories/<id>/prd-gap-report.md`。若存在，签核必须失败，提示用户先回流 `/to-prd` 补全缺口。
+2. **扫描 REQ 覆盖**：每个 REQ-ID 是否至少有一个测试？
+3. **扫描测试头部**：每个测试文件是否有 `REQ-TRACE`、`REQ-VERSION`、`CAPABILITY-TRACE`、`ENTITY-TRACE`？
+4. **扫描 capability/entity 覆盖**：根据 `business-capabilities.md`，检查本次 REQ 是否覆盖了计划中的能力/实体；新增 capability/entity 是否已在能力地图中登记。
+5. **扫描占位符**：是否还有 `// TODO: HUMAN ASSERTION`？
+6. **审查预期值来源**：向用户确认每个关键预期值是人算/真实 JSON/已签标准，而非代码输出。
+7. **展示检查清单**：让用户逐项确认。
+8. **生成/更新 signoff 文件**：填写 `signoff.md` 中 Assertion 部分的 REQ-ID 列表、capability/entity 覆盖摘要和断言摘要，确保所有检查清单项已勾选。
+9. **提交签核 commit**：用户确认后，执行：
    ```bash
    git add .aiassist/stories/<id>/signoff.md
    git commit -m "[test] assertion-signoff for <story-id>"
    ```
-9. **更新 workflow-state**：标记 assertion-signoff 通过，解锁 BUILD。
+10. **更新 workflow-state**：标记 assertion-signoff 通过，解锁 BUILD。
 
 ### 检查清单
 
+- [ ] 不存在未关闭的 `prd-gap-report.md`（PRD 完整性已通过 `/crystallize` 审查）。
+- [ ] PRD 第 6-8 节（操作流、验证规则、错误状态）已覆盖或已声明 N/A。
 - [ ] 每个 REQ-ID 都有对应测试。
 - [ ] 每个测试文件都有 `REQ-TRACE`、`REQ-VERSION`、`CAPABILITY-TRACE`、`ENTITY-TRACE`。
 - [ ] 每个 REQ 的 capability/entity 与 `business-capabilities.md` 一致。
@@ -64,11 +67,14 @@ sources:
 - [ ] 边界/错误 case 已覆盖。
 - [ ] `signoff.md` Assertion 部分已创建并通过 `[test] assertion-signoff for <story-id>` commit 提交。
 
+> BUILD 完成后，父代理将再次检查 `build-progress.md` 中的 PRD-to-code 可追溯性声明。
+
 ## 纪律
 
 - **assertion 不通过禁止 BUILD**。
 - 签核 commit 即视为人对"什么算对"承担最终责任。
 - assertion 阶段签核 commit 只应修改 `signoff.md`，不应同时修改测试文件或实现代码。
+- **存在 `prd-gap-report.md` 时禁止签核**：PRD 缺口必须在 `/to-prd` 阶段解决，不能带入 BUILD。
 
 ## 与参考项目的差异
 

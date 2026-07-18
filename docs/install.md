@@ -1,10 +1,11 @@
 # 安装
 
-循环工作流目前主要提供一套 **Claude Code skill** 集合。你可以通过 Claude Code 的插件机制安装，也可以手动复制 skill 文件到其他项目。理念本身不绑定任何工具，如果你使用其他 agent 平台，可以把 `skills/` 下的 `SKILL.md` 翻译成对应平台的 prompt 或工具调用。
+循环工作流目前主要提供一套 **Claude Code skill** 集合，并已同步发布 **Kimi Code 插件**。你可以通过 Claude Code 或 Kimi Code 的插件机制安装，也可以手动复制 skill 文件到其他项目。理念本身不绑定任何工具，如果你使用其他 agent 平台，可以把 `skills/` 下的 `SKILL.md` 翻译成对应平台的 prompt 或工具调用。
 
 ## 目录
 
 - [Claude Code Marketplace（推荐）](#claude-code-marketplace推荐)
+- [Kimi Code 插件](#kimi-code-插件)
 - [Vercel Labs skills CLI](#vercel-labs-skills-cli)
 - [手动复制或软链](#手动复制或软链)
 - [迁移到其他 agent 平台](#迁移到其他-agent-平台)
@@ -29,6 +30,28 @@
 
 > marketplace 名是 `charonx-workflow`，插件名是 `loop-workflow`。
 > 后续更新：先 `/plugin marketplace update charonx-workflow` 拉取最新目录，再 `/reload-plugins` 重载；必要时可 `/plugin uninstall loop-workflow@charonx-workflow` 后重新安装。
+
+---
+
+## Kimi Code 插件
+
+在任意 Kimi Code 会话中，直接安装本仓库 GitHub 地址：
+
+```bash
+/plugins install https://github.com/charonX/workflow
+```
+
+安装完成后，执行 `/reload` 或新建一个会话使插件生效。
+
+> 当前 Kimi 插件安装是**用户级**（对所有项目生效），尚不支持项目级作用域。安装后所有 skill 会作为 Kimi Agent Skills 加载。
+
+安装后，用 Kimi 的 skill 调用方式触发工作流：
+
+- `/skill:story` —— 工作流总入口，新建或继续 story
+- `/skill:bootstrap-workflow` —— 在目标项目中初始化工作流基础设施
+- `/skill:demand-insight`、 `/skill:to-prd`、 `/skill:tech-design` …… 其他阶段 skill
+
+Kimi Code 插件依赖仓库根目录的 `kimi.plugin.json` 清单，它会扫描 `skills/productivity/`、`skills/engineering/` 和 `skills/maintenance/` 下的所有 `SKILL.md`。
 
 ---
 

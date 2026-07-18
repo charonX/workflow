@@ -170,7 +170,7 @@ REQ 变 -> 挂它的测试标记「过时待重生」。任何失败测试都能
 
 ## 安装
 
-循环工作流目前主要提供一套 **Claude Code skill** 集合。你可以通过 Claude Code Marketplace、Vercel Labs skills CLI 或手动复制来安装；也欢迎把理念迁移到其他 agent 平台。
+循环工作流目前主要提供一套 **Claude Code skill** 集合，并已同步发布 **Kimi Code 插件**。你可以通过 Claude Code Marketplace、Kimi Code `/plugins install`、Vercel Labs skills CLI 或手动复制来安装；也欢迎把理念迁移到其他 agent 平台。
 
 详细安装方式（含 Marketplace、`npx skills`、手动复制、软链、跨平台迁移、保持同步）见 [`docs/install.md`](./docs/install.md)。
 

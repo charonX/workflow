@@ -1,0 +1,31 @@
+{
+  "name": "loop-workflow",
+  "version": "0.16.0",
+  "description": "循环工作流：人在外层设计上下文，AI 在内层契约内迭代，断言归人、实现归 AI",
+  "author": {
+    "name": "charonX"
+  },
+  "homepage": "https://github.com/charonX/workflow",
+  "repository": "https://github.com/charonX/workflow",
+  "license": "MIT",
+  "keywords": [
+    "kimi-code",
+    "workflow",
+    "two-loop",
+    "loop-workflow",
+    "agent-workflow",
+    "requirements",
+    "qa",
+    "research"
+  ],
+  "skills": [
+    "./skills/productivity/",
+    "./skills/engineering/",
+    "./skills/maintenance/"
+  ],
+  "interface": {
+    "displayName": "循环工作流",
+    "shortDescription": "人在外层设计上下文，AI 在测试契约内迭代",
+    "longDescription": "一套人机协作开发工作流：人持有断言，AI 在测试构成的契约内自主实现。包含需求洞察、PRD、技术方案、结晶、测试、实现、QA、缺陷处理、反思等阶段。"
+  }
+}

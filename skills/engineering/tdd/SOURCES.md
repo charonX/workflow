@@ -11,6 +11,8 @@ TDD 是 AI 内层循环的代码纪律，不是工作流阶段。业务测试（
 - `reference/mattpocock/skills/engineering/tdd/mocking.md`
 - `reference/mattpocock/skills/engineering/code-review/SKILL.md`（v1.1.0）：mattpocock 在该版本将 `tdd` 中的 refactor 阶段移出。
 - `reference/agent-skills/skills/test-driven-development/SKILL.md`：测试金字塔、测试尺寸（Small/Medium/Large）、DAMP over DRY、Prove-It Pattern、测试替身优先级、Arrange-Act-Assert。
+- `reference/superpowers/skills/test-driven-development/SKILL.md`：common rationalizations 表、Red Flags 清单、TDD 循环图。
+- `reference/superpowers/skills/test-driven-development/writing-good-tests.md`（2026-07 新增）：Name the Break、Exercise the Real Thing 两条原则、mock 纪律、变异检查。
 
 ## 主要改动
 
@@ -33,3 +35,4 @@ TDD 是 AI 内层循环的代码纪律，不是工作流阶段。业务测试（
 - 2026-07-07：创建 skill，定义 TDD 作为内层循环代码纪律，与业务测试契约分层。
 - 2026-07-09：引入 agent-skills `test-driven-development` 的测试金字塔、测试尺寸、DAMP over DRY、Prove-It Pattern、测试替身优先级、Arrange-Act-Assert。
 - 2026-07-09：将 refactor 移出 `/tdd`，改为由 `/implementer` 的 refactor subagent 处理。
+- 2026-08-02：吸收 superpowers TDD skill 的 `writing-good-tests.md`（v6.2.0）：新增 Name the Break 门函数、Mock 纪律（Exercise the Real Thing、正确层级、完整结构、mock 膨胀→集成测试）、Change Detector 反模式、变异检查。

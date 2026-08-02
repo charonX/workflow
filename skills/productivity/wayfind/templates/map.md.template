@@ -1,0 +1,29 @@
+# Wayfind: {{NAME}}
+
+## Destination
+
+{{DESTINATION}}
+<!-- 这次探索的终点是什么。一到两行，每次 session 选票前先对照它。 -->
+
+## Notes
+
+{{NOTES}}
+<!-- 领域知识、要参考的 skill、这次探索的特殊偏好。 -->
+
+## Decisions so far
+
+<!-- index —— 每个已关闭的票一行：摘要 + 链接。不在此处重复票的细节，细节在票文件里。 -->
+
+{{DECISIONS}}
+
+## Not yet specified
+
+<!-- 战争迷雾 —— 能感觉到但还无法精确提问的东西。不在此处预切票，前面的票解决后自然会毕业。 -->
+
+{{FOG}}
+
+## Out of scope
+
+<!-- 明确排除的工作 —— 超出 Destination 的边界，不毕业。 -->
+
+{{OUT_OF_SCOPE}}

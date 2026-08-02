@@ -1,0 +1,16 @@
+# {{TITLE}}
+
+- **Type**: {{TYPE}}          <!-- research | prototype | grilling | task -->
+- **Mode**: {{MODE}}          <!-- AFK | HITL -->
+- **Status**: {{STATUS}}      <!-- open | claimed | resolved -->
+- **Blocks**: {{BLOCKS}}      <!-- 被本票阻塞的票 ID，逗号分隔，无则留空 -->
+- **Blocked by**: {{BLOCKED_BY}}  <!-- 阻塞本票的票 ID，逗号分隔，无则留空 -->
+
+## Question
+
+{{QUESTION}}
+<!-- 本票要解决的决策或调查。必须是精确的问题，不是模糊的方向。 -->
+
+## Resolution
+
+<!-- 决议后填写。给出清晰的答案，不要模棱两可。 -->

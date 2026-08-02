@@ -49,22 +49,18 @@
 ### 三个阶段对应两个循环
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│  外层循环：人控制的设计上下文                                            │
-│  THINK -> PRD -> DESIGN -> DOMAIN-MODEL -> TECH-DESIGN -> TEST -> ASSERTION-SIGNOFF │
-└─────────────────────────────────────────────────────────────────────┘
-                                    │ 门 1：断言签核（人把上下文交给 AI）
-                                    ▼
-┌─────────────────────────────────────────────────────────────┐
-│  内层循环：agent 控制的实现迭代                                  │
-│  BUILD -> QA                                                  │
-│   ↑    │                                                      │
-│   └────┘ 测试不绿就自修，不许改断言                              │
-│          有缺陷 -> BUG ──────┘                                │
-└─────────────────────────────────────────────────────────────┘
-                                    │ 无 open bug，QA 全绿
-                                    ▼
-                            REFLECT（门 2：最终验收 + 知识沉淀）
+WAYFIND (可选) -> 外层循环：人控制的设计上下文
+                    THINK -> PRD -> DESIGN -> DOMAIN-MODEL -> TECH-DESIGN -> TEST -> ASSERTION-SIGNOFF
+                                                    │ 门 1：断言签核（人把上下文交给 AI）
+                                                    ▼
+                                            内层循环：agent 控制的实现迭代
+                                              BUILD -> QA
+                                               ↑    │
+                                               └────┘ 测试不绿就自修，不许改断言
+                                                    有缺陷 -> BUG ──────┘
+                                                    │ 无 open bug，QA 全绿
+                                                    ▼
+                                            REFLECT（门 2：最终验收 + 知识沉淀）
 ```
 
 ### 两挡模型
@@ -78,10 +74,11 @@
 
 跨越线 = 「某块不再推翻 / 即将被依赖」。一挡可无限循环；二挡的回报是**回归安全网**。
 
-### 十二个阶段
+### 十三个阶段
 
 | # | 阶段 | Skill | 触发者 | 做什么 |
 |---|---|---|---|---|
+| 0 | **WAYFIND**（可选） | `/wayfind` | 用户 | 模糊想法 → 决策票 → 清晰的 story 列表 / ADR；story 之前的上游探索 |
 | 1 | **THINK** | `/demand-insight` | 用户 | 对抗式访谈，暴露隐性需求、边界与矛盾 |
 | 2 | **PRD** | `/to-prd` | 用户 | 把讨论整理成结构化 PRD（问题陈述锚定痛点） |
 | 3 | **DESIGN** | `/design` | 用户 | 统一入口：建 / 更新设计系统、导入设计源、迭代 HTML 原型 |
@@ -206,6 +203,7 @@ cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 | Skill | 阶段 | 用途 |
 |---|---|---|
 | `/story` | 路由 | 工作流总入口；路由外层 / 内层循环，执行回流（归档重做 / 删 story） |
+| `/wayfind` | WAYFIND（可选） | 探索模糊想法——创建决策地图，一次解决一张票，输出清晰的 story 列表或 ADR；story 之前的上游探索 |
 | `/bootstrap-workflow` | 初始化 | 创建 `.aiassist/` 项目基础设施 |
 | `/demand-insight` | THINK | 对抗式需求访谈；用第一性原理剥离继承假设，适合只有模糊痛点或初步想法的阶段 |
 | `/to-prd` | PRD | 把讨论整理成 PRD |
@@ -235,6 +233,13 @@ cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 
 ```
 .aiassist/
+├── wayfind/<name>/               # （可选）探索阶段产物——决策地图与票
+│   ├── map.md                    # 总地图（index）
+│   ├── tickets/                  # 决策票
+│   │   ├── 01-<slug>.md
+│   │   └── ...
+│   ├── research/                 # （按需）research 票的产出
+│   └── prototypes/               # （按需）prototype 票的产出
 ├── stories/<story-id>/
 │   ├── prd.md
 │   ├── tech-design.md         # 技术方案（一挡可推翻）

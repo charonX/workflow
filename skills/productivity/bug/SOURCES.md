@@ -36,3 +36,5 @@ bug 处理是一次一个、人机协同的连续动作：报告症状 -> 诊断
 
 - 2026-07-10：合并 `/file-bug` + `/fix-bugs` 为 `/bug`，单 bug 人机协同，不落本地 bug 工件，三道闸门，外部 issue 实时交互。依据 `design/adr/0002-single-bug-fix-loop.md`。取代 v0.13 的双 skill + `bugs/` 工件设计。
 - 2026-07-10（修订）：req-gap 从"回流外层"重新定性为"就地补全"（局部纠错）--就地更新 PRD/tech/REQ/HTML + 补测试，phase 保持 BUG 不退回，补完回步骤 5 继续修。真回流（初衷级推翻）交 `/story`。依据 ADR 0002 修订。
+- 2026-08-06：PRD 与 tech-design 合并（`design/adr/0004`）：req-gap 就地补全的产物引用从 PRD/tech-design 改为"PRD（含 §10 技术方案）"。
+- 2026-08-06：快速收敛哲学（`design/adr/0005`）：req-gap 定义为**默认收敛路径**（QA 验收缺口 → 就地补 → 继续）；缺口超出当前 story 范围时显式归类（新建 story / 范围外）。

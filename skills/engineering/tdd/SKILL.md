@@ -25,7 +25,7 @@ sources:
 
 - 当前 slice 要满足的业务测试（由 `/test-author` 生成，人已签核）
 - `requirements.md` 中本 slice 对应的 REQ-ID 和验收标准
-- `tech-design.md` 中本 slice 的模块/接口/seam 设计
+- `prd.md` §10-11 中本 slice 的模块/接口/seam 设计
 - 现有代码库和项目约定
 
 ## 输出
@@ -144,7 +144,7 @@ expect(buildSearchQuery({ tag: 'urgent' })).toBe('tag:"urgent"');
 - 单元测试文件可以改、可以删、可以合并
 - 最终验收只认业务测试（CLI/E2E/API）
 - 如果单元测试和业务测试冲突，业务测试优先
-- **业务测试全绿只是最低门槛**：实现还必须符合 PRD 意图、tech-design 的模块/数据流/接口契约、UX HTML 的结构与行为。不能为了通过测试而写特判或阉割功能。
+- **业务测试全绿只是最低门槛**：实现还必须符合 PRD 意图、`prd.md` §10 的模块/数据流/接口契约、UX HTML 的结构与行为。不能为了通过测试而写特判或阉割功能。
 
 ## 什么是好的单元测试
 
@@ -306,7 +306,7 @@ Bug 报告到达
 
 ## Seams 选择
 
-TDD 的 seam 是 tech-design 阶段已经确定的边界：
+TDD 的 seam 是技术方案阶段（`prd.md` §11）已经确定的边界：
 
 - **CLI 命令**：一个子命令就是一个 seam
 - **服务函数**：`projectService.create(name)`
@@ -314,7 +314,7 @@ TDD 的 seam 是 tech-design 阶段已经确定的边界：
 - **工具/纯函数**：无 side effect 的计算函数
 - **UI 组件事件处理函数**：如果测试 seam 是组件，事件处理是内部 seam
 
-**规则**：只在 pre-agreed seams 上写单元测试。如果不确定 seam，先问 `/tech-design` 或人。
+**规则**：只在 pre-agreed seams 上写单元测试。如果不确定 seam，先问 `/tech-design`（`complex` story 时）或人。
 
 ## 与 `/implementer` 的关系
 

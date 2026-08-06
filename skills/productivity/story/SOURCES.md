@@ -12,6 +12,8 @@ story = 初衷，不是具体方案。本 skill 是工作流总入口：路由�
 
 ## 改动记录
 
+- 2026-08-06：PRD 与 tech-design 合并（`design/adr/0004`）：TECH-DESIGN 阶段改为条件（仅 PRD §9=complex 走）；`/review` 时序表 `stage=tech` 并入 `stage=prd`；归档产物 `tech-design.md` 并入 `prd.md`；回流"技术方案层→TECH-DESIGN"保留并注明语义（重做 `prd.md` §10）。
+- 2026-08-06：快速收敛哲学（`design/adr/0005`）：QA 验收 req-gap 就地补全表述为**默认收敛路径**；缺口超出当前 story 范围时显式归类（新建 story / 范围外）。
 - 2026-07-10：取消 FEEL-SIGNOFF 阶段；门 2 改为 `/reflect`；bug 循环结束后进入 REFLECT；新增向后兼容处理旧 `phase: FEEL-SIGNOFF`。
 - 2026-07-06：DESIGN 阶段路由统一为 `/design`，合并 `tac-design-system`、`tac-design-import`、`tac-ux-explore` 三个入口。
 - 2026-07-05：路由表更新：ASSERTION-SIGNOFF / FEEL-SIGNOFF 统一指向 `/signoff` 的对应 stage。

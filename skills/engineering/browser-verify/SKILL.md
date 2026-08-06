@@ -18,7 +18,7 @@ sources:
 
 ## 输入
 
-- 运行中的 dev server URL（来自 `tech-design.md` seams、项目 `CLAUDE.md` 或项目约定）
+- 运行中的 dev server URL（来自 `prd.md` §11 seams、项目 `CLAUDE.md` 或项目约定）
 - `.aiassist/stories/<id>/ux/*.html`（HTML UX 参照）
 - `.aiassist/stories/<id>/requirements.md`（了解要验证的 REQ）
 - `.aiassist/stories/<id>/qa-report.md`（QA 阶段上下文）
@@ -70,7 +70,7 @@ sources:
 
 从以下来源按顺序查找：
 
-1. `tech-design.md` 中声明的 browser seam / dev server URL
+1. `prd.md` §11 中声明的 browser seam / dev server URL
 2. 项目 `CLAUDE.md` 中的启动命令和端口
 3. 项目约定（如 `http://localhost:3000`、`http://localhost:5173`、`http://localhost:4311`）
 

@@ -57,7 +57,7 @@ sources:
 | PRD | 外层 | `/to-prd` |
 | DESIGN | 外层 | `/design` |
 | DOMAIN-MODEL | 外层 | `/domain-model` |
-| TECH-DESIGN | 外层 | `/tech-design`（若对技术/API/库不熟，可先 `/research`） |
+| TECH-DESIGN | 外层 | `/tech-design`（**仅 PRD §9=complex 时走**；simple 直接结晶，路由到此阶段时提示可跳过。若对技术/API/库不熟，可先 `/research`） |
 | CRYSTALLIZE | 外层 | `/crystallize` |
 | TEST | 外层 | `/test-author` |
 | ASSERTION-SIGNOFF | **门 1** | `/signoff --stage=assertion` |
@@ -93,9 +93,10 @@ BUILD/QA 发现异常 -> BUG (/bug) -> QA
 
 | 审查时机 | stage | 审查产物 | 通过后可进入 |
 |---|---|---|---|
-| PRD 完成后 | `prd` | `prd.md` | TECH-DESIGN |
-| 技术方案完成后 | `tech` | `prd.md` + `tech-design.md` | CRYSTALLIZE |
+| PRD（含技术方案）完成后 | `prd` | `prd.md`（含 §10 技术方案、§11 测试决策） | CRYSTALLIZE |
 | BUILD 完成后 | `code` | diff + 全部契约文档 | QA |
+
+> 原 `stage=tech` 已并入 `stage=prd`（PRD 与 tech-design 合并，见 `design/adr/0004`）。
 
 `/review` 是建议性门，输出报告后由人决定是否继续、修复后重审，或回流。
 
@@ -119,12 +120,12 @@ BUILD/QA 发现异常 -> BUG (/bug) -> QA
 
 1. **归档本次 attempt**:
    - 创建 `.aiassist/stories/<id>/archive/attempt-<N>/`。
-   - 移入**承诺层产物**:`prd.md`、`tech-design.md`、`requirements.md`、`requirements-*.hash`、`signoff.md`、`qa-report.md`、相关代码。
+   - 移入**承诺层产物**:`prd.md`（含 §10 技术方案）、`requirements.md`、`requirements-*.hash`、`signoff.md`、`qa-report.md`、相关代码。
    - **不归档**:`ux/`(一挡思考工具,直接改)、`interview-notes.md`(软的)、`workflow-state.yaml`(状态机本身,要更新不是归档)。
 2. **写归档原因**:`archive/attempt-<N>/reason.md`,记录根因(错误假设活在哪一层)+ 推翻理由 + 下次该避开什么。这是下次 `/demand-insight` 的关键输入。
 3. **更新 workflow-state**:
    - `attempt` +1。
-   - `phase` 回到根因层对应阶段:根因在需求层 -> `THINK`;在方案层 -> `PRD`;在技术方案层 -> `TECH-DESIGN`;在 UX 暴露的约束层 -> `DESIGN`。
+   - `phase` 回到根因层对应阶段:根因在需求层 -> `THINK`;在方案层 -> `PRD`;在技术方案层 -> `TECH-DESIGN`(语义 = 重做 `prd.md` §10,仅 complex story);在 UX 暴露的约束层 -> `DESIGN`。
    - `history` 追加一条:`{from, to, reason, date}`。
 4. **同 story 重做**:从回退后的 phase 起跑。UX 原型留在 `ux/` 直接改,不搬。
 
@@ -138,7 +139,7 @@ BUILD/QA 发现异常 -> BUG (/bug) -> QA
 
 | 情况 | 机制 | 动作 |
 |---|---|---|
-| bug 中 req-gap（REQ/PRD/tech 漏或错、缺测试 seam、HTML 参照小改） | bug 处理中就地补全 | `/bug` 就地补全 PRD/tech/测试（REQ 漏 case 走 `/crystallize`），继续修 |
+| QA 验收发现意图缺口（req-gap：REQ/PRD 漏或错、缺测试 seam、HTML 参照小改）——**默认收敛路径** | bug 处理中就地补全 | `/bug` 就地补全 PRD（含 §10 技术方案）/REQ/测试（REQ 漏 case 走 `/crystallize`），继续修；缺口超出当前 story 范围 → 与用户显式归类：新建 story 或归入范围外 |
 | 断言自相矛盾/不可满足 | 逃生口 | 回门 1 重审断言 |
 | 实现者烧完轮数不绿 | 逃生口 | 上报,换模型或回门 1 |
 | 一挡内某块被推翻 | 按块回流 | 该块降级回"移动块",其它块不动,UX 直接改 |

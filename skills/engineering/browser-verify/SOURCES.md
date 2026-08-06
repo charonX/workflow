@@ -24,3 +24,4 @@
 
 - 2026-07-10：证据消费者从 feel-signoff 改为 bug 循环 + REFLECT。
 - 2026-07-09：创建 skill，定义运行时浏览器验证门与 `browser-verify-report.md` 输出格式。
+- 2026-08-06：PRD 与 tech-design 合并（`design/adr/0004`）：browser seam / dev server URL 来源从 `tech-design.md` 改到 `prd.md` §11。

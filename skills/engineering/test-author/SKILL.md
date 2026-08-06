@@ -18,7 +18,7 @@ sources:
 
 - `.aiassist/stories/<id>/requirements.md`
 - `.aiassist/stories/<id>/requirements-v1.hash`
-- `.aiassist/stories/<id>/tech-design.md`（其中定义了 seams：CLI / 单元 / 浏览器 E2E）
+- `.aiassist/stories/<id>/prd.md` §11（其中定义了 seams：CLI / 单元 / 浏览器 E2E）
 - `.aiassist/stories/<id>/ux/*.html`（如有 UX 原型，作为结构与行为测试的输入）
 - `.aiassist/global/business-capabilities.md`（能力地图，决定测试目录结构）
 - `.aiassist/global/CONTEXT.md`（统一术语与实体命名）
@@ -39,9 +39,9 @@ sources:
 
 ## 执行步骤
 
-1. **读取 seams 与 capability/entity 声明**：从 `tech-design.md` 读取每个 REQ-ID 对应的 seam 类型，从 `requirements.md` 读取每个 REQ 的 `capability` 和 `entity`。如果存在冲突或缺失，先调用 `/domain-model` 统一术语。
+1. **读取 seams 与 capability/entity 声明**：从 `prd.md` §11 读取每个 REQ-ID 对应的 seam 类型，从 `requirements.md` 读取每个 REQ 的 `capability` 和 `entity`。如果存在冲突或缺失，先调用 `/domain-model` 统一术语。
 2. **按 capability/entity 规划目录**：根据 `business-capabilities.md`，为每个 REQ 确定测试目录 `tests/capabilities/<capability>/<entity>/<story-id>/`。如果 capability/entity 是新的，在 `business-capabilities.md` 中预留条目（由 `/crystallize` 最终维护，但 `/test-author` 不应重复造名）。
-3. **逐条读取 REQ 与 tech-design.md**：按 seams 为每条验收标准设计至少一个测试方法/命令。
+3. **逐条读取 REQ 与 prd.md §10-11**：按 seams 为每条验收标准设计至少一个测试方法/命令。
 4. **读取 HTML UX 原型（强制提取结构/行为测试）**：如果 `ux/` 目录存在，扫描所有 `.html` 文件，为每个原型提取可验证项并生成至少一个自动化测试：
    - 关键元素是否存在（如按钮、表单、列表、canvas、node palette、properties panel）。
    - 页面/组件之间的导航流程（点击 A → 出现 B，路由跳转）。

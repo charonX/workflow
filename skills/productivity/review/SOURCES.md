@@ -35,3 +35,5 @@
 - 2026-07-04：创建 skill，定义三阶段手动 review 流程与报告模板。
 - 2026-07-09：新增 `--mode=panel` 与 4 个 specialist 子代理并行审查模式，报告模板新增 Panel Review 小节。
 - 2026-08-06：吸收 mattpocock v1.1.0 code-review 的 Fowler 代码异味基线到 `stage=code`；panel 模式由 code-reviewer 承担，不做重复审查。
+- 2026-08-06：PRD 与 tech-design 合并（`design/adr/0004`）：`--stage=tech` 并入 `--stage=prd`，PRD 审查现含技术方案维度；specialist 输入改读 `prd.md`（含技术方案）。
+- 2026-08-06：快速收敛哲学（`design/adr/0005`）：stage=prd 明确为补缺口第二场所——发现 PRD 缺口就地补或按四分法归类。

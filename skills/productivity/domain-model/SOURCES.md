@@ -25,3 +25,4 @@
 ## 改动记录
 
 - 2026-07-08：创建 skill，维护领域词汇表 CONTEXT.md。
+- 2026-08-06：PRD 与 tech-design 合并（`design/adr/0004`）：术语输入改读 `prd.md`（含 §10 技术方案）；触发时机改为"技术方案设计前（complex 走 `/tech-design`）"。

@@ -25,7 +25,7 @@ sources:
 ## 输入
 
 - 当前 story ID（从 `workflow-state.yaml` 或 `.aiassist/stories/` 最近更新推导）
-- `.aiassist/stories/<id>/prd.md`、`requirements.md`、`tech-design.md`、`signoff.md`、`ux/`
+- `.aiassist/stories/<id>/prd.md`（含 §10 技术方案）、`requirements.md`、`signoff.md`、`ux/`
 - 实现代码和测试文件
 - `.aiassist/global/issue-tracker.json`（可选，外部 issue 用）
 - bug 症状、复现步骤、期望/实际、环境、截图/日志（口述或 issue body）
@@ -67,7 +67,7 @@ sources:
 |---|---|---|
 | **code-defect** | 实现偏离已签核 REQ（含功能缺陷和视觉/feel 偏差）；或测试本应暴露但该 case 未覆盖 | 进步骤 5 修复 |
 | **test-gap** | 行为符合当前 REQ，但测试未覆盖该边界/路径 | `/test-author` 补测试；如测试暴露实现缺陷，转 code-defect |
-| **req-gap** | REQ/PRD 未定义或定义错误；或已批准 HTML UX 参照本身要改；或诊断发现没有正确测试 seam | **就地补全**：增量更新 PRD/tech-design/REQ/HTML + 补测试 seam，回步骤 5 继续修。UX 方向/初衷级推翻则升级 `/story` 真回流。见步骤 8 |
+| **req-gap** | REQ/PRD 未定义或定义错误；或已批准 HTML UX 参照本身要改；或诊断发现没有正确测试 seam | **就地补全**：增量更新 PRD（含 §10 技术方案）/REQ/HTML + 补测试 seam，回步骤 5 继续修。UX 方向/初衷级推翻则升级 `/story` 真回流。见步骤 8 |
 | **not-a-bug** | 实际行为符合 REQ，只是用户预期不同 | 记录决策（commit note 或口述），不修。见步骤 9 |
 
 分类必须引用相关 REQ-ID 或 PRD 段落，不凭猜测。**分类不是一次性赌注**：步骤 5 修复中若 3-strike 或 no-seam 信号出现，重分类为 req-gap 就地补全。
@@ -117,20 +117,21 @@ sources:
 
 **不自动连续修下一个**。人在场，人决定。
 
-### 8. req-gap 就地补全（非回流）
+### 8. req-gap 就地补全（非回流 · 默认收敛路径）
 
-诊断或修复中判定 req-gap 时，**不踢回外层重走、不退 phase、不归档**。req-gap 是局部纠错：就地增量更新产物 + 补测试，补完回步骤 5 继续把这个 bug 修完。**不是重新设计。**
+诊断或修复中判定 req-gap 时，**不踢回外层重走、不退 phase、不归档**。req-gap 是默认收敛路径：QA 验收发现意图缺口 → 就地增量更新产物 + 补测试，补完回步骤 5 继续把这个 bug 修完。**不是重新设计。**
 
-1. 向用户说明：根因在 REQ/PRD/tech-design/HTML 层，不是代码层；但不需要重新设计，只需就地补全相应产物与测试。
+1. 向用户说明：根因在 REQ/PRD（含技术方案）/HTML 层，不是代码层；但不需要重新设计，只需就地补全相应产物与测试。
 2. 就地补全动作（按根因选一）：
    - REQ 漏 case -> `/crystallize` 补验收标准增量。
-   - PRD/tech-design 写错 -> 人改 PRD / `/tech-design` 改 tech-design。
+   - PRD 写错 / §10 技术方案缺 seam 或契约 -> 人改 PRD，或 `/tech-design` 深潜补全 §10。
    - 缺测试 seam -> `/test-author` 补测试骨架。
    - HTML UX 参照小改 -> `/design` 改 HTML（一挡可改）。
 3. 补完后**回步骤 5.1**（失败回归测试），继续修复这个 bug，不退出 `/bug`。
 4. **升级条件**：诊断判定是 UX 方向推翻或初衷不成立 -> 不就地补全，改走 `/story` 真回流（归档重做/删 story）。这是 req-gap 与真回流的边界，由根因诊断、人拍板。
-5. REQ 实质契约变更（改了契约语义，非补 case）-> 提示人考虑门 1 重审受影响断言；不强制退 phase。
-6. 更新 `workflow-state.yaml`：**phase 保持 BUG**，history 记一条 req-gap 补全说明（更新了哪些产物）。不退 phase、不建 `archive/attempt-N/`。
+5. **超范围归类**：缺口超出当前 story 范围（不属于本 story 承诺）-> 不与用户纠结，直接显式决策：**新建 story** 或 **归入范围外**，并在本次修复中只做能就地补的部分。
+6. REQ 实质契约变更（改了契约语义，非补 case）-> 提示人考虑门 1 重审受影响断言；不强制退 phase。
+7. 更新 `workflow-state.yaml`：**phase 保持 BUG**，history 记一条 req-gap 补全说明（更新了哪些产物）。不退 phase、不建 `archive/attempt-N/`。
 
 > req-gap 不是回流。真回流（初衷级推翻）由 `/story` 执行，见 `skills/productivity/story/SKILL.md` 的"回流"章节。
 
@@ -163,7 +164,7 @@ sources:
 - **分类人确认**：分类是裁决，模型提议，人拍板。分类随诊断证据可修正。
 - **回归测试必须先红**（Prove-It）：禁止无测试直接改代码。
 - **三道闸门必过**：3-strike / blast-radius(>5 文件) / req-gap 检测。卡住即停，问人。
-- **req-gap 就地补全，不是回流**：就地更新 PRD/tech-design/REQ/HTML + 补测试，phase 保持 BUG，补完继续修；只有 UX 方向/初衷级推翻才升级 `/story` 真回流。
+- **req-gap 就地补全，不是回流**：就地更新 PRD（含技术方案）/REQ/HTML + 补测试，phase 保持 BUG，补完继续修；只有 UX 方向/初衷级推翻才升级 `/story` 真回流。
 - **不落本地 bug 工件**：无 `bugs/`、无 bug.md、无 triage.md、无 bug-fix-report.md。追溯靠 `// REQ-TRACE` + commit `[bugfix] BUG-NNN`。
 - **只改当前 story**：跨 story bug 拒绝处理。
 - **fix subagent 对业务测试只读**。

@@ -1,6 +1,6 @@
 ---
 name: tech-design
-description: 对抗式技术方案设计。适合已有方案主干的阶段，通过拷问把 PRD 稳定块翻译成系统语言：模块边界、数据流、接口契约与 CLI 优先的测试 seams。
+description: 条件深潜：仅当 PRD §9=complex 或技术可行性不清晰时调用。对抗式把稳定块翻译成系统语言，写入 prd.md §10（技术方案），不生成独立文档。
 sources:
   - reference/gstack/plan-eng-review/SKILL.md
   - reference/mattpocock/skills/engineering/codebase-design/SKILL.md
@@ -13,13 +13,18 @@ sources:
 
 ## 何时调用
 
-PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户语言"翻译成"系统语言"时。用户说"设计技术方案"、"/tech-design"时。
+**条件深潜，不是必经阶段。** 两种触发：
 
-本 skill 不替代 PRD，而是承接 PRD。如果 PRD 本身还在大动，先回流 `/to-prd`。
+1. PRD 第 9 节复杂度分级为 `complex`——技术取舍需要一次独立的对抗式检查，避免把不可实现的块锁成 REQ。
+2. `/crystallize` 技术可行性预演发现某些稳定块"实现路径不清晰 / 没有可测试 seam"——提示回流到这里补全。
+
+用户说"设计技术方案"、"/tech-design"时也可直接调用。`simple` story 不需要本 skill：`/to-prd` 直接填 `prd.md` 第 10 节（高层）即可结晶。
+
+本 skill 不替代 PRD，而是把技术方案**写进 `prd.md` 第 10 节**。如果 PRD 本身还在大动，先回流 `/to-prd`。
 
 ## 输入
 
-- `.aiassist/stories/<id>/prd.md`
+- `.aiassist/stories/<id>/prd.md`（第 10 节先由 `/to-prd` 填好设计目标与已知约束）
 - `.aiassist/stories/<id>/workflow-state.yaml`
 - `.aiassist/stories/<id>/research/*.md`（如有）
 - 现有代码库（了解当前架构、领域词汇、已有 seams）
@@ -34,9 +39,12 @@ PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户�
 
 如果存在 `/research` 产出的调研笔记，**优先读取**它们，把其中的事实作为技术方案设计的前提，不重复做事实调研。
 
+**向后兼容**：若旧 story 已有 `tech-design.md`，先读它，把内容迁移到 `prd.md` 第 10 节后继续深潜（不新建独立文档）。
+
 ## 输出
 
-- `.aiassist/stories/<id>/tech-design.md`
+- **追加写入** `.aiassist/stories/<id>/prd.md` 第 10 节「技术方案」（10.2-10.7 完整填充），第 11.1 节补全覆盖接缝。
+- 反向同步 `prd.md` 第 4/5 节（稳定/移动块状态变化）与第 8 节（错误状态补充）。
 
 ## 执行步骤
 
@@ -140,14 +148,14 @@ PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户�
 - **小调整**（块的状态变化、补充约束、修正描述）：直接更新 `prd.md`，保持其与技术方案一致。
 - **大调整**（痛点本身需要重想、解决方案方向变了）：停止 `/tech-design`，回流到 `/to-prd`。
 
-在起草 `tech-design.md` 之前，先确认：
+在把方案写进 `prd.md` 第 10 节之前，先确认：
 - `prd.md` 中的稳定块列表是否与当前技术方案匹配？
 - 是否有稳定块因为技术原因被降级为移动块？
-- PRD 是否需要新增"补充说明"或调整"范围外"？
+- PRD 是否需要新增“补充说明”或调整“范围外”？
 
-### 5. 起草 `tech-design.md`
+### 5. 写入 `prd.md` 第 10 节
 
-当方案稳定到"可以画模块图、可以切 seams"、且 PRD 已同步更新后，使用 `templates/story/tech-design.md.template` 输出。
+当方案稳定到“可以画模块图、可以切 seams”、且 PRD 已同步更新后，按 `templates/story/prd.md.template` 第 10 节的子结构（10.1-10.7）完整填充：设计目标、模块与边界、数据流、接口契约、关键决策、风险与回流点、安全/性能/可观测性；补全覆盖接缝到第 11.1 节。**不生成独立文档。**
 
 ### 6. 判断是否生成 ADR
 
@@ -165,7 +173,7 @@ PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户�
 
 ### 7. 提交给用户审查
 
-- "这是根据刚才讨论整理的技术方案。模块边界、接口契约、seams 是否准确？"
+- "这是根据刚才讨论整理的技术方案，已写入 `prd.md` 第 10 节。模块边界、接口契约、seams 是否准确？"
 - "PRD 已按技术方案讨论做了以下反向更新：..."
 - 用户修改后定稿。
 
@@ -176,17 +184,17 @@ PRD 已有明确稳定块，但进入 `/crystallize` 之前还需要把"用户�
 ## 纪律
 
 - **不写代码**：只到接口/模块/数据流层面，不写文件路径或具体实现。
-- **不替代 PRD**：如果讨论中发现需求本身 unclear，回流 `/to-prd`。
+- **是 PRD 的一部分**：技术方案写进 `prd.md` 第 10 节，不是独立文档；若讨论中发现需求本身 unclear，回流 `/to-prd`。
 - **对抗式但不抬杠**：目的是暴露盲区，不是证明用户错了。
 - **Seam 是测试的出生地**：每个稳定块至少要有一个清晰的测试 seam。
 - **CLI 是默认 seam**：产品 CLI 是人类和 agent 共用的真实接口，优先把可验证行为暴露为 CLI 命令；不能 CLI 化的部分才退到 public 接口测试或浏览器 E2E。
 - **跨模块必须有显式契约**：输入、输出、错误、副作用，四要素缺一不可。
 - **重要决策写 ADR**：满足"难逆转、不说明会令人困惑、有真实取舍"三个条件的决策，必须写入 `adr/`。
-- **安全/性能/可观测性前置**：设计阶段参考 `checklists/security.md`、`checklists/performance.md`、`checklists/observability.md`，把相关 seams 和约束写进 `tech-design.md`，而不是留到实现后再补。
+- **安全/性能/可观测性前置**：设计阶段参考 `checklists/security.md`、`checklists/performance.md`、`checklists/observability.md`，把相关 seams 和约束写进 `prd.md` 第 10.7 节，而不是留到实现后再补。
 
 ## 与参考项目的差异
 
 - gstack `plan-eng-review`：给我们工程审查的问题清单和复杂度检查。
 - mattpocock `codebase-design`：给我们 deep modules、seams、interfaces 的统一词汇。
 - mattpocock `grill-with-docs` / `domain-modeling`：给我们对抗式访谈和术语挑战方法。
-- 核心差异：把技术方案设计成进入 REQ 前的独立一挡阶段，输出物直接服务测试契约。
+- 核心差异：把技术方案做成进入 REQ 前的**条件深潜**（PRD §9=complex 或技术可行性不清晰时才走），输出写进 `prd.md` §10，直接服务测试契约。`simple` story 由 `/to-prd` 直接填 §10 高层，跳过本 skill。

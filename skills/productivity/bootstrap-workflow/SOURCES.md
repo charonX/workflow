@@ -24,6 +24,7 @@
 
 ## 改动记录
 
+- 2026-08-06：PRD 与 tech-design 合并（`design/adr/0004`）：adr 模板与全局清单（security/performance/observability/architecture）的使用方增加 `/to-prd`；story 目录树不再生成独立 `tech-design.md`（技术方案在 `prd.md` §10）。
 - 2026-07-01：整理参考来源，明确借鉴的 reference 文件。
 - 2026-07-03：补全 SKILL.md 初始化流程；新增 `.aiassist/hooks/pre-commit` 与 `commit-msg`，强制实现 commit 与测试 commit 分离；新增多技术栈 CI/CD 模板（Node.js/Python/Swift/Go/Generic），bootstrap 时自动检测或询问用户选择；在 `project-claude-appendix.md.template` 中加入 commit 标签约定。
 - 2026-07-08：新增 `CONTEXT.md`、`business-capabilities.md`、`adr/`、`codegraph.json` 全局文档；可选启用 CodeGraph。

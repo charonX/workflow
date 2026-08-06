@@ -1,6 +1,6 @@
 ---
 name: domain-model
-description: 维护项目的领域词汇表（CONTEXT.md）和业务实体关系。在术语冲突、新增业务概念、或 /tech-design 前统一语言时触发。
+description: 维护项目的领域词汇表（CONTEXT.md）和业务实体关系。在术语冲突、新增业务概念、或技术方案设计前统一语言时触发。
 sources:
   - reference/mattpocock/skills/engineering/domain-modeling/SKILL.md
   - reference/mattpocock/skills/deprecated/ubiquitous-language/SKILL.md
@@ -12,15 +12,14 @@ sources:
 ## 何时调用
 
 - 用户说"更新领域模型"、"/domain-model"、"统一术语"。
-- `/tech-design` 前发现 PRD 中出现新术语或与 `CONTEXT.md` 冲突。
+- 技术方案设计前（`complex` story 走 `/tech-design`）发现 PRD 中出现新术语或与 `CONTEXT.md` 冲突。
 - `/reflect` 阶段发现本次 story 引入了新业务概念或术语冲突。
 - `/review --stage=prd` 发现术语不一致。
 
 ## 输入
 
 - `.aiassist/global/CONTEXT.md`（已有领域词汇表，可能没有）
-- `.aiassist/stories/<id>/prd.md`（当前 story 的术语）
-- `.aiassist/stories/<id>/tech-design.md`（已有技术设计中的实体名）
+- `.aiassist/stories/<id>/prd.md`（当前 story 的术语；§10 技术方案中的实体名）
 - 项目源码中的实体/类型/模块名（可选）
 
 ## 输出
@@ -53,7 +52,7 @@ sources:
    - 如果不存在，创建空模板。
 
 2. **扫描当前 story 的术语**
-   - 读取 `prd.md` 和 `tech-design.md`。
+   - 读取 `prd.md`（含 §10 技术方案）。
    - 提取所有名词、动词、状态词。
    - 标记疑似业务概念的词汇。
 
@@ -125,7 +124,7 @@ sources:
 ## 与其他 skill 的关系
 
 - `/to-prd`：PRD 中首次出现新术语时，可调用 `/domain-model` 沉淀。
-- `/tech-design`：设计前读取 `CONTEXT.md` 统一术语；发现新术语时回流到 `/domain-model`。
+- `/tech-design`：设计前读取 `CONTEXT.md` 统一术语；发现新术语时回流到 `/domain-model`（`complex` story 时）。
 - `/crystallize`：根据 `CONTEXT.md` 为 REQ 选择规范术语。
 - `/test-author`：使用 `CONTEXT.md` 中的术语统一测试命名。
 - `/implementer`：使用 `CONTEXT.md` 中的术语命名代码实体。
@@ -133,7 +132,7 @@ sources:
 
 ## 纪律
 
-- **不做实现决策**：`CONTEXT.md` 是词汇表，不是 tech-design。
+- **不做实现决策**：`CONTEXT.md` 是词汇表，不是技术方案（`prd.md` §10）。
 - **不复制 PRD**：只提炼术语和关系，不复制需求细节。
 - **保持 opinionated**：同一概念有多个词时，选一个规范词，其他列为禁用别名。
 - **冲突必须解决**：发现术语冲突时不能放过，必须统一。

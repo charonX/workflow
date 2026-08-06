@@ -30,3 +30,4 @@
 ## 改动记录
 
 - 2026-07-06：合并 `tac-design-system`、`tac-design-import`、`tac-ux-explore` 为 `/design`。
+- 2026-08-06：PRD 与 tech-design 合并（`design/adr/0004`）：DESIGN 完成后写 `phase=DOMAIN-MODEL`（不再直接写 `TECH-DESIGN`）；复杂 story 之后才进入 `TECH-DESIGN` 深潜。

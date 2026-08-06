@@ -25,3 +25,5 @@
 
 - 2026-07-03：补全 SKILL.md 执行步骤；增加模块边界属性（scope/modules/interface_contract）和 REQ 分类维度，强调跨模块 REQ 必须显式接口契约；增加 `tech-design.md` 作为输入，增加技术可行性预演步骤。
 - 2026-07-01：整理参考来源，明确借鉴的 reference 文件。
+- 2026-08-06：PRD 与 tech-design 合并（`design/adr/0004`）：输入去掉独立 `tech-design.md`，seams/接口契约改从 `prd.md` §10/§11 读取；技术可行性不清晰时降级回 PRD（complex→`/tech-design`）。
+- 2026-08-06：快速收敛哲学（`design/adr/0005`）：移除 `prd-gap-report.md` 硬阻断；完整性审查改对话式轻确认，缺口强制四分法归类（就地补/移动块/新建 story/范围外），不阻断结晶。

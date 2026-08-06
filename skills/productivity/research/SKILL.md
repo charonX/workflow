@@ -1,6 +1,6 @@
 ---
 name: research
-description: 针对一个技术/API/库/领域问题，启动 background agent 读取 primary sources，输出带引用的调研笔记到 story 的 research/ 目录。在 /tech-design 前使用，为技术方案提供事实基础。
+description: 针对一个技术/API/库/领域问题，启动 background agent 读取 primary sources，输出带引用的调研笔记到 story 的 research/ 目录。在技术方案设计前使用（complex story 走 /tech-design），为技术方案提供事实基础。
 sources:
   - reference/mattpocock/skills/engineering/research/SKILL.md
   - workflow/design/test-as-contract-workflow.md
@@ -12,14 +12,14 @@ sources:
 
 用户在以下场景说"帮我调研一下 X"、"查一下 Y API"、"research Z"、"了解一下某技术"时：
 
-- 准备进入 `/tech-design`，但对某个技术点/第三方 API/库还不清楚。
+- 准备做技术方案设计（`complex` story 走 `/tech-design`），但对某个技术点/第三方 API/库还不清楚。
 - PRD 或技术方案中需要一个外部事实支撑（协议行为、SDK 能力、官方限制等）。
 - 想先让 agent 读文档、源码、spec，再基于带引用的笔记做决策。
 
 **不调用的情况**：
 
 - 用户访谈 / 痛点挖掘 → 走 `/demand-insight`。
-- 技术方案设计本身 → 走 `/tech-design`。
+- 技术方案深潜本身 → 走 `/tech-design`（`complex` story 时）。
 - 设计系统 / UX 探索 → 走 `/design`。
 
 ## 输入
@@ -61,7 +61,7 @@ touch .aiassist/stories/<story-id>/research/<topic-slug>.md
 > 3. 每个重要 claim 都必须标注来源（URL + 章节/文件路径）。
 > 4. 不确定的地方显式标注 "不确定"，并说明为什么不确定。
 > 5. 将结果写入 `.aiassist/stories/<story-id>/research/<topic-slug>.md`，严格遵循输出格式。
-> 6. 不要下工程决策，只陈述事实。工程决策由人在 `/tech-design` 中做。
+> 6. 不要下工程决策，只陈述事实。工程决策由人在技术方案设计中做（`complex` story 走 `/tech-design`）。
 
 允许 researcher 使用的工具：WebFetch、WebSearch、Bash（仅用于读取本地文件或 clone 公开仓库）、Read。
 
@@ -73,11 +73,11 @@ background agent 完成后，读取生成的 markdown 文件，向用户汇报�
 - 输出文件路径
 - 主要发现（3-5 条 bullet，带引用）
 - 仍存在的开放问题或不确定处
-- 建议下一步：`/tech-design` 或继续补充调研
+- 建议下一步：补全技术方案（`complex` story 走 `/tech-design`）或继续补充调研
 
 ### 5. 不自动消费
 
-**`/research` 只产出笔记，不修改 PRD/tech-design。** 后续由 `/to-prd` 或 `/tech-design` 显式读取该笔记并融入决策。
+**`/research` 只产出笔记，不修改 prd.md。** 后续由 `/to-prd` 或 `/tech-design` 显式读取该笔记并融入决策（写入 `prd.md` §10）。
 
 ## 输出格式
 
@@ -111,7 +111,7 @@ background agent 完成后，读取生成的 markdown 文件，向用户汇报�
 
 ## 开放问题
 
-- <问题 1>：留给 `/tech-design` 决策。
+- <问题 1>：留给技术方案设计决策（`complex` story 走 `/tech-design`）。
 - <问题 2>：...
 
 ## 参考来源清单
@@ -128,7 +128,7 @@ background agent 完成后，读取生成的 markdown 文件，向用户汇报�
 2. **Claim 必须可引用**：任何事实性陈述都要能回溯到具体来源。
 3. **不下决策**：research 回答"是什么/能做什么"，不回答"我们应该怎么做"。
 4. **不替代访谈**：用户痛点相关的问题回 `/demand-insight`。
-5. **输出是临时探索产物**：属于一挡，可被后续 `/tech-design` 推翻或细化。
+5. **输出是临时探索产物**：属于一挡，可被后续技术方案设计（`/tech-design`）推翻或细化。
 
 ## 与相邻 skill 的边界
 

@@ -50,7 +50,7 @@
 
 ```
 WAYFIND (可选) -> 外层循环：人控制的设计上下文
-                    THINK -> PRD -> DESIGN -> DOMAIN-MODEL -> TECH-DESIGN -> TEST -> ASSERTION-SIGNOFF
+                    THINK -> PRD -> DESIGN -> DOMAIN-MODEL -> TECH-DESIGN(仅 complex) -> TEST -> ASSERTION-SIGNOFF
                                                     │ 门 1：断言签核（人把上下文交给 AI）
                                                     ▼
                                             内层循环：agent 控制的实现迭代
@@ -83,10 +83,10 @@ WAYFIND (可选) -> 外层循环：人控制的设计上下文
 | 2 | **PRD** | `/to-prd` | 用户 | 把讨论整理成结构化 PRD（问题陈述锚定痛点） |
 | 3 | **DESIGN** | `/design` | 用户 | 统一入口：建 / 更新设计系统、导入设计源、迭代 HTML 原型 |
 | 4 | **DOMAIN-MODEL** | `/domain-model` | 用户 | 统一术语与业务实体，维护 `CONTEXT.md` |
-| 5 | **TECH-DESIGN** | `/tech-design` | 用户 | 对抗式设计模块、数据流、接口契约与 CLI 优先的测试 seams |
-| 6 | **CRYSTALLIZE** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID；每个 REQ 至少一个自动化测试 |
-| 7 | **TEST** | `/test-author` | 模型 | 从 REQ + tech-design 优先生成 CLI 测试骨架；前端需求强制生成组件 / 浏览器结构行为测试；不能自动化的才允许在 REFLECT 中人工验收 |
-| 8 | **ASSERTION-SIGNOFF** | `/signoff --stage=assertion` | 用户 | 人在实现前签核所有断言（门 1） |
+| 5 | **TECH-DESIGN**（仅 complex） | `/tech-design` | 用户 | 对抗式深潜模块、数据流、接口契约与 CLI 优先的测试 seams，写入 `prd.md` §10；simple story 跳过直接结晶 |
+| 6 | **CRYSTALLIZE** | `/crystallize` | 模型 | 把稳定 PRD 块转成带验收标准的 REQ-ID；每个 REQ 至少一个自动化测试；PRD 缺口对话确认归类，不阻断 |
+| 7 | **TEST** | `/test-author` | 模型 | 从 REQ + `prd.md` §11 seams 优先生成 CLI 测试骨架；前端需求强制生成组件 / 浏览器结构行为测试；不能自动化的才允许在 REFLECT 中人工验收 |
+| 8 | **ASSERTION-SIGNOFF** | `/signoff --stage=assertion` | 用户 | 人在实现前签核高风险断言（门 1）：初衷、跨模块契约、expected 值、安全边界 |
 | 9 | **BUILD** | `/implementer` | 模型 | 默认用子代理实现切片；父代理调度验证，对测试只读，每轮跑全套测试 |
 | 10 | **QA** | `/qa-runner` | 模型 | E2E、回归、证据收集；有缺陷时进入 bug 处理 |
 | 11 | **BUG** | `/bug` | 用户 | 单 bug 人机协同：诊断根因 -> 分类（人确认）-> 修 / 补测试 / 就地补全 / 关闭；三道闸门；不落 bug 工件；支持从外部 issue 拉取 |
@@ -163,7 +163,7 @@ REQ 变 -> 挂它的测试标记「过时待重生」。任何失败测试都能
 
 - **归档范围**：PRD、requirements、断言签核、代码等承诺层产物 + `reason.md`（根因 + 推翻理由）。UX 原型不归档（一挡思考工具，直接改）。
 - **根因诊断优先**：回流前先判「初衷在不在」。模型提议，人拍板。
-- **不算回流的情况**（走局部纠错）：bug 中 req-gap（REQ/PRD/tech 漏或错、缺测试 seam、HTML 参照小改）-> `/bug` 就地补全 PRD/tech/测试（REQ 漏 case 走 `/crystallize`），继续修；断言自相矛盾 -> 门 1 重审；一挡内单块推翻 -> 该块降级回「移动块」。
+- **不算回流的情况**（走局部纠错）：QA 验收发现 req-gap（REQ/PRD 漏或错、缺测试 seam、HTML 参照小改）——**默认收敛路径**，`/bug` 就地补全 PRD（含 §10 技术方案）/REQ/测试（REQ 漏 case 走 `/crystallize`），继续修；缺口超出当前 story 范围则显式归类（新建 story / 范围外）；断言自相矛盾 -> 门 1 重审；一挡内单块推翻 -> 该块降级回「移动块」。
 
 ## 安装
 
@@ -207,7 +207,7 @@ cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 | `/bootstrap-workflow` | 初始化 | 创建 `.aiassist/` 项目基础设施 |
 | `/demand-insight` | THINK | 对抗式需求访谈；用第一性原理剥离继承假设，适合只有模糊痛点或初步想法的阶段 |
 | `/to-prd` | PRD | 把讨论整理成 PRD |
-| `/tech-design` | TECH-DESIGN | 对抗式技术方案设计；用第一性原理区分真实约束与历史包袱，确定 CLI 优先的 seams |
+| `/tech-design` | TECH-DESIGN（仅 complex） | 对抗式技术方案深潜；用第一性原理区分真实约束与历史包袱，确定 CLI 优先的 seams，写入 `prd.md` §10 |
 | `/domain-model` | DOMAIN-MODEL | 统一领域术语与业务实体，维护 `CONTEXT.md` |
 | `/research` | THINK/TECH | 针对技术 / API / 库问题做带引用的 background 调研 |
 | `/review` | REVIEW | 外层循环手动检查点；新会话视角审查 PRD / 技术方案 / 代码，`--stage=code --mode=panel` 启用 specialist 子代理并行审查 |
@@ -241,8 +241,7 @@ cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 │   ├── research/                 # （按需）research 票的产出
 │   └── prototypes/               # （按需）prototype 票的产出
 ├── stories/<story-id>/
-│   ├── prd.md
-│   ├── tech-design.md         # 技术方案（一挡可推翻）
+│   ├── prd.md                 # 叙事意图 + 技术方案（一挡可推翻；含 §10 技术方案、§11 测试决策）
 │   ├── requirements.md
 │   ├── requirements-v1.hash
 │   ├── research/                  # （可选）/research 输出的调研笔记
@@ -265,7 +264,7 @@ cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 └── global/
     ├── CONTEXT.md                 # 领域词汇表与业务实体定义（由 /domain-model 维护）
     ├── business-capabilities.md   # 业务能力地图（由 /crystallize、/reflect 维护）
-    ├── adr/                       # 架构决策记录目录（由 /tech-design、/reflect 维护）
+    ├── adr/                       # 架构决策记录目录（由 /to-prd、/tech-design、/reflect 维护）
     │   └── README.md
     ├── checklists/                # 共享检查清单（由 /reflect 维护）
     │   ├── testing.md

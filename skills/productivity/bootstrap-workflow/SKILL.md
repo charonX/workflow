@@ -55,7 +55,7 @@ sources:
 - `templates/global/CONTEXT.md.template` → `.aiassist/global/CONTEXT.md`
 - `templates/global/business-capabilities.md.template` → `.aiassist/global/business-capabilities.md`
 - `templates/global/adr/README.md.template` → `.aiassist/global/adr/README.md`
-- `templates/global/adr/NNNN-title.md.template` → 保留在 workflow 内，由 `/tech-design` 和 `/reflect` 使用
+- `templates/global/adr/NNNN-title.md.template` → 保留在 workflow 内，由 `/to-prd`、`/tech-design` 和 `/reflect` 使用
 - `templates/global/architecture.md.template` → `.aiassist/global/architecture.md`
 - `templates/global/codegraph.json.template` → `.aiassist/global/codegraph.json`
 - `templates/global/issue-tracker.json.template` → `.aiassist/global/issue-tracker.json`

@@ -16,13 +16,14 @@ sources:
 
 ## 何时调用
 
-人在 PRD、技术方案或代码实现完成后，觉得"需要一双新眼睛看看"时，手动触发：
+人在 PRD（含技术方案）、代码实现完成后，觉得"需要一双新眼睛看看"时，手动触发：
 
 ```
-/review --stage=prd --story=<story-id>
-/review --stage=tech --story=<story-id>
+/review --stage=prd --story=<story-id>    # 审查合并后的 prd.md（产品意图 + §10 技术方案 + §11 测试决策）
 /review --stage=code --story=<story-id>
 ```
+
+> 原 `--stage=tech` 已并入 `--stage=prd`（PRD 与 tech-design 合并后，技术方案审查属于 PRD 审查的一部分，见 `design/adr/0004`）。
 
 对于关键/高风险的代码变更，可使用 specialist 子代理并行审查：
 
@@ -64,9 +65,9 @@ sources:
 
 | 子代理 | 输入 | 审查维度 | 输出 |
 |---|---|---|---|
-| **code-reviewer** | diff + `prd.md` + `tech-design.md` + `requirements.md` | 正确性、可读性、架构、diff 范围、ADR 对齐、标准符合（含代码异味基线） | CRITICAL/IMPORTANT/SUGGESTION 列表 |
-| **security-auditor** | diff + `checklists/security.md` + `tech-design.md` | 输入验证、鉴权/授权、secrets、依赖 CVE、OWASP Top 10、LLM 安全 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
-| **performance-auditor** | diff + `tech-design.md` + `checklists/performance.md` | N+1 查询、无界操作、bundle 大小、渲染模式、缓存、长任务 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
+| **code-reviewer** | diff + `prd.md`（含技术方案）+ `requirements.md` | 正确性、可读性、架构、diff 范围、ADR 对齐、标准符合（含代码异味基线） | CRITICAL/IMPORTANT/SUGGESTION 列表 |
+| **security-auditor** | diff + `checklists/security.md` + `prd.md`（§10.7） | 输入验证、鉴权/授权、secrets、依赖 CVE、OWASP Top 10、LLM 安全 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
+| **performance-auditor** | diff + `prd.md`（§10.7） + `checklists/performance.md` | N+1 查询、无界操作、bundle 大小、渲染模式、缓存、长任务 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
 | **test-engineer** | diff + 测试文件 + `requirements.md` + `checklists/testing.md` | 覆盖缺口、测试质量、边界 case、REQ-测试可追溯性 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
 
 ### 协调流程
@@ -74,7 +75,7 @@ sources:
 ```
 /review --stage=code --mode=panel
     │
-    ├── 父代理读取 diff、requirements、tech-design、checklists
+    ├── 父代理读取 diff、requirements、prd.md（含技术方案）、checklists
     │
     ├── 并行派发 4 个子代理
     │   ├── code-reviewer
@@ -102,13 +103,8 @@ sources:
 
 ### stage=prd
 
-- `.aiassist/stories/<id>/prd.md`
+- `.aiassist/stories/<id>/prd.md`（含 §10 技术方案、§11 测试决策）
 - `.aiassist/stories/<id>/workflow-state.yaml`
-
-### stage=tech
-
-- `.aiassist/stories/<id>/prd.md`
-- `.aiassist/stories/<id>/tech-design.md`
 - `.aiassist/global/adr/`（检查 ADR 冲突与覆盖）
 - `.aiassist/global/adr/README.md`
 - `.aiassist/global/architecture.md`（如有，仅作概览）
@@ -117,8 +113,7 @@ sources:
 
 ### stage=code
 
-- `.aiassist/stories/<id>/prd.md`
-- `.aiassist/stories/<id>/tech-design.md`
+- `.aiassist/stories/<id>/prd.md`（含 §10 技术方案）
 - `.aiassist/stories/<id>/requirements.md`
 - `.aiassist/stories/<id>/signoff.md`
 - 当前 branch 与 base branch 的 diff
@@ -135,14 +130,14 @@ sources:
 
 ### 1. 解析参数
 
-- `--stage`：必填，`prd` / `tech` / `code`
+- `--stage`：必填，`prd` / `code`
 - `--story`：可选，story-id
 
 如果没有 `--story`，检测当前项目 `.aiassist/stories/` 下最近更新的目录作为默认 story。
 
 ### 2. 读取全部输入文件
 
-**不要依赖当前会话上下文。** 所有相关文件都必须显式读取，包括 PRD、tech-design、requirements、全局标准、git diff 等。
+**不要依赖当前会话上下文。** 所有相关文件都必须显式读取，包括 PRD（含技术方案）、requirements、全局标准、git diff 等。
 
 ### 3. 按 stage 执行审查
 
@@ -157,19 +152,21 @@ sources:
 | 范围 | 范围内/范围外是否明确？ |
 | 用户故事 | 是否覆盖主路径和关键边界？ |
 
-#### stage=tech：审查技术方案
+**技术方案（PRD §10-11）审查维度：**
 
 | 维度 | 检查点 |
 |---|---|
-| 对齐 PRD | tech-design 的模块/数据流是否覆盖所有 PRD 稳定块？ |
+| 对齐稳定块 | §10 的模块/数据流是否覆盖所有稳定块？ |
 | 模块边界 | 每个模块职责是否单一？ |
-| 接口契约 | 跨模块调用是否有输入/输出/错误/副作用四要素？ |
-| 测试 seams | 每个稳定块是否有清晰 seam？ |
+| 接口契约 | 跨模块调用是否有输入/输出/错误/副作用四要素（§10.4）？ |
+| 测试 seams | 每个稳定块是否在 §11.1 有清晰 seam？ |
 | 复杂度 | 是否过度设计？是否有更简方案？ |
-| 风险 | 风险与回流点是否明确？ |
+| 风险 | §10.6 风险与回流点是否明确？ |
 | ADR 覆盖 | 满足 ADR 三条件的决策是否已写入 `adr/`？是否与已有 ADR 冲突？ |
 | 术语一致性 | 方案中的术语是否与 `CONTEXT.md` 一致？ |
 | 标准 | 是否违反项目架构/标准？ |
+
+**缺口处理**：审查中发现 PRD 缺口时，这是对话阶段之外的**第二补缺口场所**——可从上下文推导的就地补进 `prd.md`；需用户判断的按四分法归类（就地补 / 移动块 §5 / 新建 story / 范围外 §12），不允许悬空带入结晶。
 
 #### stage=code：审查实现代码
 
@@ -178,7 +175,7 @@ sources:
 | 维度 | 检查点 |
 |---|---|
 | diff 范围 | 是否只包含预期改动？是否误改测试文件？ |
-| 对齐契约 | 实现是否与 requirements.md + tech-design.md 一致？ |
+| 对齐契约 | 实现是否与 requirements.md + prd.md §10-11 一致？ |
 | 代码质量 | 明显反模式：硬编码、空 catch、重复代码、过大函数、深嵌套 |
 | 标准符合 | 是否违反 `STANDARDS.md`、项目约定、`checklists/` 中的清单？ |
 | 范围外 | 是否顺手实现了 PRD 范围外功能？ |
@@ -233,7 +230,7 @@ sources:
 
 ### 6. 不自动修改任何产物
 
-`/review` 只输出报告，不改 PRD、tech-design、代码或测试。修改由人在后续会话中完成。
+`/review` 只输出报告，不改 PRD（含技术方案）、代码或测试。修改由人在后续会话中完成。
 
 ## 纪律
 
@@ -241,7 +238,7 @@ sources:
 - **新视角优先**：如果可能，在新会话中调用，减少上下文污染。
 - **失败项必须显性处理**：人不能对 FAIL 项视而不见，必须选择修或接受。
 - **建议回流但不强制**：review 报告可以建议回流，最终回流决策由人做。
-- **ADR 是硬约束**：stage=tech 和 stage=code 必须检查实现与已有 ADR 是否冲突。
+- **ADR 是硬约束**：stage=prd 和 stage=code 必须检查实现与已有 ADR 是否冲突。
 - **CodeGraph 是辅助**：stage=code 启用 CodeGraph 时，用影响面分析补充人工审查，但不替代代码语义判断。
 
 ## 与参考项目的差异

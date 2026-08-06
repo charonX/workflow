@@ -324,8 +324,10 @@ node scripts/design-system/record-asset.mjs .aiassist/stories/<id>/ux <flow>.htm
 
 DESIGN 阶段完成后，不要直接进入最终验收。正确顺序是：
 
-1. 更新 `workflow-state.yaml`，把 `phase` 设为 `TECH-DESIGN`。
-2. 由 `/story` 路由到 `/tech-design`，继续技术方案设计。
+1. 更新 `workflow-state.yaml`，把 `phase` 设为 `DOMAIN-MODEL`（统一领域术语）。
+2. 由 `/story` 路由到 `/domain-model`；统一术语后：
+   - `PRD §9=complex` → 进入 `TECH-DESIGN`（`/tech-design` 深潜补全 `prd.md` §10）。
+   - `simple` → 直接进入 `CRYSTALLIZE`。
 3. 后续依次经过 `CRYSTALLIZE` → `TEST` → `ASSERTION-SIGNOFF` → `BUILD` → `QA` → `BUG`（如有缺陷）→ `REFLECT`。
 4. BUILD 和 QA 都完成后，进入 `/reflect` 做最终验收；如实现偏离 HTML 原型，通过 `/bug` 登记为 `code-defect` 修复。
 

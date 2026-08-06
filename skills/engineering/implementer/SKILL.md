@@ -22,9 +22,8 @@ sources:
 ## 输入
 
 - `.aiassist/stories/<id>/workflow-state.yaml`
-- `.aiassist/stories/<id>/prd.md`
+- `.aiassist/stories/<id>/prd.md`（含 §10 技术方案、§11 测试决策；无独立 `tech-design.md`）
 - `.aiassist/stories/<id>/requirements.md`
-- `.aiassist/stories/<id>/tech-design.md`（如有）
 - `.aiassist/stories/<id>/signoff.md`
 - `.aiassist/stories/<id>/ux/*.html`（如有 UX 原型，作为视觉/结构参照）
 - `.aiassist/stories/<id>/ux/_d_meta.json`（资产注册表 + 设计系统绑定）
@@ -61,13 +60,12 @@ sources:
 
 在调度任何子代理之前，父代理必须先完整阅读：
 
-1. `prd.md`：story 初衷和用户痛点
+1. `prd.md`：story 初衷、用户痛点，以及 §10 技术方案的模块边界、数据流、接口契约
 2. `requirements.md`：所有 REQ-ID、验收标准、capability/entity、seam、测试路径
-3. `tech-design.md`：模块边界、数据流、接口契约
-4. `signoff.md`：人已签核的断言范围和约束
-5. `workflow-state.yaml`：当前 phase、attempt、slices、history
-6. `ux/*.html`、`_d_meta.json`、`_ds_manifest.json`、`_ds_prompt.md`（如有 UX 原型）
-7. `.aiassist/global/CONTEXT.md`、`business-capabilities.md`、`adr/`、`codegraph.json`
+3. `signoff.md`：人已签核的断言范围和约束
+4. `workflow-state.yaml`：当前 phase、attempt、slices、history
+5. `ux/*.html`、`_d_meta.json`、`_ds_manifest.json`、`_ds_prompt.md`（如有 UX 原型）
+6. `.aiassist/global/CONTEXT.md`、`business-capabilities.md`、`adr/`、`codegraph.json`
 
 父代理应简要记录：
 - 本 story 涉及哪些 capability/entity
@@ -99,7 +97,7 @@ sources:
    - 使用 Agent 工具派发 **PRD 对齐子代理**（见下文"PRD 对齐子代理"），对抗式检查 PRD 操作流、验证规则、错误状态是否已在实现中完整表达。
    - 如果可追溯性审查或 PRD 对齐子代理发现缺口：
      - 不派发 refactor subagent，不标记 slice 完成，不进入下一个 slice。
-     - 将缺口按 `/bug` 做初步分类（缺实现 / 缺测试 / PRD 或 tech-design 错误等）。
+     - 将缺口按 `/bug` 做初步分类（缺实现 / 缺测试 / PRD（含技术方案）错误等）。
      - 向用户报告 blocker，建议先补缺口（继续 `/implementer` 或回流 `/to-prd` / `/tech-design`）。
      - 停止当前 `/implementer` 调用。
 5. 如果 PRD 意图对齐检查也通过：
@@ -154,7 +152,7 @@ sources:
 
 1. `prd.md`：本 slice 要解决的用户痛点和业务范围。
 2. `requirements.md`：本切片对应的 REQ-ID、验收标准、capability/entity。
-3. `tech-design.md`：相关模块边界、数据流、接口契约、测试 seams。
+3. `prd.md` §10-11：相关模块边界、数据流、接口契约、测试 seams。
 4. `signoff.md`：人已签核的断言范围和已知约束。
 5. 测试文件：理解输入/输出/断言。
 6. `ux/_d_meta.json` 与 `ux/*.html`：视觉/结构参照；子代理必须读取并对齐。
@@ -186,7 +184,7 @@ sources:
 - 对照 HTML 原型实现视觉与结构，无法完全对齐时记录偏差。
 - 实现完成后跑**全套业务测试**。
 - 全部通过后再 commit；commit 消息格式：`[build] <slice 名称>`。
-- **测试全绿只是最低门槛**：子代理必须确认实现同时满足 PRD 意图、tech-design 契约、UX HTML 结构/行为，不能仅为通过测试而硬凑。
+- **测试全绿只是最低门槛**：子代理必须确认实现同时满足 PRD 意图、`prd.md` §10 技术方案契约、UX HTML 结构/行为，不能仅为通过测试而硬凑。
 - **PRD→代码 可追溯性表**：子代理必须在 `build-progress.md` 中为本 slice 写入一张表，逐条列出本 slice 涉及的 PRD 意图（操作流步骤、验证规则、错误状态、UX 结构/行为等），并给出对应的实现文件、测试文件和状态（`COVERED` / `PARTIAL` / `GAP`）。不允许全部留白或用模糊描述填充。
 - **禁止以测试通过为由跳过 PRD 定义的行为**：错误状态、表单校验、分支流程、副作用/回滚必须按 PRD 实现，不能因现有测试未覆盖就忽略。
 - 如果 CodeGraph 已启用，commit 后运行 `codegraph sync` 更新图谱。
@@ -216,13 +214,13 @@ sources:
 - 本 slice 在 story 中的位置、对应的 REQ-ID 列表。
 - 本 slice 已修改的文件列表（严格范围锁）。
 - 原始 diff（重构前的状态）。
-- `requirements.md` 和 `tech-design.md` 中相关契约。
+- `requirements.md` 和 `prd.md` §10-11 中相关契约。
 - `.aiassist/global/checklists/testing.md` 作为测试纪律参考。
 
 #### 2. 输入读取顺序
 
 1. `requirements.md`：本 slice 对应的 REQ-ID、验收标准。
-2. `tech-design.md`：相关模块边界、数据流、接口契约。
+2. `prd.md` §10：相关模块边界、数据流、接口契约。
 3. 当前 slice 的 diff。
 4. `.aiassist/global/checklists/testing.md`。
 
@@ -324,7 +322,7 @@ pytest
 
 1. `prd.md`：重点读第 6-8 节，明确本 slice 应实现的 PRD 意图。
 2. `requirements.md`：本 slice 对应的 REQ-ID、验收标准。
-3. `tech-design.md`：相关模块边界、数据流、接口契约。
+3. `prd.md` §10：相关模块边界、数据流、接口契约。
 4. 当前 slice 的 diff（实现代码）。
 5. 相关业务测试文件。
 6. `build-progress.md` 中的 PRD→代码 可追溯性表（子代理此前写入）。
@@ -344,7 +342,7 @@ pytest
 - 状态：`ALIGNED` / `MISALIGNMENT_FOUND` / `UNCERTAIN`
 - 对齐项清单（逐条说明 PRD 意图 → 实现文件 → 测试覆盖，状态为 `COVERED`）
 - 缺口项清单（PRD 意图 → 发现的问题 → 建议分类）
-  - 分类建议：`missing-implementation`（实现漏了）、`missing-test`（测试没覆盖但实现可能有）、`prd-error`（PRD 自身矛盾或不清晰）、`tech-design-gap`（技术方案缺 seam 或契约）
+  - 分类建议：`missing-implementation`（实现漏了）、`missing-test`（测试没覆盖但实现可能有）、`prd-error`（PRD 自身矛盾或不清晰）、`spec-gap`（prd.md §10/§11 缺 seam 或契约）
 - 任何 `UNCERTAIN` 项必须说明需要人确认什么
 
 ### 父代理处理
@@ -363,12 +361,12 @@ PRD 对齐子代理返回后，父代理必须：
 ## 纪律
 
 - **父代理不写实现代码**：父代理只读文档、调度、验证、更新元数据。
-- **写代码前必须先读设计上下文**：`prd.md` → `requirements.md` → `tech-design.md` → `signoff.md` → 测试 → UX HTML。禁止没读文档就探索代码或写实现。
+- **写代码前必须先读设计上下文**：`prd.md`（含技术方案）→ `requirements.md` → `signoff.md` → 测试 → UX HTML。禁止没读文档就探索代码或写实现。
 - **对业务测试只读**：禁止修改由 `/test-author` 生成、人已签核的业务测试文件。
 - **单元测试是 TDD 工具**：子代理可在实现过程中自由写、改、删单元测试，它们不进入契约。
 - **diff 碰业务测试 = 本轮作废**。
 - **每轮跑全套业务测试**：停机条件是"全套业务测试绿"，但绿只是最低门槛。
-- **测试全绿 ≠ 实现正确**：绿了之后必须对照 PRD、tech-design、UX HTML 检查意图是否完整实现。禁止为绿而写特判、mock 掉真实行为、或阉割功能。
+- **测试全绿 ≠ 实现正确**：绿了之后必须对照 PRD（含技术方案）、UX HTML 检查意图是否完整实现。禁止为绿而写特判、mock 掉真实行为、或阉割功能。
 - **PRD 意图对齐是 slice 完成的必要条件**：只有 PRD 对齐子代理报告 `ALIGNED`，slice 才能标记完成。
 - **不擅自放宽断言**。
 - **不跳过看起来"无关"的失败**。

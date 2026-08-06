@@ -27,3 +27,5 @@
 
 - 2026-07-10：取消 feel-signoff，`/signoff` 只保留 assertion 阶段。
 - 2026-07-05：合并 tac-assertion-signoff 与 tac-feel-signoff 为 tac-signoff。
+- 2026-08-06：PRD 与 tech-design 合并（`design/adr/0004`）：签核清单补"PRD §10 技术方案完整性（complex 必须完整）"。
+- 2026-08-06：快速收敛哲学（`design/adr/0005`）：签核收敛到**只签高风险项**（初衷/跨模块契约/expected 值/安全边界/GAP 归类），其余改 AI 自检；移除 `prd-gap-report.md` 检查，改为"每个 GAP 已归类"。

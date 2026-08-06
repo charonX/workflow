@@ -1,7 +1,7 @@
 # 架构概览
 
 > 本文件只保留高层模块图和 ADR 索引。
-> 具体架构决策记录在 `adr/` 目录中，由 `/tech-design` 和 `/reflect` 维护。
+> 具体架构决策记录在 `adr/` 目录中，由 `/to-prd`、`/tech-design` 和 `/reflect` 维护。
 
 ---
 

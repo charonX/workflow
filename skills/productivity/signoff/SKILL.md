@@ -1,6 +1,6 @@
 ---
 name: signoff
-description: 外层设计循环的终点（门 1）。人在实现前签核所有断言，把契约交给 AI 实现。
+description: 外层设计循环的终点（门 1）。人在实现前签核高风险断言（初衷、跨模块契约、expected 值、安全边界），其余由 AI 自检，把契约交给 AI 实现。
 sources:
   - reference/gstack/plan-eng-review/SKILL.md
   - reference/gstack/design-review/SKILL.md
@@ -39,30 +39,45 @@ sources:
 
 ### 执行步骤
 
-1. **检查 PRD 完整性状态**：确认不存在 `.aiassist/stories/<id>/prd-gap-report.md`。若存在，签核必须失败，提示用户先回流 `/to-prd` 补全缺口。
-2. **扫描 REQ 覆盖**：每个 REQ-ID 是否至少有一个测试？
-3. **扫描测试头部**：每个测试文件是否有 `REQ-TRACE`、`REQ-VERSION`、`CAPABILITY-TRACE`、`ENTITY-TRACE`？
-4. **扫描 capability/entity 覆盖**：根据 `business-capabilities.md`，检查本次 REQ 是否覆盖了计划中的能力/实体；新增 capability/entity 是否已在能力地图中登记。
-5. **扫描占位符**：是否还有 `// TODO: HUMAN ASSERTION`？
-6. **审查预期值来源**：向用户确认每个关键预期值是人算/真实 JSON/已签标准，而非代码输出。
-7. **展示检查清单**：让用户逐项确认。
-8. **生成/更新 signoff 文件**：填写 `signoff.md` 中 Assertion 部分的 REQ-ID 列表、capability/entity 覆盖摘要和断言摘要，确保所有检查清单项已勾选。
-9. **提交签核 commit**：用户确认后，执行：
+1. **确认 PRD 缺口已归类**：读 `prd.md` §14 自检查表，每个 GAP 必须有明确去处——就地补 / 移动块（§5）/ 新建 story / 范围外（§12），**不允许悬空**。若有未归类 GAP，先与用户确认归类，再继续。
+2. **AI 自检（全量，结果写入 signoff.md 供人抽查）**：
+   - 每个 REQ-ID 至少有一个测试。
+   - 每个测试文件有 `REQ-TRACE`、`REQ-VERSION`、`CAPABILITY-TRACE`、`ENTITY-TRACE`。
+   - capability/entity 与 `business-capabilities.md` 一致。
+   - 无 `// TODO: HUMAN ASSERTION` 占位。
+   - 无快照当判定依据。
+   - 边界/错误 case 已覆盖。
+3. **人确认（高风险，逐项）**：
+   - **初衷锚定**：`prd.md` §1 问题陈述仍是用户痛点。
+   - **跨模块接口契约**：§10.4 的契约（输入/输出/业务错误/系统错误/副作用）准确。
+   - **expected 值来源**：人手算 / 真实 JSON / 已签标准，而非代码输出。
+   - **安全边界**（如有涉及）。
+   - **每个 GAP 的去处**（步骤 1 结果）。
+4. **展示给用户**：先给"人确认高风险清单"，再给"AI 自检结果摘要（供抽查）"。
+5. **生成/更新 signoff 文件**：填写 `signoff.md` 中 Assertion 部分的 REQ-ID 列表、capability/entity 覆盖摘要、断言摘要，以及"人确认 / AI 自检"两段结果。
+6. **提交签核 commit**：用户确认后，执行：
    ```bash
    git add .aiassist/stories/<id>/signoff.md
    git commit -m "[test] assertion-signoff for <story-id>"
    ```
-10. **更新 workflow-state**：标记 assertion-signoff 通过，解锁 BUILD。
+7. **更新 workflow-state**：标记 assertion-signoff 通过，解锁 BUILD。
 
 ### 检查清单
 
-- [ ] 不存在未关闭的 `prd-gap-report.md`（PRD 完整性已通过 `/crystallize` 审查）。
-- [ ] PRD 第 6-8 节（操作流、验证规则、错误状态）已覆盖或已声明 N/A。
+**A. 人确认（高风险项，逐项勾选）**
+
+- [ ] PRD §1 初衷（问题陈述）仍是用户痛点，未漂移。
+- [ ] 跨模块 REQ 的接口契约（§10.4）准确：输入 / 输出 / 业务错误 / 系统错误 / 副作用。
+- [ ] expected 值来源清晰（人手算 / 已签标准 / 真实 JSON），非代码输出。
+- [ ] 安全边界（如涉及）已确认。
+- [ ] PRD §14 每个 GAP 已归类（就地补 / 移动块 / 新建 story / 范围外），无悬空。
+
+**B. AI 自检（写入 signoff.md，人抽查）**
+
 - [ ] 每个 REQ-ID 都有对应测试。
 - [ ] 每个测试文件都有 `REQ-TRACE`、`REQ-VERSION`、`CAPABILITY-TRACE`、`ENTITY-TRACE`。
 - [ ] 每个 REQ 的 capability/entity 与 `business-capabilities.md` 一致。
 - [ ] 无 `// TODO: HUMAN ASSERTION` 占位。
-- [ ] 预期值来源清晰，非代码输出。
 - [ ] 无快照当判定依据。
 - [ ] 边界/错误 case 已覆盖。
 - [ ] `signoff.md` Assertion 部分已创建并通过 `[test] assertion-signoff for <story-id>` commit 提交。
@@ -74,7 +89,7 @@ sources:
 - **assertion 不通过禁止 BUILD**。
 - 签核 commit 即视为人对"什么算对"承担最终责任。
 - assertion 阶段签核 commit 只应修改 `signoff.md`，不应同时修改测试文件或实现代码。
-- **存在 `prd-gap-report.md` 时禁止签核**：PRD 缺口必须在 `/to-prd` 阶段解决，不能带入 BUILD。
+- **PRD §14 的 GAP 必须显式归类**（补/移动块/新 story/范围外），不能静默带入 BUILD。
 
 ## 与参考项目的差异
 

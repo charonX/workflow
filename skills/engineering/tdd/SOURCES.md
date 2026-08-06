@@ -36,3 +36,4 @@ TDD 是 AI 内层循环的代码纪律，不是工作流阶段。业务测试（
 - 2026-07-09：引入 agent-skills `test-driven-development` 的测试金字塔、测试尺寸、DAMP over DRY、Prove-It Pattern、测试替身优先级、Arrange-Act-Assert。
 - 2026-07-09：将 refactor 移出 `/tdd`，改为由 `/implementer` 的 refactor subagent 处理。
 - 2026-08-02：吸收 superpowers TDD skill 的 `writing-good-tests.md`（v6.2.0）：新增 Name the Break 门函数、Mock 纪律（Exercise the Real Thing、正确层级、完整结构、mock 膨胀→集成测试）、Change Detector 反模式、变异检查。
+- 2026-08-06：PRD 与 tech-design 合并（`design/adr/0004`）：seam 定义与对齐契约引用从 `tech-design.md` 改到 `prd.md` §10-11。

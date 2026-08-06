@@ -41,3 +41,4 @@
 - 2026-07-09：引入 agent-skills `incremental-implementation` 的 Simplicity First、Scope Discipline、One Thing at a Time、Keep It Compilable、Feature Flags、Safe Defaults、Rollback-Friendly 纪律。
 - 2026-07-09：将 refactor 从 `/tdd` 移出，改为 `/implementer` 在每个 slice 后派发 refactor subagent 处理。
 - 2026-07-10：fix subagent 支持 `/bug` 单 bug 修复模式（由 `/bug` 调用，不再读 bug 工件）。
+- 2026-08-06：PRD 与 tech-design 合并（`design/adr/0004`）：输入与读上下文顺序不再含独立 `tech-design.md`，契约改从 `prd.md` §10-11 读取；缺口分类 `tech-design-gap` 更名 `spec-gap`。

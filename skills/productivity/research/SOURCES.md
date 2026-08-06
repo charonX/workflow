@@ -23,3 +23,4 @@
 ## 改动记录
 
 - 2026-07-06：新建 `/research`，补技术调研缺口。
+- 2026-08-06：PRD 与 tech-design 合并（`design/adr/0004`）：定位改为"技术方案设计前使用（complex 走 `/tech-design`）"；只产出笔记，不修改 `prd.md`。

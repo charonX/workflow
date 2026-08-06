@@ -18,6 +18,7 @@ history:
 archive: []
 #  - {attempt: 1, date: 2026-07-03, reason_file: archive/attempt-1/reason.md, root_layer: PRD}
 #    root_layer 取值:THINK / PRD / DESIGN / DOMAIN-MODEL / TECH-DESIGN —— 表示这次回流判定根因活在哪一层。
+#    TECH-DESIGN 语义 = 重做 prd.md §10 技术方案（仅 complex story）。
 
 # 块状态(一挡内按块回流时维护)。
 blocks: {}

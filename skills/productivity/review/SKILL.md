@@ -64,7 +64,7 @@ sources:
 
 | 子代理 | 输入 | 审查维度 | 输出 |
 |---|---|---|---|
-| **code-reviewer** | diff + `prd.md` + `tech-design.md` + `requirements.md` | 正确性、可读性、架构、diff 范围、ADR 对齐、标准符合 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
+| **code-reviewer** | diff + `prd.md` + `tech-design.md` + `requirements.md` | 正确性、可读性、架构、diff 范围、ADR 对齐、标准符合（含代码异味基线） | CRITICAL/IMPORTANT/SUGGESTION 列表 |
 | **security-auditor** | diff + `checklists/security.md` + `tech-design.md` | 输入验证、鉴权/授权、secrets、依赖 CVE、OWASP Top 10、LLM 安全 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
 | **performance-auditor** | diff + `tech-design.md` + `checklists/performance.md` | N+1 查询、无界操作、bundle 大小、渲染模式、缓存、长任务 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
 | **test-engineer** | diff + 测试文件 + `requirements.md` + `checklists/testing.md` | 覆盖缺口、测试质量、边界 case、REQ-测试可追溯性 | CRITICAL/IMPORTANT/SUGGESTION 列表 |
@@ -187,7 +187,31 @@ sources:
 | 影响面 | 如启用 CodeGraph，可查询变更函数/模块的依赖关系，检查是否有未覆盖的影响面 |
 | 未处理项 | 是否有未处理 TODO、FIXME、临时代码？ |
 
-**Panel 模式（`--mode=panel`）**：上述维度由 4 个 specialist 子代理并行审查，父代理负责汇总。默认模式不派生子代理。
+##### 代码异味基线（Fowler smell baseline）
+
+`stage=code` 的"标准符合"维度在 `STANDARDS.md` / `checklists/` 之上，始终携带一组固定的 Fowler 代码异味基线（《Refactoring》ch.3），即使项目没写任何标准也适用。两条绑定规则：
+
+- **仓库标准优先**：项目文档化的标准永远优先；若基线会误报被标准认可的做法，抑制该异味。
+- **永远只是判断**：每个异味是带标签的启发式（"疑似 Feature Envy"），不是硬性违规；工具已强制的项直接跳过。
+
+对照 diff 匹配，读作 *是什么 → 怎么修*：
+
+| 异味 | 是什么 | 怎么修 |
+|---|---|---|
+| **Mysterious Name** | 函数/变量/类型名不揭示其作用或含义 | 重命名；取不出诚实名字说明设计本身浑浊 |
+| **Duplicated Code** | 同一逻辑形状在 diff 的多处出现 | 提取共享形状，两处调用 |
+| **Feature Envy** | 方法伸手够别的对象的数据，超过自己的 | 把方法移到它羡慕的数据所在处 |
+| **Data Clumps** | 同一组字段/参数反复结伴出现（要诞生的类型） | 打包成独立类型，整体传递 |
+| **Primitive Obsession** | 基础类型/字符串顶替了应独立成型的领域概念 | 给概念建独立小类型 |
+| **Repeated Switches** | 对同一类型的 switch/if 级联在变更里反复出现 | 用多态，或一个双方共享的 map 替代 |
+| **Shotgun Surgery** | 一次逻辑改动被逼着散落改多个文件 | 把一起变的收进一个模块 |
+| **Divergent Change** | 一个文件/模块为多种无关原因被改动 | 拆分，让每个模块只为一个原因变 |
+| **Speculative Generality** | 为规范没有的需求加的抽象/参数/钩子 | 删掉，内联回来，直到真有需要 |
+| **Message Chains** | 过长的 `a.b().c().d()` 导航链，调用方不该依赖 | 用首对象上的一个方法藏起这段行走 |
+| **Middle Man** | 类/函数大部分只是转发给下游 | 砍掉，直接调真实目标 |
+| **Refused Bequest** | 子类/实现者忽略或推翻大部分继承的东西 | 放弃继承，改用组合 |
+
+**Panel 模式（`--mode=panel`）**：上述维度由 4 个 specialist 子代理并行审查，父代理负责汇总。默认模式不派生子代理。异味基线由 `code-reviewer` 子代理在其"标准符合"轴上应用，其余三个子代理不做重复审查。
 
 ### 4. 生成 review 报告
 

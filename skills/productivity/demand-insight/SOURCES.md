@@ -28,9 +28,11 @@
 
 - superpowers `brainstorming` 更新时，检查"探索上下文 → 澄清 → 提出方案 → 批准"流程。
 - mattpocock 若更新提问技术，检查"执行步骤"中的追问维度。
+- mattpocock `batch-grill-me`（in-progress，07-16 起）转正后评估：一次问完整条 frontier + 事实查找派子 agent 不阻塞。我们当前是"一次一问、展示思考"，批量模式是相反节奏，不急于吸收，先观察。
 - gstack 若更新 CEO 审查清单，检查"谁/为什么/边界/矛盾/野心"覆盖。
 - agent-skills `interview-me` 更新时，检查开场假设、Q+GUESS、停止条件、confirmed intent 格式。
 
 ## 改动记录
 
 - 2026-07-09：引入 agent-skills `interview-me` 的置信度 + GUESS、"想要 vs 应该想要"探测、95% 停止条件、confirmed intent 输出格式。
+- 2026-08-06：mattpocock 同步评估后，将 `batch-grill-me`（批量 frontier 访谈）记入观察清单，暂不吸收。

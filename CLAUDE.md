@@ -194,7 +194,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 我想…… | 参考 |
 |--------|------|
 | 验证想法或找到切口 | `reference/superpowers/skills/brainstorming/` 或 `reference/gstack/office-hours/` |
-| 把计划盘问到锋利 | `reference/mattpocock/skills/productivity/grill-me/` 或 `reference/mattpocock/skills/engineering/grill-with-docs/` |
+| 把计划盘问到锋利 | `reference/mattpocock/skills/productivity/grilling/` 或 `reference/mattpocock/skills/engineering/grill-with-docs/` |
 | 生产级需求访谈（置信度 + GUESS） | `reference/agent-skills/skills/interview-me/` |
 | 探索 UI 变体 | `reference/gstack/design-shotgun/` |
 | 从零建立设计系统 | `reference/gstack/design-consultation/` |

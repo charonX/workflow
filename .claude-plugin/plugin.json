@@ -39,6 +39,9 @@
     "./skills/engineering/qa-runner",
     "./skills/engineering/browser-verify",
     "./skills/engineering/tdd",
-    "./skills/engineering/test-author"
+    "./skills/engineering/test-author",
+    "./skills/tools/improve-codebase-architecture",
+    "./skills/tools/wizard",
+    "./skills/tools/resolving-merge-conflicts"
   ]
 }

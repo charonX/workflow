@@ -185,6 +185,7 @@ rm -rf .claude/skills/*
 cp -R /path/to/workflow/skills/productivity/* .claude/skills/
 cp -R /path/to/workflow/skills/engineering/* .claude/skills/
 cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
+cp -R /path/to/workflow/skills/tools/* .claude/skills/
 ```
 
 ## 使用
@@ -230,6 +231,16 @@ cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 | `/implementer` | BUILD | 内层实现循环核心；默认子代理实现切片，父代理调度验证；针对已签核测试写代码，对业务测试只读；内部用 `/tdd` RED -> GREEN；每个 slice 绿后由 refactor subagent 做一轮安全重构 |
 | `/qa-runner` | QA | 内层实现循环终点验证；跑 E2E / 回归（Playwright）、输出 QA 报告；失败时建议 `/bug`；浏览器项目可选调用 `/browser-verify` |
 | `/browser-verify` | QA | 用 Chrome DevTools MCP 做运行时浏览器验证（Console / DOM / Network / A11y / 截图 / 性能），输出客观证据供 bug 处理和 REFLECT 参考 |
+
+### 独立工具
+
+不绑定循环流程、不参与签核的独立工具类 skill，按需单独触发：
+
+| Skill | 阶段 | 用途 |
+|---|---|---|
+| `/improve-codebase-architecture` | — | 扫描既有代码库找架构深化机会（shallow → deep module），产出 HTML 报告并轮询收敛决策 |
+| `/wizard` | — | 生成交互式 bash wizard，引导人完成只有人能做的步骤（凭据、CI secrets、第三方后台） |
+| `/resolving-merge-conflicts` | — | 解决进行中的 git merge / rebase 冲突（找 primary sources、preserve both intents、绝不 `--abort`） |
 
 ## 产物目录
 

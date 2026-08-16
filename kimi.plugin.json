@@ -21,7 +21,8 @@
   "skills": [
     "./skills/productivity/",
     "./skills/engineering/",
-    "./skills/maintenance/"
+    "./skills/maintenance/",
+    "./skills/tools/"
   ],
   "interface": {
     "displayName": "循环工作流",

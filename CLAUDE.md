@@ -53,8 +53,12 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 │   │   ├── qa-runner/
 │   │   ├── browser-verify/    # 运行时浏览器验证（DevTools MCP）
 │   │   └── tdd/               # 内层 RED -> GREEN 纪律
-│   └── maintenance/           # 工作流维护 skill
-│       └── sync-refs/
+│   ├── maintenance/           # 工作流维护 skill
+│   │   └── sync-refs/
+│   └── tools/                 # 独立工具 skill（不绑定循环，按需触发）
+│       ├── improve-codebase-architecture/  # 扫描代码库深化机会 → HTML 报告 → 轮询
+│       ├── wizard/            # 交互式 bash wizard 引导人工步骤
+│       └── resolving-merge-conflicts/      # git 冲突解决
 ├── templates/
 │   ├── claude/                # 追加到目标项目 CLAUDE.md 的附录
 │   ├── global/                # .aiassist/global/ 初始化模板（含 checklists/）
@@ -186,6 +190,9 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 从 UX 生成开发者交接包 | `/design-handoff` |
 | 捕获经验教训并更新知识 | `/reflect` |
 | 针对技术/API/库问题做带引用的调研 | `/research` |
+| 扫描既有代码库找架构深化机会，产出报告并轮询收敛 | `/improve-codebase-architecture` |
+| 把"只有人能做的步骤"固化成交互式 bash wizard | `/wizard` |
+| 解决进行中的 git merge/rebase 冲突 | `/resolving-merge-conflicts` |
 | 手动审查 PRD/技术方案/代码；`--stage=code --mode=panel` 启用 specialist 子代理并行审查 | `/review` |
 | 同步参考项目并吸收上游变更 | `/sync-refs` |
 
@@ -252,6 +259,7 @@ cd /path/to/your-project
 cp -R /path/to/workflow/skills/productivity/* .claude/skills/
 cp -R /path/to/workflow/skills/engineering/* .claude/skills/
 cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
+cp -R /path/to/workflow/skills/tools/* .claude/skills/
 ```
 
 ## 声音与风格

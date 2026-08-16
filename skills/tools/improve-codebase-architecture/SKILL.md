@@ -1,11 +1,10 @@
 ---
 name: improve-codebase-architecture
-description: 扫描代码库找"深化机会"（shallow→deep module），产出自包含 HTML 报告，再轮询 grilling 用户选中的候选。用 module/interface/seam/depth 词汇做测试性与 AI 可导航性视角的架构评审。不绑定 story，独立触发。
+description: 扫描既有代码库找架构深化机会（shallow→deep module），产出 HTML 报告，用户圈定要落地的候选并创建 N 个 story 起点。不做实施——深化在 story 流程内完成。独立触发，不绑定 story。
 sources:
   - reference/mattpocock/skills/engineering/improve-codebase-architecture/SKILL.md
   - reference/mattpocock/skills/engineering/codebase-design/SKILL.md
-  - reference/mattpocock/skills/engineering/codebase-design/DEEPENING.md
-  - reference/mattpocock/skills/productivity/grilling/SKILL.md
+  - architecture-vocabulary.md
 ---
 
 # improve-codebase-architecture
@@ -15,8 +14,8 @@ sources:
 用户想系统性地改善**既有代码库**的架构、可测试性或 AI 可导航性，而非设计新功能时：
 
 - "我们的代码库哪里最该重构？""哪个模块最难测 / 最难让 AI 读懂？"
-- 想给一段历史代码找一个深化方向（把浅层模块合并成 deep module）。
-- 想用报告 + 访谈的方式把架构摩擦点摆到桌面上再逐个决定。
+- 想给一段历史代码找深化方向（把浅层模块合并成 deep module）。
+- 想先看清架构摩擦点，再决定要不要立项去做。
 
 **不调用的情况**：
 
@@ -33,42 +32,13 @@ sources:
 ## 输出
 
 1. **HTML 报告**：写入系统临时目录 `$TMPDIR`（fallback `/tmp` 或 `%TEMP%`），文件名 `architecture-review-<timestamp>.html`。**不落地 repo**。写完自动打开（`open` / `xdg-open` / `start`）并告知绝对路径。
-2. **副作用**（grilling 决策落地时）：
-   - 为深化模块命名了新领域概念 → 更新 `CONTEXT.md`（不存在则 lazy 创建）。
-   - 用户以承重理由拒绝候选 → 询问是否记为 ADR，避免未来评审重复建议同一方案。
+2. **N 个 story 起点**：用户从报告圈定的每个候选 → 创建 `.aiassist/stories/<id>/workflow-state.yaml`（初衷 = 该深化机会），供用户逐个走 `/story` 在流程内实施深化。
 
-## 架构词汇表
+## 架构词汇
 
-整个 skill 的语言基础。**用这些术语，禁止漂移**到 component/service/API/boundary。
+本 skill 用 **deep-module 词汇**做语言基础——完整定义见 [architecture-vocabulary.md](../architecture-vocabulary.md)（共享公共词汇文件，供本 skill 与未来架构类 skill 复用；`/tech-design` 也引用它）。执行时用它命名与评估，禁止漂移。
 
-| 术语 | 定义 | 避免 |
-|---|---|---|
-| **Module** | 任何有 interface + implementation 的东西，刻意 scale-agnostic（函数/类/包/跨层切片） | unit, component, service |
-| **Interface** | 调用者正确使用所需知道的一切：签名 + 不变量、顺序约束、错误模式、配置、性能特征 | API, signature（太窄） |
-| **Implementation** | 模块内部。与 Adapter 区分：adapter 描述"角色"，implementation 描述"内容" | — |
-| **Depth** | interface 处的 leverage：每单位需要学习的 interface 能驱动多少行为。deep = 大行为藏在小 interface 后；shallow = interface 复杂度≈implementation | 行数比（Ousterhout，奖励 padding） |
-| **Seam** | 不改代码就能改变行为的位置；interface 所在之处 | boundary（与 DDD bounded context 冲突） |
-| **Adapter** | 在 seam 处满足 interface 的具体物，描述角色而非内容 | — |
-| **Leverage** | 调用者收益：一个 implementation 回报 N 个调用点 + M 个测试 | "easier to maintain" |
-| **Locality** | 维护者收益：变更/bug/知识/验证集中一处，fix once, fixed everywhere | "cleaner code" |
-
-**四条原则**：
-
-1. **Depth 是 interface 的属性，不是 implementation 的**。模块可以有内部 seam（私有、供自身测试）与外部 seam（interface 处）。
-2. **Deletion test**：假想删掉模块——复杂度消失说明是 pass-through；复杂度在 N 个调用者处重现说明它物有所值。
-3. **The interface is the test surface**：调用者和测试过同一个 seam；想"绕过 interface 测内部"说明模块形状错了。
-4. **One adapter = hypothetical seam, two = real**：没有真实变化就不要引入 seam。
-
-**依赖四分类**（评估候选时给依赖归类，决定深化后的模块怎么跨 seam 测试）：
-
-| 类别 | 判定 | 测试策略 |
-|---|---|---|
-| in-process | 纯计算/内存态，无 I/O | 直接合并，透过新 interface 测，无需 adapter |
-| local-substitutable | 有本地替身（PGLite、内存文件系统） | 用替身跑测试；seam 内部化，模块外部无 port |
-| remote-but-owned（ports & adapters） | 自己的跨网络服务 | 在 seam 定义 port；逻辑在 deep module，transport 注入为 adapter；测试用 in-memory adapter |
-| true-external（mock） | 第三方服务（Stripe/Twilio） | 注入为 port；测试用 mock adapter |
-
-**测试策略：replace, don't layer** —— 深化模块的 interface 测试就位后，删掉浅层模块的旧单测（变废了）；新测试断言 interface 可观察结果，不测内部状态；测试应能存活于内部重构（若实现变了测试就要变，说明在测 interface 之外）。
+**用词纪律**：只使用 module / interface / implementation / depth / deep / shallow / seam / adapter / leverage / locality；禁止替换为 component/service/unit、API/signature、boundary、layer/wrapper。Wins bullets 用词汇表术语命名收益，不写 "easier to maintain" 或 "cleaner code"。
 
 ## 执行步骤
 
@@ -98,24 +68,27 @@ sources:
 
 **ADR 冲突**：候选与既有 ADR 矛盾时，只在摩擦真实到值得重开 ADR 时才浮出，并在卡片里明确标注（"contradicts ADR-0007 — but worth reopening because…"）。不把 ADR 禁止的每个理论重构都列出来。
 
-**这一步不要提 interface 方案。** 写完后问用户："你想深挖哪个？"
+**这一步只呈现机会，不提 interface 方案。** 深化方案在 story 流程内定。
 
-### 3. 轮询 grilling
+### 3. 落地：圈定候选，创建 story
 
-用户选中候选后，用 **round-based frontier** 模式推进（与 `/demand-insight` 的轮询澄清同构，这里用于架构决策树）：
+用户在报告上圈定要落地的候选——**可多选，N 个**（一个深化机会 = 一个 story）。对每个选中的候选：
 
-- 把对话建模为 **design tree**——每个决策分叉出悬挂决策。
-- **frontier** = 前置已全部 settled、现在就能问的问题。**一轮问完整条 frontier**，每题编号 + 给出推荐答案。
-- 用户回答后重算 frontier 进下一轮；依赖本轮未决答案的问题留到更晚的轮次。
-- 事实自己查（派 sub-agent 找环境事实，不阻塞；运行中的探索算"未决前置"，只有下游问题等它）。
-- 结束条件 = frontier 为空且用户确认达成共识，**在此之前不得行动**。
+1. **生成 story-id**：`日期-短描述`（如 `2026-08-16-deepen-order-intake`）。短描述用深化动作命名，不用候选序号。
+2. **创建 story 骨架**：`.aiassist/stories/<id>/workflow-state.yaml`，结构仿 `/story` 初始化（`templates/story/workflow-state.yaml.template`）：
+   - `story_id`: `<id>`
+   - `intention`: 该深化机会的**一句话痛点**，用词汇表术语，**非方案**（例："Order intake pipeline 是 6 个浅层模块，Pricing 逻辑在 seam 处泄漏，改动一次跨 N 处"）
+   - `phase: THINK`（初衷已明确，进入需求/方案细化）
+   - `created` + `history` 记录一条创建记录
+3. **不要在 story 内预填方案**：深化方案、模块边界、接口契约、测试 seam 都留给该 story 的 `/to-prd`、`/tech-design`、`/crystallize` 流程。
 
-决策落地时的副作用（内联规则）：
+全部创建后，向用户汇报：
 
-- 给深化模块命名了新概念且不在 `CONTEXT.md` → 更新 `CONTEXT.md`（lazy 创建）。
-- 谈话中澄清了模糊术语 → 就地更新 `CONTEXT.md`。
-- 用户以承重理由拒绝候选 → 问："要记为 ADR 吗？免得未来评审再提同案。"只在该理由对未来探索者确实必要才 offer（跳过"现在不值得"这类短暂理由与自明的理由）。
-- 想探索替代 interface → 并行 sub-agent 各出激进不同的 interface 方案，按 depth / locality / seam placement 对比再给意见。
+- 报告路径（如需重看）
+- 创建了 N 个 story：列出 story-id + 初衷一句话
+- 下一步：逐个 `/story` 进入，从 PRD 开始推进深化；用户可自行决定每个 story 的优先级与先后
+
+**本 skill 到此为止**——不做 grilling 收敛方案、不更新 CONTEXT.md、不写 interface、不写测试。发现与落地交给用户，实施归 story 流程。
 
 ## 输出格式
 
@@ -128,31 +101,31 @@ HTML 报告的完整规范见 [HTML-REPORT.md](HTML-REPORT.md)。要点：
 
 ## 纪律
 
-1. **术语纪律**：只用 module/interface/implementation/depth/deep/shallow/seam/adapter/leverage/locality；禁止替换为 component/service/unit、API/signature、boundary、layer/wrapper。Concision 不是漂移的借口。
-2. **YAGNI 扫描**：范围前置，热点优先；不扫全库。
-3. **不重开 ADR**：除非摩擦真实到值得重开，否则不浮出被 ADR 否决的方案。
-4. **不落地 repo**：HTML 报告只写临时目录；不留架构评审工件在项目里。
-5. **决策是用户的**：只提候选与推荐答案，不下 interface 方案；达成共识前不行动。
-6. **不重复已否决方案**：用户以承重理由拒绝的候选，经 ADR 固化后不再重复建议。
+1. **只发现不实施**：本 skill 止步于"报告 + 圈定 + 建 story 起点"。不 grilling 方案、不更新 CONTEXT.md/ADR、不写 interface/测试——这些都归 story 流程。
+2. **词汇纪律**：只用词汇表术语（见[架构词汇](#架构词汇)）；禁止漂移。Concision 不是漂移的借口。
+3. **YAGNI 扫描**：范围前置，热点优先；不扫全库。
+4. **不重开 ADR**：除非摩擦真实到值得重开，否则不浮出被 ADR 否决的方案。
+5. **不落地 repo**：HTML 报告只写临时目录；不留架构评审工件在项目里（story 起点除外）。
+6. **决策是用户的**：圈定哪些候选、是否建 story、建几个，都由用户定；只提供信息与推荐强度。
 
 ## 与相邻 skill 的边界
 
 | Skill | 负责 | 不负责 |
 |---|---|---|
-| `/improve-codebase-architecture` | 扫描既有代码库、产出深化机会报告、轮询收敛架构决策 | 新功能设计、PRD、story 产物 |
-| `/tech-design` | 复杂 story 的技术方案深潜（模块边界/数据流/接口契约），写入 `prd.md` §10 | 既有代码库的主动扫描 |
+| `/improve-codebase-architecture` | 扫描既有代码库、产出深化机会报告、建 story 起点 | 深化实施、story 内容 |
+| `/story` | story 流程总入口；对每个已建 story 起点做 PRD→测试→实现→验收 | 架构扫描 |
+| `/tech-design` | 复杂 story 内的技术方案深潜（模块边界/数据流/接口契约） | 既有代码库的主动扫描 |
 | `/review` | 审查已提交的改动 / PRD / 技术方案 | 主动找摩擦点 |
 | `/domain-model` | 维护 `CONTEXT.md` 领域词汇 | 架构深化决策 |
-| `/demand-insight` | 用户痛点 / 需求边界的轮询访谈 | 架构访谈 |
 
 ## 示例
 
 ```bash
 /improve-codebase-architecture
-# 无 --scope：git log 热点优先，报告多个候选，用户挑一个轮询收敛
+# 无 --scope：git log 热点优先，报告多个候选，用户圈定 2 个 → 创建 2 个 story 起点
 ```
 
 ```bash
 /improve-codebase-architecture --scope="payment intake pipeline"
-# 定点一个子系统，跳过热点推断
+# 定点一个子系统，跳过热点推断，报告该子系统内候选
 ```

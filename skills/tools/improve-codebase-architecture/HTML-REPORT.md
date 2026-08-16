@@ -39,7 +39,7 @@ Repo 名、日期、一个紧凑图例：实线框 = module，虚线 = seam，�
 
 ## Candidate card
 
-图承载分量。散文克制、平实，用 SKILL.md 词汇表术语，不做修饰。
+图承载分量。散文克制、平实，用 architecture-vocabulary.md 词汇表术语，不做修饰。
 
 每个候选是一个 `<article>`：
 
@@ -105,7 +105,7 @@ Before：一个嵌套盒子的函数调用树。After：同一棵树折叠进一
 
 ## Tone
 
-平实、简洁的英文——但架构名词和动词直接来自 SKILL.md 词汇表。简洁不是漂移的借口。
+平实、简洁的英文——但架构名词和动词直接来自 architecture-vocabulary.md 词汇表。简洁不是漂移的借口。
 
 **Use exactly:** module, interface, implementation, depth, deep, shallow, seam, adapter, leverage, locality.
 

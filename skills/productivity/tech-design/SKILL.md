@@ -4,6 +4,7 @@ description: 条件深潜：仅当 PRD §9=complex 或技术可行性不清晰�
 sources:
   - reference/gstack/plan-eng-review/SKILL.md
   - reference/mattpocock/skills/engineering/codebase-design/SKILL.md
+  - skills/tools/architecture-vocabulary.md
   - reference/mattpocock/skills/engineering/grill-with-docs/SKILL.md
   - reference/mattpocock/skills/engineering/domain-modeling/SKILL.md
   - workflow/design/test-as-contract-workflow.md
@@ -195,6 +196,6 @@ sources:
 ## 与参考项目的差异
 
 - gstack `plan-eng-review`：给我们工程审查的问题清单和复杂度检查。
-- mattpocock `codebase-design`：给我们 deep modules、seams、interfaces 的统一词汇。
+- mattpocock `codebase-design`：给我们 deep modules、seams、interfaces 的统一词汇。统一词汇落地在 `skills/tools/architecture-vocabulary.md`（共享公共词汇文件，与 `/improve-codebase-architecture` 共用）——设计模块边界、接口契约、测试 seam 时用这套术语。
 - mattpocock `grill-with-docs` / `domain-modeling`：给我们对抗式访谈和术语挑战方法。
 - 核心差异：把技术方案做成进入 REQ 前的**条件深潜**（PRD §9=complex 或技术可行性不清晰时才走），输出写进 `prd.md` §10，直接服务测试契约。`simple` story 由 `/to-prd` 直接填 §10 高层，跳过本 skill。

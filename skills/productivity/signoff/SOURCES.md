@@ -2,7 +2,7 @@
 
 ## 理念
 
-外层设计循环的终点必须显式化。本 skill 是门 1：断言签核，把契约交给 AI。不签字不准 BUILD，签字后契约生效，偏差必须回到契约层修正。观感/feel 验收已合并到 `/reflect` 和 bug 循环，不再由 `/signoff` 处理。
+外层设计循环的终点必须显式化。本 skill 是门 1：断言签核默认由 AI 全量自检完成（expected 值交叉验证 trace 到 PRD 锚点），把契约交给 AI；仅在升级点（初衷漂移/契约歧义/expected 推导不出/安全边界/范围决策）停下由人确认。签核前不准 BUILD。观感/feel 验收已合并到 `/reflect` 和 bug 循环，不再由 `/signoff` 处理。
 
 ## 借鉴的 reference 文件
 
@@ -14,7 +14,7 @@
 ## 主要改动
 
 - `/signoff` 仅保留 `--stage=assertion`，作为外层设计循环终点（门 1）。
-- 实现前签核功能断言，确认每个 REQ 有测试、测试有 trace 头、预期值来源清晰。
+- 实现前 AI 全量自检功能断言：每个 REQ 有测试、测试有完整 trace 头（含 `EXPECTED-TRACE`）、expected 值交叉验证可回溯到 PRD 锚点。
 - assertion 阶段仍用 `[test] assertion-signoff for <story-id>` commit 留痕。
 - 原 feel-signoff 功能已合并到 bug 循环和 `/reflect`：实现偏差登记为 `/file-bug`，最终验收在 `/reflect` 完成。
 

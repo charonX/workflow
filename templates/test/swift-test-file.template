@@ -1,7 +1,10 @@
 // REQ-TRACE: REQ-{{PHASE}}-001, REQ-{{PHASE}}-002
 // REQ-VERSION: {{REQ_VERSION}}
+// CAPABILITY-TRACE: <capability-name>
+// ENTITY-TRACE: <entity-name>
+// EXPECTED-TRACE: prd.md §6.3 row N   # expected 值来源，供 /signoff 交叉验证
 // TEST-AUTHOR: agent
-// ASSERTIONS-SIGNED: false
+// ASSERTIONS-SIGNED: false            # /signoff 自检通过后翻转为 true
 
 import XCTest
 @testable import {{MODULE_NAME}}
@@ -18,13 +21,14 @@ final class {{TEST_CLASS_NAME}}: XCTestCase {
         let result = /* 脚手架填充 */
 
         // 则
-        // TODO: HUMAN ASSERTION — 替换为已签核的 expected 值
+        // EXPECTED-TRACE: prd.md §6.3 row N —— expected 值从 PRD 锚点推导，不抄代码输出
         XCTAssertEqual(result, <#expected#>)
     }
 
     // MARK: - REQ-{{PHASE}}-002
 
     func test{{EdgeCaseName}}() {
-        // TODO: HUMAN ASSERTION
+        // EXPECTED-TRACE: prd.md §7 无效例子 row N（或 bug 分类记录）
+        // 推导不出时：就地补 prd.md，或写 // TODO: HUMAN ASSERTION 登记升级点
     }
 }

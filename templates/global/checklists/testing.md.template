@@ -1,6 +1,6 @@
 # 测试模式检查清单
 
-loop-workflow 中测试是契约。本清单用于 `/test-author`、`/tdd` 和 `/review --stage=code` 的 test-engineer 维度。
+loop-workflow 中测试是契约。本清单用于 `/test-author`、`/tdd` 和 `/review --cover=test` 的 test-engineer 维度。
 
 ## 测试分层
 
@@ -15,7 +15,7 @@ loop-workflow 中测试是契约。本清单用于 `/test-author`、`/tdd` 和 `
 - [ ] 测试按 `tests/capabilities/<capability>/<entity>/<story-id>/` 组织
 - [ ] 关键预期值来自人/真实 JSON/已签标准，而非代码输出
 - [ ] 边界/错误 case 已覆盖
-- [ ] 无 `// TODO: HUMAN ASSERTION` 占位
+- [ ] 无 `// TODO: HUMAN ASSERTION` 占位（未解决升级点除外）
 
 ## 测试结构
 

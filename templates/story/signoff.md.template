@@ -2,8 +2,9 @@
 
 > 故事 ID：`{{STORY_ID}}`
 > 生成日期：{{DATE}}
+> 签核方式：`auto`（AI 全量自检）/ `escalated`（含人确认项）
 
-本文件由 `/signoff` 维护，记录 **Assertion 阶段**的签核结果。
+本文件由 `/signoff` 维护，记录 **Assertion 阶段**的签核结果。签核默认由 AI 全量自检完成，仅在升级点（初衷漂移 / 契约歧义 / expected 推导不出 / 安全边界 / 范围决策）停下由人确认。
 
 ---
 
@@ -11,31 +12,40 @@
 
 ### 签核声明
 
-我确认：本 story 所有 REQ 的 expected 值均来自我对需求的理解，或从已签字的 REQ 中机械推出。**绝非**从当前代码输出抄写。
+- **signer**：`AI`（auto）/ `human`（escalated）——命中升级点并由人确认后置为 `human`。
+- 本 story 所有 REQ 的 expected 值均 trace 到 PRD 锚点（§6.3 / §7 / §10.4），并逐条交叉验证锚点真实存在且值一致。**绝非**从当前代码输出抄写。
 
-| REQ-ID | 断言内容摘要 | 测试位置 |
-|---|---|---|
-| REQ-P0-001 | | |
-| REQ-P0-002 | | |
-| ... | | |
+| REQ-ID | 断言内容摘要 | expected 值 trace | 测试位置 |
+|---|---|---|---|
+| REQ-P0-001 | | `prd.md` §6.3 row N | |
+| REQ-P0-002 | | `prd.md` §10.4 契约样例 | |
+| ... | | | |
+
+### 升级点记录（如有）
+
+| 升级点 | 触发原因 | 人确认结果 | 是否已解决 |
+|---|---|---|---|
+| | | | |
 
 ### 检查清单
 
-**A. 人确认（高风险项）**
-
-- [ ] PRD §1 初衷（问题陈述）仍是用户痛点，未漂移。
-- [ ] 跨模块 REQ 的接口契约（§10.4）准确：输入 / 输出 / 业务错误 / 系统错误 / 副作用。
-- [ ] expected 值来源清晰（人手算 / 已签标准 / 真实 JSON），非代码输出。
-- [ ] 安全边界（如涉及）已确认。
-- [ ] PRD §14 每个 GAP 已归类（就地补 / 移动块 / 新建 story / 范围外），无悬空。
-
-**B. AI 自检（供人抽查）**
+**A. AI 全量自检（默认执行）**
 
 - [ ] 每个 REQ-ID 都有对应测试。
-- [ ] 每个测试文件都有 `// REQ-TRACE` 和 `// REQ-VERSION`。
-- [ ] 无 `// TODO: HUMAN ASSERTION` 占位。
+- [ ] 每个测试文件都有 `// REQ-TRACE`、`// REQ-VERSION`、`// CAPABILITY-TRACE`、`// ENTITY-TRACE`、`// EXPECTED-TRACE`。
+- [ ] 每条 `// EXPECTED-TRACE` 锚点真实存在于 `prd.md` 且值一致（交叉验证）。
+- [ ] 无 `// TODO: HUMAN ASSERTION` 占位（未解决升级点除外）。
 - [ ] 无 snapshot 当测试预言。
 - [ ] 边界/错误场景已覆盖。
+- [ ] capability/entity 与 `business-capabilities.md` 一致。
+
+**B. 升级点检查（按需，命中才停下问人）**
+
+- [ ] 初衷锚定：PRD §1 问题陈述仍是用户痛点，无漂移信号（有信号 → 升级）。
+- [ ] 跨模块契约（§10.4）可从 PRD 锚点确认，无歧义（有歧义 → 升级）。
+- [ ] expected 值 trace 全部成功，无"从代码抄 expected"风险（trace 失败且无法就地补 → 升级）。
+- [ ] 安全边界（如涉及）已确认。
+- [ ] PRD §14 每个 GAP 已归类（就地补 / 移动块 / 新建 story / 范围外），无悬空；范围决策（新 story / 范围外）→ 升级。
 
 > BUILD 完成后，将复查 `build-progress.md` 中的 PRD-to-code 可追溯性声明。
 

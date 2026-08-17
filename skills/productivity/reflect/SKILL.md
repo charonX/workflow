@@ -63,6 +63,7 @@ sources:
    - 展示 QA 报告摘要（单元/E2E 结果）。
    - 展示 `browser-verify-report.md` 摘要（如有）。
    - 展示 bug 处理总结（从 `[bugfix]` commit log 回顾本次修了哪些 bug、根因、是否有 req-gap 就地补全）。
+   - 展示 signoff 升级点记录（如有）：确认断言阶段的升级项均已解决，或已在 bug 处理中收敛。
    - 用户逐项确认检查清单。
    - 用户明确说"接受"或"完成"。
    - 若用户在验收中发现新的实现偏差，停止 reflect，回到 `/bug` 处理。

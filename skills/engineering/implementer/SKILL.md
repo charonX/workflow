@@ -62,7 +62,7 @@ sources:
 
 1. `prd.md`：story 初衷、用户痛点，以及 §10 技术方案的模块边界、数据流、接口契约
 2. `requirements.md`：所有 REQ-ID、验收标准、capability/entity、seam、测试路径
-3. `signoff.md`：人已签核的断言范围和约束
+3. `signoff.md`：已锁定的断言范围和约束（AI 自检 + expected 可 trace；升级项人已确认）
 4. `workflow-state.yaml`：当前 phase、attempt、slices、history
 5. `ux/*.html`、`_d_meta.json`、`_ds_manifest.json`、`_ds_prompt.md`（如有 UX 原型）
 6. `.aiassist/global/CONTEXT.md`、`business-capabilities.md`、`adr/`、`codegraph.json`
@@ -153,7 +153,7 @@ sources:
 1. `prd.md`：本 slice 要解决的用户痛点和业务范围。
 2. `requirements.md`：本切片对应的 REQ-ID、验收标准、capability/entity。
 3. `prd.md` §10-11：相关模块边界、数据流、接口契约、测试 seams。
-4. `signoff.md`：人已签核的断言范围和已知约束。
+4. `signoff.md`：已锁定的断言范围和已知约束（AI 自检 + expected 可 trace；升级项人已确认）。
 5. 测试文件：理解输入/输出/断言。
 6. `ux/_d_meta.json` 与 `ux/*.html`：视觉/结构参照；子代理必须读取并对齐。
 7. `ux/_ds_manifest.json` 与 `.aiassist/global/_ds/<slug>/_ds_prompt.md`：story 级组件清单与 prop 契约。
@@ -248,7 +248,7 @@ sources:
 - 状态：`REFACTORED` / `NO_CHANGES_NEEDED` / `ROLLED_BACK`
 - 修改的文件列表（如有）
 - 每项重构的简短理由
-- 发现但未处理的设计问题（留给 `/review --stage=code` 或人决策）
+- 发现但未处理的设计问题（留给 `/review --cover=code` 或人决策）
 - 测试命令和输出摘要（证明重构后测试仍绿）
 - 原始 commit hash 与新的 commit hash（如有）
 
@@ -362,7 +362,7 @@ PRD 对齐子代理返回后，父代理必须：
 
 - **父代理不写实现代码**：父代理只读文档、调度、验证、更新元数据。
 - **写代码前必须先读设计上下文**：`prd.md`（含技术方案）→ `requirements.md` → `signoff.md` → 测试 → UX HTML。禁止没读文档就探索代码或写实现。
-- **对业务测试只读**：禁止修改由 `/test-author` 生成、人已签核的业务测试文件。
+- **对业务测试只读**：禁止修改由 `/test-author` 生成、已签核锁定的业务测试文件。
 - **单元测试是 TDD 工具**：子代理可在实现过程中自由写、改、删单元测试，它们不进入契约。
 - **diff 碰业务测试 = 本轮作废**。
 - **每轮跑全套业务测试**：停机条件是"全套业务测试绿"，但绿只是最低门槛。
@@ -386,4 +386,4 @@ PRD 对齐子代理返回后，父代理必须：
 - superpowers `verification-before-completion`：给我们"证据先于完成声明"的纪律。
 - superpowers `finishing-a-development-branch`：给我们全部任务完成后的收尾思路。
 - mattpocock `implement`：给我们"按已有上下文实现"的轻量模式。
-- 核心差异：默认使用子代理实现每个切片，父代理专职调度与验证；测试只读 + 断言归人 + 轮数上限逃生口 + TAC 的两道门。
+- 核心差异：默认使用子代理实现每个切片，父代理专职调度与验证；测试只读 + 断言可 trace 到规格锚点 + 轮数上限逃生口 + TAC 的两道门。

@@ -14,7 +14,7 @@ sources:
 - 用户说"更新领域模型"、"/domain-model"、"统一术语"。
 - 技术方案设计前（`complex` story 走 `/tech-design`）发现 PRD 中出现新术语或与 `CONTEXT.md` 冲突。
 - `/reflect` 阶段发现本次 story 引入了新业务概念或术语冲突。
-- `/review --stage=prd` 发现术语不一致。
+- `/review --cover=prd` 发现术语不一致。
 
 ## 输入
 
@@ -96,7 +96,7 @@ sources:
 | 术语 | 定义 | 相关实体 | 使用场景 |
 |------|------|----------|----------|
 | 归档 | 将已完成 story 的产物移入 `archive/` | Story | 回流机制 |
-| 签核 | 人对断言/观感的正式确认 | Signoff | 门 1 / 门 2 |
+| 签核 | 契约锁定：断言 expected 可 trace 到规格锚点；高风险项人确认 | Signoff | 门 1 / 门 2 |
 | 能力 | 系统对外提供的独立业务功能 | Capability | 测试组织 |
 
 ## 状态与生命周期
@@ -104,7 +104,7 @@ sources:
 | 术语 | 定义 | 所属实体 | 状态转换 |
 |------|------|----------|----------|
 | 待实现 | Story 已通过断言签核，等待 /implementer | Story | 待实现 → 实现中 → 已完成 |
-| 已签核 | 断言已被用户确认 | Signoff | — |
+| 已签核 | 断言已通过 AI 自检锁定（expected 可 trace；升级项人已确认） | Signoff | — |
 
 ## 命名约定
 

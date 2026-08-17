@@ -96,24 +96,24 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 
 本工作流以“测试即契约”为内核：
 
-> **人持有裁决器（断言）；AI 在测试构成的契约内实现。人不直接修改实现代码 -- 他们修改需求和断言，错误逐层回流到最高层。**
+> **人定规格锚点（PRD/design 的 expected 值）；AI 从锚点机械推导断言并在契约内实现。人不直接修改实现代码 -- 他们修改需求和规格锚点，错误逐层回流到最高层；推导不出的点升级给人。**
 
 测试全绿是实现的**必要门槛，不是充分条件**。实现还必须对齐 PRD 意图、`prd.md` 技术方案（§10）的模块/数据流/接口契约、以及 UX HTML 的结构与行为。禁止为通过测试而写特判、mock 掉真实行为、或阉割功能。
 
 每个 REQ 必须至少有一个自动化测试。不能自动化的纯审美判断（颜色、间距、动效曲线）才允许进入 REFLECT 人工验收。涉及元素存在、状态变化、路由跳转、API 调用的行为，必须在进入 BUILD 前就有自动化契约。
 
-**快速收敛**：PRD 不可能一次全面（见 `design/adr/0005`）。PRD 只需"可启动"（稳定块+主流程+复杂度）；缺口在 to-prd 对话 / review 阶段就地补，补不了必须显式归类（就地补 / 移动块 / 新建 story / 范围外），不许悬空。QA 验收发现的缺口走 `/bug` req-gap **就地补全**收敛——这是默认收敛路径，不是异常。实现前签核收敛到**高风险项**（初衷、跨模块契约、expected 值、安全边界），其余由 AI 自检。
+**快速收敛**：PRD 不可能一次全面（见 `design/adr/0005`）。PRD 只需"可启动"（稳定块+主流程+复杂度）；缺口在 to-prd 对话 / review 阶段就地补，补不了必须显式归类（就地补 / 移动块 / 新建 story / 范围外），不许悬空。QA 验收发现的缺口走 `/bug` req-gap **就地补全**收敛——这是默认收敛路径，不是异常。实现前签核默认由 AI 全量自检完成（expected 值交叉验证 trace 到 PRD 锚点），仅在升级点（初衷漂移、契约歧义、expected 推导不出、安全边界、范围决策）停下问人。
 
 ### 两个循环
 
-- **外层循环（人控制）**：需求洞察 -> PRD -> UX -> 领域建模 -> 技术方案 -> REQ -> 断言签核 -> (BUILD -> QA -> bug 循环) -> REFLECT -> 回流。
+- **外层循环（人控制）**：需求洞察 -> PRD -> UX -> 领域建模 -> 技术方案 ->（自动链）REQ -> 断言签核 -> (BUILD -> QA -> bug 循环) -> REFLECT -> 回流。
 - **内层循环（agent 控制）**：读测试 -> 写代码 -> 跑测试 -> 改 bug -> 全绿。
 
 两个循环的边界是**签核**：
 
 | 门 | Skill | 作用 |
 |---|---|---|
-| 门 1 | `/signoff --stage=assertion` | 人在实现前签核高风险断言，把上下文交给 AI |
+| 门 1 | `/signoff --stage=assertion` | 断言签核默认 AI 全量自检；升级点（初衷漂移/契约歧义/expected 推导不出/安全边界/范围决策）停下问人，把契约交给 AI |
 | 门 2 | `/reflect` | QA 全绿、bug 循环结束后，人做最终验收确认并沉淀知识 |
 
 ### 阶段总览
@@ -126,9 +126,9 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 3 | DESIGN - 设计 | `/design` | 用户 | 外层 | 统一入口：建/更新设计系统、导入设计源、迭代 HTML-native 高保真原型 |
 | 4 | DOMAIN-MODEL - 领域建模 | `/domain-model` | 用户 | 外层 | 统一术语与业务实体，维护 `CONTEXT.md` |
 | 5 | TECH-DESIGN - 技术方案（**仅 complex**） | `/tech-design` | 用户 | 外层 | 对抗式深潜模块边界、数据流、接口契约与 CLI 优先的测试 seams，写入 `prd.md` §10；`simple` story 跳过，直接结晶 |
-| 6 | CRYSTALLIZE - 结晶 | `/crystallize` | 模型 | 外层 | 把稳定的 PRD 块转换成带验收标准的 REQ-ID；每个 REQ 至少一个自动化测试；PRD 缺口对话确认归类（就地补/移动块/新 story/范围外），不阻断 |
-| 7 | TEST - 编写靶子 | `/test-author` | 模型 | 外层 | 从 REQ 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；浏览器 E2E 默认 Playwright；不能自动化的行为才允许在 REFLECT 中人工验收 |
-| 8 | ASSERTION-SIGNOFF - 断言签核 | `/signoff --stage=assertion` | 用户 | **门 1** | 人在实现开始前签核高风险断言（初衷、跨模块契约、expected 值、安全边界）；其余 AI 自检；把上下文交给 AI |
+| 6 | CRYSTALLIZE - 结晶 | `/crystallize` | 模型 | 外层（自动链） | 把稳定的 PRD 块转换成带验收标准的 REQ-ID，expected 值源自 §6.3/§7/§10.4 锚点；每个 REQ 至少一个自动化测试；缺口就地补或升级 |
+| 7 | TEST - 编写靶子 | `/test-author` | 模型 | 外层（自动链） | 从 REQ 优先生成 CLI 测试骨架，expected 值 trace 到 PRD 锚点并标注 `EXPECTED-TRACE`；前端需求强制生成组件/浏览器结构行为测试；不能自动化的行为才允许在 REFLECT 中人工验收 |
+| 8 | ASSERTION-SIGNOFF - 断言签核 | `/signoff --stage=assertion` | 模型（自动链） | **门 1** | AI 全量自检签核（含 expected 交叉验证）；升级点（初衷漂移/契约歧义/expected 推导不出/安全边界/范围决策）停下问人；`phase` 置 BUILD 解锁实现 |
 | 9 | BUILD - 实现 | `/implementer` | 模型 | 内层 | 默认用子代理实现每个切片；父代理读文档/调度/验证；对业务测试只读；内部用 `/tdd` 纪律 RED -> GREEN；每个 slice 绿后由 refactor subagent 做一轮安全重构；每轮迭代跑全套业务测试 |
 | 10 | QA - 回归 | `/qa-runner` | 模型 | 内层 | E2E、回归、证据收集；浏览器 E2E 默认 Playwright；失败时建议 `/bug`；浏览器项目在 E2E 通过后可选调用 `/browser-verify` 做运行时验证；无 open bug 后进入 REFLECT |
 | 11 | BUG - 缺陷处理 | `/bug` | 用户 | 内层/外层交界 | 单 bug 人机协同：诊断根因 -> 分类（人确认）-> 修/补测试/就地补全/关闭；三道闸门（3-strike/blast-radius/req-gap）；不落 bug 工件；支持从外部 issue 实时拉取 |
@@ -138,7 +138,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 ### 关键机制
 
 - **两挡**：一挡（探索期 -- PRD、HTML 原型、无测试、可随意推翻）-> 跨越线 -> 二挡（测试锁定 -- REQ-ID -> tests -> code）。
-- **三道角色权限互斥**：人写 REQ/断言/HTML；test-author 写测试骨架；implementer 写实现代码且对业务测试只读。
+- **角色分工**：人写规格锚点（PRD/design 的 expected 值）与 HTML，人拍板升级点；test-author 从锚点推导断言并写测试骨架（expected 值 trace 到锚点）；implementer 写实现代码且对业务测试只读。
 - **REQ-ID 可追溯**：每个测试文件必须声明 `// REQ-TRACE` 和 `// REQ-VERSION`。
 - **能力/实体可追溯**：每个 REQ 标注 `capability` 和 `entity`，测试头部声明 `// CAPABILITY-TRACE` 和 `// ENTITY-TRACE`，测试按 `tests/capabilities/<capability>/<entity>/` 组织。
 - **ADR 目录**：重要架构决策写入 `.aiassist/global/adr/`，原 `architecture.md` 只保留高层概览和索引。
@@ -160,7 +160,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 
 - **归档范围**：PRD、requirements、断言签核、代码等承诺层产物 + `reason.md`（根因+推翻理由）。UX 原型不归档（一挡思考工具，直接改）。
 - **根因诊断优先**：回流前先判“初衷在不在”。模型提议，人拍板。
-- **不算回流的情况**（走局部纠错）：QA 验收发现 req-gap（REQ/PRD 漏或错、缺测试 seam、HTML 参照小改）——**默认收敛路径**，`/bug` 就地补全 PRD（含 §10 技术方案）/REQ/测试（REQ 漏 case 走 `/crystallize`），继续修；缺口超出当前 story 范围则显式归类（新建 story / 范围外）；断言自相矛盾 -> 门 1 重审；一挡内单块推翻 -> 该块降级回“移动块”。
+- **不算回流的情况**（走局部纠错）：QA 验收发现 req-gap（REQ/PRD 漏或错、缺测试 seam、HTML 参照小改）——**默认收敛路径**，`/bug` 就地补全 PRD（含 §10 技术方案）/REQ/测试（REQ 漏 case 走 `/crystallize`），继续修；缺口超出当前 story 范围则显式归类（新建 story / 范围外）；断言自相矛盾 -> 重跑自动签核重审受影响断言（可升级给人）；一挡内单块推翻 -> 该块降级回“移动块”。
 
 ## Skill 速查
 
@@ -183,7 +183,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 把 PRD 转成 REQ-ID（每个 REQ 至少一个自动化测试） | `/crystallize` |
 | 从 REQ 优先生成 CLI 测试骨架；前端需求强制生成组件/浏览器结构行为测试；浏览器 E2E 默认 Playwright | `/test-author` |
 | 内层实现纪律：RED -> GREEN 写单元测试 | `/tdd` |
-| 在实现前签核高风险断言 | `/signoff` |
+| 断言签核（默认 AI 全量自检；升级点停下问人） | `/signoff` |
 | 针对已签核测试实现代码（默认子代理实现，父代理调度验证） | `/implementer` |
 | 运行 QA / E2E（Playwright）/ 回归；浏览器项目可触发 `/browser-verify` 收集运行时证据 | `/qa-runner` |
 | 用 Chrome DevTools MCP 做运行时浏览器验证，输出客观证据供 bug 循环和 REFLECT 参考 | `/browser-verify` |
@@ -193,7 +193,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 扫描既有代码库找架构深化机会，产出报告并轮询收敛 | `/improve-codebase-architecture` |
 | 把"只有人能做的步骤"固化成交互式 bash wizard | `/wizard` |
 | 解决进行中的 git merge/rebase 冲突 | `/resolving-merge-conflicts` |
-| 手动审查 PRD/技术方案/代码；`--stage=code --mode=panel` 启用 specialist 子代理并行审查 | `/review` |
+| 手动审查；无 stage，按 cover 层并行 specialist 审查 PRD/技术方案/REQ/测试/代码，汇总 `review.md` | `/review` |
 | 同步参考项目并吸收上游变更 | `/sync-refs` |
 
 ### 参考 skill（仅作灵感）

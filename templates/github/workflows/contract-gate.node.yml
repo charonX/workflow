@@ -55,8 +55,8 @@ jobs:
       - name: Assertion signoff check
         run: |
           if grep -qE '\[build\]' <<< "${{ github.event.pull_request.title }}"; then
-            test -f .aiassist/stories/*/assertion-signoff.md || {
-              echo "❌ [build] PR 缺少 assertion-signoff.md"
+            test -f .aiassist/stories/*/signoff.md || {
+              echo "❌ [build] PR 缺少 signoff.md"
               exit 1
             }
           fi

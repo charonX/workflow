@@ -16,12 +16,13 @@
 
 ## 主要改动
 
-- 设计为手动触发，支持 `prd` / `tech` / `code` 三个阶段。
-- 强调在新 Claude Code 会话中调用，避免上下文偏见。
-- 输出结构化 review 报告，但不自动修改产物。
-- 建议性而非强制性；回流决策由人做。
-- 新增 `--mode=panel`（仅 `stage=code`），并行派发 code-reviewer / security-auditor / performance-auditor / test-engineer 四个 specialist 子代理。
-- `stage=code` 增加 Fowler 代码异味基线（12 个坏味道），默认模式与 panel 模式的 code-reviewer 均应用；repository 标准优先、异味永远只是判断。
+- 无 stage：接口为 `--cover=prd,tech,req,test,code` / `--mode=panel|single` / `--story`；`--cover` 缺省自动审所有输入存在的层。
+- 默认 panel 并行：每层一个 specialist 子代理（prd-reviewer / tech-reviewer / req-reviewer / test-engineer / code-reviewer；安全/性能条件派发），父代理汇总到 `review.md`。
+- 末端统一审查：默认建议 QA 全绿后、REFLECT 前一次审全链五层；不设中途建议检查点。
+- `--mode=single`：不派子代理，单会话按各层维度逐项过（小改动/token 敏感场景）。
+- test-engineer 承担 `EXPECTED-TRACE` 诚实性检查（防 AI 自证）。
+- `cover=code` 应用 Fowler 代码异味基线（12 个坏味道），repository 标准优先、异味永远只是判断。
+- 强调在新 Claude Code 会话中调用，避免上下文偏见；输出结构化 review 报告，但不自动修改产物；建议性而非强制性，回流决策由人做。
 
 ## 未来局部更新建议
 
@@ -32,6 +33,7 @@
 
 ## 改动记录
 
+- 2026-08-17：重构为无 stage 的 cover 自适应并行审查（`design/adr/0008`）：去掉 `--stage=prd|code`，改 `--cover` 按层派发 specialist；panel 为默认模式；输出改 `review.md`；默认流改末端统一审查（QA 后 REFLECT 前一次审全链）。新增 prd-reviewer / tech-reviewer / req-reviewer 维度，test-engineer 增加 EXPECTED-TRACE 诚实性检查。
 - 2026-07-04：创建 skill，定义三阶段手动 review 流程与报告模板。
 - 2026-07-09：新增 `--mode=panel` 与 4 个 specialist 子代理并行审查模式，报告模板新增 Panel Review 小节。
 - 2026-08-06：吸收 mattpocock v1.1.0 code-review 的 Fowler 代码异味基线到 `stage=code`；panel 模式由 code-reviewer 承担，不做重复审查。

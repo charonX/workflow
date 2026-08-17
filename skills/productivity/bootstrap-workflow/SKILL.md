@@ -232,7 +232,7 @@ git commit -m "[bootstrap] 初始化双循环工作流基础设施"
 
 | 标签 | 用途 | 可修改的文件 |
 |---|---|---|
-| `[test]` | test-author 编写/修改测试、人签核断言 | 测试文件（`test/`、`*.test.*`、`e2e/` 等） |
+| `[test]` | test-author 编写/修改测试、断言签核（AI 自检 + 升级） | 测试文件（`test/`、`*.test.*`、`e2e/` 等） |
 | `[build]` | implementer 编写/修改实现 | 实现代码（`src/`、`app/`、`lib/` 等） |
 | `[bugfix]` | /bug 修复 bug | 实现代码（不修改业务测试契约文件） |
 | `[bootstrap]` | 工作流基础设施变更 | `.aiassist/`、`CLAUDE.md`、hooks 等 |

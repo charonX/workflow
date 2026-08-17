@@ -130,7 +130,7 @@ sources:
 3. 补完后**回步骤 5.1**（失败回归测试），继续修复这个 bug，不退出 `/bug`。
 4. **升级条件**：诊断判定是 UX 方向推翻或初衷不成立 -> 不就地补全，改走 `/story` 真回流（归档重做/删 story）。这是 req-gap 与真回流的边界，由根因诊断、人拍板。
 5. **超范围归类**：缺口超出当前 story 范围（不属于本 story 承诺）-> 不与用户纠结，直接显式决策：**新建 story** 或 **归入范围外**，并在本次修复中只做能就地补的部分。
-6. REQ 实质契约变更（改了契约语义，非补 case）-> 提示人考虑门 1 重审受影响断言；不强制退 phase。
+6. REQ 实质契约变更（改了契约语义，非补 case）-> 受影响断言自动重签（`/signoff` AI 自检），高风险项升级给人；不强制退 phase。
 7. 更新 `workflow-state.yaml`：**phase 保持 BUG**，history 记一条 req-gap 补全说明（更新了哪些产物）。不退 phase、不建 `archive/attempt-N/`。
 
 > req-gap 不是回流。真回流（初衷级推翻）由 `/story` 执行，见 `skills/productivity/story/SKILL.md` 的"回流"章节。

@@ -53,7 +53,7 @@ PRD 中已有明确稳定块，用户说"生成需求"、"/crystallize"时。或
    - 格式：`REQ-<PHASE>-NNN`
    - `<PHASE>` 取自当前 story phase（如 BUILD、DESIGN、TEST 等）
    - 编号从 001 开始递增
-7. **定义验收标准**：每个 REQ 必须包含具体、可机器验证的标准，以及边界场景和错误处理。**每条验收标准必须能映射到至少一个自动化测试断言。** 如果某条标准只能用人眼判断（如颜色搭配、间距比例），把它放入 `REFLECT 人工验收备注`，不作为 REQ 的正式验收标准。
+7. **定义验收标准**：每个 REQ 必须包含具体、可机器验证的标准，以及边界场景和错误处理。**每条验收标准必须能映射到至少一个自动化测试断言。** 验收标准的 expected 值必须源自 `prd.md` §6.3 预期值锚点 / §7 有效无效例子 / §10.4 契约样例；发现缺锚点时视为缺口——可从上下文推导的就地补进 `prd.md`，需人判断的走升级（见第 13 步）。如果某条标准只能用人眼判断（如颜色搭配、间距比例），把它放入 `REFLECT 人工验收备注`，不作为 REQ 的正式验收标准。
 8. **标记模块边界属性**：
    - `scope`：单个模块内（`intra-module`）或跨模块（`cross-module`）
    - `modules`：涉及哪些 module/service/executive
@@ -68,7 +68,11 @@ PRD 中已有明确稳定块，用户说"生成需求"、"/crystallize"时。或
     - 如果答案全是“不能”，唯一允许的理由必须是**纯审美判断**（颜色、间距、动效曲线、字体选择）。此时测试类型才能选 `人工(仅视觉)`。
 11. **更新业务能力地图**：把新 capability/entity/REQ-ID/测试文件追加到 `.aiassist/global/business-capabilities.md`，保持能力与测试的映射关系。
 12. **计算 requirements 哈希**：将 `requirements.md` 内容哈希写入 `requirements-v1.hash`，用于后续检测测试是否过时。
-13. **提交给用户审查**：请用户确认 REQ-ID、capability/entity 划分和验收标准。
+13. **升级点检查（按需，不默认打断）**：默认自动完成，并更新 `workflow-state.yaml`（`phase: TEST`）。仅以下情况停下询问用户：
+    - **范围决策**：缺口归类为"新建 story / 范围外"（人的范围判断；"就地补 / 移动块" AI 自决）。
+    - **seam 映射失败**：某个稳定块找不到可测试的 seam，且无法从上下文推导（`complex` story 可调用 `/tech-design` 补 §10）。
+    - **capability/entity 歧义**：无法从 `CONTEXT.md` / `business-capabilities.md` 消歧。
+    其余（REQ-ID 划分、验收标准、expected 值锚定）默认自动完成；用户可随时中断审阅，或单独调用 `/crystallize` 做逐项确认。由 `/story` 自动链调用时不在此停下（升级点由 `/signoff` 统一收敛）。
 
 ## REQ 分类维度
 
@@ -90,7 +94,7 @@ PRD 中已有明确稳定块，用户说"生成需求"、"/crystallize"时。或
 - **“人工(仅视觉)”只能用于无法结构化的纯审美判断**：如颜色搭配、间距比例、动效曲线、字体选择。涉及元素存在、状态变化、路由跳转、API 调用的 REQ，必须选择自动化测试类型。
 - **跨模块 REQ 必须显式接口契约**：模块之间的契约是二挡最重要的防线。
 - **主观判断不进 REQ**：观感/美学问题通过 `/bug` 登记为 `code-defect` 处理，或在 REFLECT 中做最终人工验收；但结构/行为必须已进入 REQ 并有自动化测试。
-- **REQ 变更必须重算哈希**：任何修改触发 `requirements-v{N}.hash` 更新，下游测试需要重新签核。
+- **REQ 变更必须重算哈希**：任何修改触发 `requirements-v{N}.hash` 更新，下游测试触发自动重签（高风险项升级给人）。
 - **每个 REQ 必须标注 capability/entity**：这是从 story 视图升级到能力视图的基础。
 - **不能破坏已有能力地图**：新增 capability/entity 前先检查 `business-capabilities.md`，避免重复命名或冲突。
 - **PRD 缺口必须归类，不许悬空**：就地补 / 归入移动块（§5）/ 新建 story / 归入范围外（§12），四选一；不生成阻断文档。

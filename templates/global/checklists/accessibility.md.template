@@ -1,6 +1,6 @@
 # 可访问性检查清单
 
-本清单用于 `/design`、`/browser-verify` 和 `/review --stage=code` 的前端审查。
+本清单用于 `/design`、`/browser-verify` 和 `/review --cover=code` 的前端审查。
 
 ## 键盘导航
 

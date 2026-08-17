@@ -1,7 +1,8 @@
-# Review 报告 — {{STORY_NAME}} / {{STAGE}}
+# Review 报告 — {{STORY_NAME}} / {{COVER}}
 
 > 故事 ID：`{{STORY_ID}}`
-> 审查阶段：`{{STAGE}}`
+> 审查层：`{{COVER}}`（prd / tech / req / test / code）
+> 模式：`panel`（并行 specialist）/ `single`（单会话）
 > 日期：{{DATE}}
 
 ---
@@ -14,7 +15,25 @@
 
 ---
 
-## 审查项
+## 分层发现（panel 模式）
+
+| 层 | 子代理 | 严重 | 重要 | 建议 |
+|---|---|---|---|---|
+| prd | prd-reviewer | N | N | N |
+| tech | tech-reviewer | N | N | N |
+| req | req-reviewer | N | N | N |
+| test | test-engineer | N | N | N |
+| code | code-reviewer | N | N | N |
+
+### 关键发现（按层）
+
+- [ ] **CRITICAL: ...**（由 prd-reviewer / tech-reviewer / req-reviewer / test-engineer / code-reviewer 提出）
+  - 问题：...
+  - 建议：...
+
+---
+
+## 审查项（single 模式）
 
 | 维度 | 结果 | 说明 |
 |---|---|---|
@@ -22,35 +41,18 @@
 
 ---
 
-## Panel Review（仅 --mode=panel）
-
-| Specialist | 严重 | 重要 | 建议 |
-|---|---|---|---|
-| code-reviewer | N | N | N |
-| security-auditor | N | N | N |
-| performance-auditor | N | N | N |
-| test-engineer | N | N | N |
-
-### 关键发现
-
-- [ ] **CRITICAL: ...**（由 code-reviewer/security-auditor/... 提出）
-  - 问题：...
-  - 建议：...
-
----
-
 ## 阻塞项（建议修复或回流）
 
-- [ ] **维度：XXX**
+- [ ] **层：XXX**
   - 问题：...
   - 建议：...
-  - 建议动作：修复后重审 / 回流到 PRD / 回流到 TECH-DESIGN
+  - 建议动作：修复后重审 / 回流到 PRD / TECH-DESIGN / REQ / TEST / BUILD
 
 ---
 
 ## 警告项（建议但不阻塞）
 
-- [ ] **维度：XXX**
+- [ ] **层：XXX**
   - 问题：...
   - 建议：...
 
@@ -60,7 +62,7 @@
 
 - [ ] 可进入下一阶段
 - [ ] 需修复阻塞项后重审
-- [ ] 建议回流到 `PRD` / `TECH-DESIGN` / `BUILD`
+- [ ] 建议回流到 `PRD` / `TECH-DESIGN` / `REQ` / `TEST` / `BUILD`
 
 ---
 

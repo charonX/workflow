@@ -18,9 +18,9 @@ sources:
 
 ## 核心概念:两个循环 + story = 初衷
 
-- **外层循环 - 人控制的设计上下文**:THINK -> PRD -> DESIGN -> DOMAIN-MODEL -> TECH-DESIGN -> CRYSTALLIZE -> TEST -> ASSERTION-SIGNOFF。人做决定、签核、改需求。
+- **外层循环 - 人控制的设计上下文**:THINK -> PRD -> DESIGN -> DOMAIN-MODEL -> TECH-DESIGN ->（自动链）CRYSTALLIZE -> TEST -> ASSERTION-SIGNOFF。前半段（需求/PRD/design/领域/技术）人做决定、改需求；REQ/test/断言签核由自动链 AI 完成，仅在升级点停下问人。
 - **内层循环 - agent 控制的实现迭代**:BUILD -> QA -> BUG。AI 在测试契约内自主迭代，bug 处理后进入 REFLECT。
-- **门 1(assertion-signoff)**:外层循环的终点,把完整上下文(REQ + 测试)交给 AI。
+- **门 1(assertion-signoff)**:外层循环的终点,把完整上下文(REQ + 测试)交给 AI。签核默认 AI 全量自检完成,仅在升级点停下由人确认。
 - **门 2(reflect)**:内层循环的终点,人做最终验收确认并沉淀知识。
 
 一个 story 对应一个**初衷**--用户痛点,不是具体方案。
@@ -58,9 +58,9 @@ sources:
 | DESIGN | 外层 | `/design` |
 | DOMAIN-MODEL | 外层 | `/domain-model` |
 | TECH-DESIGN | 外层 | `/tech-design`（**仅 PRD §9=complex 时走**；simple 直接结晶，路由到此阶段时提示可跳过。若对技术/API/库不熟，可先 `/research`） |
-| CRYSTALLIZE | 外层 | `/crystallize` |
-| TEST | 外层 | `/test-author` |
-| ASSERTION-SIGNOFF | **门 1** | `/signoff --stage=assertion` |
+| CRYSTALLIZE | 外层 | 自动链：`/crystallize` → `/test-author` → `/signoff`（见"自动链"） |
+| TEST | 外层 | 同上（自动链续跑） |
+| ASSERTION-SIGNOFF | **门 1** | 同上（自动链收尾；升级点停下问人） |
 | BUILD | 内层 | `/implementer` |
 | QA | 内层 | `/qa-runner` |
 | BUG | 内层/外层交界 | `/bug` |
@@ -71,6 +71,15 @@ sources:
 4. 向后兼容：若读取到旧版 `phase: BUG_TRIAGE` 或 `BUG_FIX`，向用户说明 bug 循环已合并为单 skill `/bug`，自动迁移到 `BUG` 阶段，追加历史记录 `{from: BUG_TRIAGE|BUG_FIX, to: BUG, note: "自动迁移：file-bug+fix-bugs 已合并为 /bug"}`，然后路由到 `/bug`。
 
 5. 若 `archive` 下已有历史 attempt,提示用户:"本 story 已尝试过 N 次,最新归档原因见 `archive/attempt-N/reason.md`,这次别踩同样的坑。"
+
+### 自动链（CRYSTALLIZE → TEST → ASSERTION-SIGNOFF）
+
+路由到 CRYSTALLIZE 时进入自动链：**一次会话**连续执行 `/crystallize` → `/test-author` → `/signoff --stage=assertion`，phase 由各 skill 显式推进（crystallize → `TEST`，test-author → `ASSERTION-SIGNOFF`，signoff → `BUILD`）。中间不打断用户，仅在升级点停下询问。
+
+- **升级点**（停下问人，phase 停在对应阶段）：范围决策（新建 story / 范围外）、expected 值推导不出且无法就地补、跨模块契约歧义、安全边界、初衷漂移信号。
+- **无升级** → 零打断跑完，输出摘要（REQ 数、测试数、signoff 结果、升级项日志），phase 置为 `BUILD`。用户审阅后重调 `/story` 进入实现。
+- **续跑**：升级点回答后，重调 `/story` 会从当前 phase 继续自动链（如停在 TEST 则从 test-author 续到 signoff）。
+- **单独调用**：想逐阶段确认时，可绕过 `/story` 直接调 `/crystallize`、`/test-author`、`/signoff`，各 skill 行为相同（默认自动 + 升级）。
 
 ### C. Story 内的 bug 处理（可选）
 
@@ -89,16 +98,15 @@ BUILD/QA 发现异常 -> BUG (/bug) -> QA
 
 ### D. 手动审查（可选但建议）
 
-以下关键转换点，建议人手动触发 `/review`，最好在新会话中执行：
+`/review` 是建议性门：一次调用按 cover 层并行派发 specialist 子代理，汇总一份 `review.md` 报告，由人决定是否继续、修复后重审，或回流。最好在新会话中执行。
 
-| 审查时机 | stage | 审查产物 | 通过后可进入 |
+**默认建议一处末端统一审查**：
+
+| 审查时机 | 命令 | 审查内容 | 通过后可进入 |
 |---|---|---|---|
-| PRD（含技术方案）完成后 | `prd` | `prd.md`（含 §10 技术方案、§11 测试决策） | CRYSTALLIZE |
-| BUILD 完成后 | `code` | diff + 全部契约文档 | QA |
+| QA 全绿后、REFLECT 前 | `/review`（默认全层） | 全链五层：PRD（含 §10 技术方案、§11 测试决策）+ REQ + 测试 + 实现 diff | REFLECT |
 
-> 原 `stage=tech` 已并入 `stage=prd`（PRD 与 tech-design 合并，见 `design/adr/0004`）。
-
-`/review` 是建议性门，输出报告后由人决定是否继续、修复后重审，或回流。
+高风险 story 可随时聚焦审查某层（如 `--cover=req,test` 只审自动链产物），但默认流不在中途设置建议检查点。
 
 ## 回流:发现根本问题时
 
@@ -108,7 +116,7 @@ BUILD/QA 发现异常 -> BUG (/bug) -> QA
 
 - 错误在用户需求/痛点本身 -> 走"删 story"。
 - 错误在实现路径(方案/REQ/UX 方向) -> 走"归档重做"。
-- 错误只是 REQ 漏了个 case / 断言自相矛盾 -> **不算回流**,走局部纠错(`/crystallize` 补验收标准,或门 1 重审,或逃生口)。见下文"不算回流的情况"。
+- 错误只是 REQ 漏了个 case / 断言自相矛盾 -> **不算回流**,走局部纠错(`/crystallize` 补验收标准,或重跑自动签核/升级给人,或逃生口)。见下文"不算回流的情况"。
 
 判定标准:初衷(问题陈述里的痛点)还成立吗?
 - 成立 -> 归档重做。
@@ -140,8 +148,8 @@ BUILD/QA 发现异常 -> BUG (/bug) -> QA
 | 情况 | 机制 | 动作 |
 |---|---|---|
 | QA 验收发现意图缺口（req-gap：REQ/PRD 漏或错、缺测试 seam、HTML 参照小改）——**默认收敛路径** | bug 处理中就地补全 | `/bug` 就地补全 PRD（含 §10 技术方案）/REQ/测试（REQ 漏 case 走 `/crystallize`），继续修；缺口超出当前 story 范围 → 与用户显式归类：新建 story 或归入范围外 |
-| 断言自相矛盾/不可满足 | 逃生口 | 回门 1 重审断言 |
-| 实现者烧完轮数不绿 | 逃生口 | 上报,换模型或回门 1 |
+| 断言自相矛盾/不可满足 | 逃生口 | 重跑自动签核，重审受影响断言（可升级给人） |
+| 实现者烧完轮数不绿 | 逃生口 | 上报，换模型或重审契约（升级给人） |
 | 一挡内某块被推翻 | 按块回流 | 该块降级回"移动块",其它块不动,UX 直接改 |
 
 按块回流(一挡内)不创建 `archive/attempt-N/`,只在 PRD 里把该块从"稳定块"挪回"移动块"。归档是 **story 级**动作,只在整个实现路径错了时用。
@@ -152,6 +160,7 @@ BUILD/QA 发现异常 -> BUG (/bug) -> QA
 story_id: 2026-07-02-mood-tracking
 intention: <一句话痛点,非方案>
 phase: THINK              # THINK/PRD/DESIGN/DOMAIN-MODEL/TECH-DESIGN/CRYSTALLIZE/TEST/ASSERTION-SIGNOFF/BUILD/QA/BUG/REFLECT
+                          # CRYSTALLIZE/TEST/ASSERTION-SIGNOFF 由自动链一次推进，仅升级点停下；其余逐阶段路由
 attempt: 1
 bug-counter: 0            # story 内 bug 计数，/bug 每次修复 +1
 created: 2026-07-02

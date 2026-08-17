@@ -2,7 +2,7 @@
 
 ## 理念
 
-人写断言，AI 写骨架；测试是人与实现之间的契约文本。本 skill 从 REQ-ID 生成可运行的测试结构，为人留出断言占位，确保裁决权始终在人手中。
+人定规格锚点（PRD/design 的 expected 值），AI 从锚点机械推导断言并写骨架；测试是规格与实现之间的契约文本。本 skill 从 REQ-ID + PRD 锚点生成可运行的测试结构，expected 值标注 `EXPECTED-TRACE`；推导不出的升级给人，确保裁决权始终在人手中。
 
 **CLI 优先。** 能用产品 CLI 验证的行为，先生成 CLI 测试；CLI 测不了的复杂前端交互才退到单元或浏览器 E2E。CLI 是真实用户路径，不是测试专用工具。
 
@@ -20,7 +20,7 @@
 - 只写业务测试骨架（验收测试），不写实现代码。
 - 不写 TDD 单元测试；单元测试是 `/implementer` 内部代码纪律。
 - seams 类型限定为 CLI、API/public 函数接口、组件/结构、浏览器 E2E。
-- 断言占位等人签；测试头部强制 REQ-TRACE。
+- expected 值从 PRD 锚点（§6.3/§7/§10.4）机械推导并标注 `EXPECTED-TRACE`；推导不出的就地补 PRD 或升级；测试头部强制 REQ-TRACE / REQ-VERSION / CAPABILITY-TRACE / ENTITY-TRACE / EXPECTED-TRACE / ASSERTIONS-SIGNED。
 - 默认禁用快照当判定依据。
 - 引入 `.aiassist/global/checklists/testing.md` 作为测试模式/反模式参考。
 - **v0.10.1 起**：增强 Playwright E2E 模板，增加 config、fixture/认证、API mocking、page object 模板与纪律。

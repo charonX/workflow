@@ -1,6 +1,6 @@
 ---
 name: test-author
-description: 从 REQ 生成可执行的业务测试骨架（验收测试）。默认把产品 CLI 当作首要测试 seam，不能 CLI 化的行为退到浏览器 E2E 或 public API/函数接口测试。用占位符标记等人签断言。不写实现代码，不写 TDD 单元测试。
+description: 从 REQ 生成可执行的业务测试骨架（验收测试）。默认把产品 CLI 当作首要测试 seam，不能 CLI 化的行为退到浏览器 E2E 或 public API/函数接口测试。expected 值从 PRD 锚点（§6.3/§7/§10.4）trace 推导并标注 `EXPECTED-TRACE`；推导不出标记升级点。不写实现代码，不写 TDD 单元测试。
 sources:
   - reference/mattpocock/skills/engineering/tdd/SKILL.md
   - reference/superpowers/skills/test-driven-development/SKILL.md
@@ -13,6 +13,10 @@ sources:
 ## 何时调用
 
 `requirements.md` 已确认，用户说"写测试骨架"、"/test-author"时。或被 `/story` 总入口调用。
+
+## 自动链模式
+
+由 `/story` 自动链调用时，本 skill 作为 CRYSTALLIZE→TEST→ASSERTION-SIGNOFF 的一段：按第 7 步直接推导 expected 值并写 `// EXPECTED-TRACE`，不要求用户中途确认；推导不出且无法就地补时写 `// TODO: HUMAN ASSERTION` 并登记升级点，交给 `/signoff` 统一收敛。单独调用本 skill 时行为相同，只是用户可随时中断审阅。
 
 ## 输入
 
@@ -50,14 +54,14 @@ sources:
    - 前端调用 `/api/*` 的参数/时机（可用 mock server / MSW / stub）。
    - 与 token.css 关联的 class/style 是否被正确引用（不验证具体像素值）。
    把这些可验证项映射到对应 REQ-ID，生成组件测试或浏览器 E2E 测试。**禁止以“这是 REFLECT 人工验收项”为由跳过自动化。** 只有纯审美判断（颜色、间距、动效曲线）才允许不生成测试，且需在 `test-plan.md` 中明确标注。
-5. **写测试文件头部**：必须包含 `REQ-TRACE`、`REQ-VERSION`、`CAPABILITY-TRACE`、`ENTITY-TRACE`、`TEST-AUTHOR`、`ASSERTIONS-SIGNED`。
+5. **写测试文件头部**：必须包含 `REQ-TRACE`、`REQ-VERSION`、`CAPABILITY-TRACE`、`ENTITY-TRACE`、`EXPECTED-TRACE`、`TEST-AUTHOR`、`ASSERTIONS-SIGNED`。`EXPECTED-TRACE` 标注每个断言的 expected 值来源（`prd.md` §6.3/§7/§10.4 锚点，或 bug 分类记录）；`ASSERTIONS-SIGNED` 由 `/signoff` 自动签核通过后翻转为 `true`。
 6. **按 seam 类型搭建脚手架**：
    - **CLI seam**：生成调用产品 CLI 的测试，断言 stdout/stderr/exit code/文件 side effect。参考[CLI 测试模板](#cli-测试模板)。
    - **API / public 函数 seam**：生成对 public 接口的调用测试，断言返回值/可观察行为。这是业务边界测试，不是实现细节测试。
    - **组件/结构 seam**：对前端组件/页面生成渲染测试，断言关键元素存在、交互状态变化、数据驱动结构。参考[组件测试模板](#组件测试模板)。
    - **浏览器 E2E seam**：覆盖跨页面流程、真实浏览器事件、路由跳转等组件测试无法覆盖的场景。参考[浏览器 E2E 测试模板](#浏览器-e2e-测试模板)。
    - 不能用 CLI/API/组件/浏览器覆盖的行为（如纯审美）才允许标记为 `人工(仅视觉)`，并在 `test-plan.md` 中说明理由。
-7. **占位断言**：在需要人拍预期值的地方写 `// TODO: HUMAN ASSERTION`。
+7. **expected 值推导与 trace**：从 `prd.md` §6.3 预期值锚点 / §7 有效无效例子 / §10.4 契约样例机械推导每个断言的 expected 值，在测试头部标注 `// EXPECTED-TRACE`（如 `prd.md §6.3 row 1`）。推导不出（PRD 缺锚点）时：可从上下文推导的就地补进 `prd.md`；需人判断的在此写 `// TODO: HUMAN ASSERTION` 并登记为升级点（交 `/signoff` 收敛）。**禁止**从"跑一遍当前代码"抄 expected。
 8. **编译/可执行检查**：确保测试文件能运行（可能需要临时 stub 实现或 CLI 入口）。
 9. **输出 test-plan.md**：列出每个 REQ-ID 对应哪些测试方法/CLI 命令，并标注：
    - seam 类型
@@ -74,8 +78,9 @@ sources:
 // REQ-VERSION: v1-hash:a3f7d2e
 // CAPABILITY-TRACE: <capability-name>
 // ENTITY-TRACE: <entity-name>
+// EXPECTED-TRACE: prd.md §6.3 row 1   # expected 值来源，供 /signoff 交叉验证
 // TEST-AUTHOR: agent
-// ASSERTIONS-SIGNED: false
+// ASSERTIONS-SIGNED: false            # /signoff 自检通过后翻转为 true
 ```
 
 ## CLI 测试模板
@@ -97,11 +102,11 @@ CLI="${CLI:-./myapp}"
 TMPDIR=$(mktemp -d)
 trap 'rm -rf "$TMPDIR"' EXIT
 
-# TODO: HUMAN ASSERTION — 填入预期输出/退出码/副作用
+# EXPECTED-TRACE: prd.md §6.3 row 1
 $CLI project create --name "demo" --output-dir "$TMPDIR"
 # 预期: 退出码 0，目录 $TMPDIR/demo 存在，包含 project.json
-# [[ -d "$TMPDIR/demo" ]]
-# [[ -f "$TMPDIR/demo/project.json" ]]
+[[ -d "$TMPDIR/demo" ]]
+[[ -f "$TMPDIR/demo/project.json" ]]
 ```
 
 ### 模板 B：TypeScript/Node（适合已有 JS/TS 生态的项目）
@@ -134,9 +139,9 @@ describe("project create", () => {
       encoding: "utf-8",
     });
 
-    // TODO: HUMAN ASSERTION — 填入预期输出
-    // expect(out).toContain("Created project demo");
-    // expect(existsSync(join(workdir, "demo", "project.json"))).toBe(true);
+    // EXPECTED-TRACE: prd.md §6.3 row 1
+    expect(out).toContain("Created project demo");
+    expect(existsSync(join(workdir, "demo", "project.json"))).toBe(true);
   });
 });
 ```
@@ -168,7 +173,7 @@ describe("FlowEditor", () => {
   it("renders canvas and node palette", () => {
     render(<FlowEditor flowId="demo" />);
 
-    // TODO: HUMAN ASSERTION — 确认元素文案/角色
+    // EXPECTED-TRACE: prd.md §6.1 row 1（元素存在性）
     expect(screen.getByTestId("flow-canvas")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /add node/i })).toBeInTheDocument();
   });
@@ -179,7 +184,7 @@ describe("FlowEditor", () => {
     const toggle = screen.getByRole("button", { name: /toggle theme/i });
     fireEvent.click(toggle);
 
-    // TODO: HUMAN ASSERTION — 确认 theme 切换后的属性/类名
+    // EXPECTED-TRACE: prd.md §6.1 row 2（主题切换 → data-theme=dark）
     expect(document.documentElement.dataset.theme).toBe("dark");
   });
 });
@@ -205,7 +210,6 @@ describe("FlowEditor", () => {
 import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
-  // TODO: HUMAN ASSERTION — 根据实际测试目录调整
   testDir: "./tests",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -216,7 +220,6 @@ export default defineConfig({
     ["list"],
   ],
   use: {
-    // TODO: HUMAN ASSERTION — 填入实际 dev server URL
     baseURL: process.env.E2E_BASE_URL || "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
@@ -238,7 +241,7 @@ export default defineConfig({
 import { test, expect } from "@playwright/test";
 
 test("user can open flow editor and see canvas", async ({ page }) => {
-  // TODO: HUMAN ASSERTION — 填入正确的启动 URL/路由
+  // EXPECTED-TRACE: prd.md §6.1 row 1
   await page.goto("/flows/demo");
 
   await expect(page.getByTestId("flow-canvas")).toBeVisible();
@@ -266,7 +269,7 @@ export const test = base.extend<{
   authenticatedPage: Page;
 }>({
   authenticatedPage: async ({ page }, use) => {
-    // TODO: HUMAN ASSERTION — 填入正确的登录凭据/方式
+    // EXPECTED-TRACE: prd.md §6.1 row 1（登录 seam；凭据为测试 fixture）
     await page.goto("/login");
     await page.getByLabel("Email").fill("test@example.com");
     await page.getByLabel("Password").fill("testpass123");
@@ -373,7 +376,7 @@ CLI="${CLI:-./myapp}"
 TMPDIR=$(mktemp -d)
 trap 'rm -rf "$TMPDIR"' EXIT
 
-# TODO: HUMAN ASSERTION — 填入触发 bug 的输入和预期失败输出
+# EXPECTED-TRACE: bug 分类记录（BUG-001 根因：空 name 校验缺失）
 $CLI project create --name "" --output-dir "$TMPDIR"
 # 预期: 退出码非 0，且 stderr 包含 "name is required"
 ```
@@ -394,7 +397,7 @@ test("BUG-001: empty flow name should show validation error", async ({ page }) =
   await page.getByLabel("Flow name").fill("");
   await page.getByRole("button", { name: /create/i }).click();
 
-  // TODO: HUMAN ASSERTION — 确认错误提示文案
+  // EXPECTED-TRACE: bug 分类记录（BUG-001：空 flow name 校验）
   await expect(page.getByText("Flow name is required")).toBeVisible();
 });
 ```
@@ -403,7 +406,7 @@ test("BUG-001: empty flow name should show validation error", async ({ page }) =
 
 - **回归测试必须在修复前失败**：如果测试已经通过，说明没有复现 bug。
 - **回归测试头部必须含 `BUG-TRACE: BUG-NNN`**。
-- **回归测试同样属于业务测试契约**：需要人签核断言（或在 bug 分类时确认）。
+- **回归测试同样属于业务测试契约**：expected 值锚定在 bug 分类记录（分类时已由人确认），不再走 PRD 锚点 trace。
 - **回归测试按 capability/entity 组织**，和 REQ 测试放在一起。
 - 修复完成后，回归测试应随 bug 一起通过全量回归。
 
@@ -411,7 +414,7 @@ test("BUG-001: empty flow name should show validation error", async ({ page }) =
 
 - **只写测试，不写实现代码**。
 - **每个 REQ 必须至少有一个自动化测试**：没有自动化测试的 REQ 不能进入 assertion-signoff。如果 `/crystallize` 把某 REQ 标为 `人工(仅视觉)`，`/test-author` 必须回溯检查它是否真的只涉及审美；否则回流 `/crystallize`。
-- 预期值**不**从当前代码抄写；用占位符等人签。
+- 预期值**不**从当前代码抄写；必须 trace 到 PRD 锚点（§6.3/§7/§10.4）或 bug 分类记录；trace 不上的走就地补 PRD 或升级。
 - 默认**禁用快照当判定依据**。
 - **CLI 优先**：能用产品 CLI 验证的行为，先生成 CLI 测试；不能 CLI 化的才进 API/组件/浏览器 E2E。
 - CLI 测试必须跑在真实命令上，不绕过权限/校验/副作用（清理命令除外）。
@@ -427,4 +430,4 @@ test("BUG-001: empty flow name should show validation error", async ({ page }) =
 
 - mattpocock `tdd`：给我们"红绿重构"和测试先行的纪律。
 - superpowers `test-driven-development`：给我们铁律和常见反模式清单。
-- 核心差异：测试作者和实现者必须分离；断言归人；测试按业务能力/实体组织，服务于长期资产视图。
+- 核心差异：测试作者和实现者必须分离；expected 值 trace 到 PRD 锚点（人定锚点，AI 机械推导，trace 不上的升级）；测试按业务能力/实体组织，服务于长期资产视图。

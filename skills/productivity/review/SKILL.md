@@ -26,7 +26,7 @@ sources:
 
 - `--cover`：可选，逗号分隔要审查的层：`prd` / `tech` / `req` / `test` / `code`。默认自动 = 审查所有输入已存在的层。
 - `--mode`：可选，`panel`（默认，并行派发 specialist 子代理）/ `single`（单会话轻量审查，不派子代理）。
-- `--story`：可选，默认取最近更新的 story。
+- `--story`：可选，默认取最近更新的**活动** story（跳过 `status: completed` 的已完成 story）。
 
 **建议在新 Claude Code 会话中调用**，避免当前会话的上下文偏见影响审查效果。
 
@@ -110,7 +110,7 @@ sources:
 
 - `--cover`：可选，逗号分隔 `prd`/`tech`/`req`/`test`/`code`。缺省 = 自动：检查哪些层的输入文件存在，审所有存在的层（末端统一审查时五层全在）。
 - `--mode`：可选，`panel`（默认）/ `single`。
-- `--story`：可选，缺省取 `.aiassist/stories/` 下最近更新的目录。
+- `--story`：可选，缺省取 `.aiassist/stories/` 下最近更新的**活动**目录（跳过 `status: completed` 的已完成 story）。
 
 ### 2. 读取全部输入文件
 

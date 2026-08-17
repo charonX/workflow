@@ -24,7 +24,7 @@ sources:
 
 ## 输入
 
-- 当前 story ID（从 `workflow-state.yaml` 或 `.aiassist/stories/` 最近更新推导）
+- 当前 story ID（从 `workflow-state.yaml` 或 `.aiassist/stories/` 最近更新推导；**跳过已完成 story**——`status: completed` 的 spec 是历史记录，不作当前 story）
 - `.aiassist/stories/<id>/prd.md`（含 §10 技术方案）、`requirements.md`、`signoff.md`、`ux/`
 - 实现代码和测试文件
 - `.aiassist/global/issue-tracker.json`（可选，外部 issue 用）
@@ -43,7 +43,7 @@ sources:
 
 ### 1. 确定当前 story
 
-读 `workflow-state.yaml` 的 `currentStory`，或取 `.aiassist/stories/` 下最近更新的目录。phase 设为 `BUG`。
+读 `workflow-state.yaml` 的 `currentStory`，或取 `.aiassist/stories/` 下最近更新的**活动**（未完成）story——跳过 `status: completed` 的已完成 story。phase 设为 `BUG`。
 
 ### 2. 收集症状
 

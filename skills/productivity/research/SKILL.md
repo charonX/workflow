@@ -25,7 +25,7 @@ sources:
 ## 输入
 
 - `--topic`：调研主题，一句话。例：`Claude Code Marketplace 的 plugin.json schema`。
-- `--story`：story-id（可选）。未指定时，使用当前项目 `.aiassist/stories/` 下最近更新的 story。
+- `--story`：story-id（可选）。未指定时，使用当前项目 `.aiassist/stories/` 下最近更新的**活动** story（跳过 `status: completed` 的已完成 story）。
 - `--sources`：已知的 primary sources 线索（可选）。可以是 URL、仓库路径、文档入口。例：`https://anthropic.com/claude-code/marketplace.schema.json`。
 
 ## 输出
@@ -39,7 +39,7 @@ sources:
 ### 1. 解析参数
 
 - `--topic` 必填。若用户只给了一个名词，补成完整问句。例：`Redis 流` → `Redis Stream 的 ACK、消费者组和阻塞读语义`。
-- `--story` 可选。未指定时，取 `.aiassist/stories/` 下最近更新的目录名。
+- `--story` 可选。未指定时，取 `.aiassist/stories/` 下最近更新的**活动**目录名（跳过 `status: completed` 的已完成 story）。
 - `--sources` 可选。用户没给时，由 background agent 自己发现 primary sources。
 
 ### 2. 检查并创建目录

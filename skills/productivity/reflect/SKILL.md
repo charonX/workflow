@@ -42,7 +42,7 @@ sources:
 - `.aiassist/global/checklists/performance.md`
 - `.aiassist/global/checklists/accessibility.md`
 - `.aiassist/global/checklists/observability.md`
-- `.aiassist/stories/<id>/workflow-state.yaml` 最终状态（标记 `completed: true`）
+- `.aiassist/stories/<id>/workflow-state.yaml` 最终状态（标记 `status: completed` / `completed: true`，原地归档）
 
 ## 前置条件
 
@@ -96,11 +96,14 @@ sources:
      - `accessibility.md`：新 a11y 模式
      - `observability.md`：新 telemetry 模式
 
-5. **标记完成**：
+5. **原地归档并标记完成**：
    - 更新 `workflow-state.yaml`：
      - `phase: REFLECT`
+     - `status: completed`（已完成；spec 降级为历史记录）
      - `completed: true`
      - `completed_at: <date>`
+   - 在 `prd.md` 头部状态行标注"已完结（历史记录）"。
+   - 记录引用语义：**已完成 story 的 spec 是历史记录**——后续新 story / 修 bug 时逻辑真值看代码、意图真值看全局文档（`adr/`、`business-capabilities.md`、`CONTEXT.md`）；回流判断（bug vs 需求变更、初衷漂移）可查本 story 的归档 spec（含初衷）。
    - 可选：生成 `[accept] story <story-id> accepted` commit。
 
 ## 最终验收检查清单

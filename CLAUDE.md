@@ -161,6 +161,7 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 - **归档范围**：PRD、requirements、断言签核、代码等承诺层产物 + `reason.md`（根因+推翻理由）。UX 原型不归档（一挡思考工具，直接改）。
 - **根因诊断优先**：回流前先判“初衷在不在”。模型提议，人拍板。
 - **不算回流的情况**（走局部纠错）：QA 验收发现 req-gap（REQ/PRD 漏或错、缺测试 seam、HTML 参照小改）——**默认收敛路径**，`/bug` 就地补全 PRD（含 §10 技术方案）/REQ/测试（REQ 漏 case 走 `/crystallize`），继续修；缺口超出当前 story 范围则显式归类（新建 story / 范围外）；断言自相矛盾 -> 重跑自动签核重审受影响断言（可升级给人）；一挡内单块推翻 -> 该块降级回“移动块”。
+- **已完成 story 的 spec 是历史记录**：后续新 story / 修 bug 时，逻辑真值看代码、意图真值看全局文档（`adr/`、`business-capabilities.md`、`CONTEXT.md`），不把已完成 story 的 prd/requirements 当权威引用；回流判断（bug vs 需求变更、初衷漂移）可查其归档 spec（含初衷）。
 
 ## Skill 速查
 

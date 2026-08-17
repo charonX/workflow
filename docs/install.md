@@ -106,3 +106,15 @@ ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
 - **npx skills 方式**：`npx skills@latest add charonX/workflow`
 - **本地软链开发**：更新会自动生效，无需重新安装
 - **其他平台迁移**：定期拉取本仓库，按你的映射脚本重新生成 prompt 或配置
+
+### 项目级升级（`.aiassist/` 内容）
+
+skill 更新后，已初始化过的项目还需要同步 `.aiassist/` 中的模板派生基础设施（全局文档、`CLAUDE.md` 附录、hooks、CI）。**运行 `/bootstrap-workflow`** 即可——它检测到已存在 `.aiassist/` 时进入**升级模式**：
+
+- **自动**：刷新 pristine 模板文件（未被定制过的）、替换项目 `CLAUDE.md` 附录、修复 CI 已知问题（`assertion-signoff.md` → `signoff.md`）。
+- **报告**：customized 文件（`/reflect` 定制过的 checklists、CONTEXT、business-capabilities 等）保留，列出待手动合并。
+- **保留**：`stories/`、累计的 CONTEXT / business-capabilities / ADR 决策、engineering-lessons、DESIGN、tokens.css。
+
+旧项目（无 `.bootstrap-state.json`）升级：保守——不自动覆盖全局文件，仅替换附录并报告模板变更供手动合并。
+
+> 首次升级前建议 commit 当前 `.aiassist/` 状态，便于回滚。

@@ -1,3 +1,4 @@
+<!-- loop-workflow:begin -->
 ## 循环工作流
 
 > **如果你是为本项目工作的 AI Agent，先读这一段。**
@@ -161,9 +162,13 @@
 /bootstrap-workflow
 ```
 
-### 更新 skill
+### 升级现有项目
 
-当 `loop-workflow` 插件更新后，重新安装：
+`loop-workflow` 插件更新后，**首选运行 `/bootstrap-workflow`**——检测到已存在 `.aiassist/` 时进入**升级模式**：自动刷新 pristine 模板文件、替换本附录、修复 CI 已知问题；customized 文件（如 `/reflect` 定制过的 checklists）保留并列出待手动合并。
+
+以下手动步骤作为**无插件 / 回退**方式：
+
+1. **重拷 skills**（插件机制已覆盖则跳过）：
 
 ```bash
 rm -rf .claude/skills/*
@@ -172,3 +177,11 @@ cp -R <workflow-path>/skills/engineering/* .claude/skills/
 cp -R <workflow-path>/skills/maintenance/* .claude/skills/
 cp -R <workflow-path>/skills/tools/* .claude/skills/
 ```
+
+2. **替换本附录**：用新版 `project-claude-appendix.md.template` 内容替换本附录段（`<!-- loop-workflow:begin/end -->` 之间）。
+3. **修 CI 契约门文件名**（如有 `.github/workflows/contract-gate.yml`）：`assertion-signoff.md` → `signoff.md`。
+4. **新 story 自动生效**：story 级模板在 workflow 内，新 story 创建时自动用新版；已存在 story 保持原样（live 或历史记录），不迁移。
+5. **全局 checklists 谨慎合并**（可选）：`.aiassist/global/checklists/*` 可能被 `/reflect` 定制过，勿整体覆盖。
+
+**验证**：`.claude/skills/` 与新版一致；本附录含"规格锚点归人 / 门 1 AI 自检 / 双真值"；CI 检查 `signoff.md`；新开一个 story 能跑通。
+<!-- loop-workflow:end -->

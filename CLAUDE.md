@@ -255,7 +255,7 @@ python3 -m json.tool .claude-plugin/plugin.json
 # 拉取所有参考仓库（只读）
 ./scripts/sync-refs.sh --pull-only
 
-# 手动安装 skill 到目标项目（见 README.md 完整说明）
+# 手动安装 skill 到目标项目（见 README.md 完整说明；升级已存在项目：运行 /bootstrap-workflow 自动升级 .aiassit/，或按 README「升级现有项目」手动回退）
 cd /path/to/your-project
 cp -R /path/to/workflow/skills/productivity/* .claude/skills/
 cp -R /path/to/workflow/skills/engineering/* .claude/skills/

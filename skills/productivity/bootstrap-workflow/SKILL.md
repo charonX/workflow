@@ -15,6 +15,10 @@ sources:
 
 ## 执行步骤
 
+**双模式**：先检测 `.aiassist/` 是否已存在——
+- **不存在** → 全新初始化（步骤 1-9，含记录 bootstrap state）。
+- **已存在** → 跳到"升级模式"（更新模板派生基础设施，保留项目状态），不执行全新初始化步骤。
+
 ### 1. 确认当前目录是目标项目根目录
 
 如果当前目录不是目标项目根目录，停下来询问用户。
@@ -211,6 +215,38 @@ chmod +x .aiassist/hooks/commit-msg
 
 将 `templates/claude/project-claude-appendix.md.template` 的内容追加到目标项目 `CLAUDE.md` 末尾。如果已经存在双循环附录，跳过。
 
+### 8.5 记录 bootstrap state
+
+创建 `.aiassist/global/.bootstrap-state.json`，记录 workflow 版本与每个模板派生目标文件的基线 hash（供后续升级检测 pristine/customized）：
+
+```json
+{
+  "workflow_version": "0.23.0",
+  "bootstrap_at": "2026-08-17",
+  "template_files": {
+    ".aiassist/global/CONTEXT.md": "<sha256>",
+    ".aiassist/global/business-capabilities.md": "<sha256>",
+    ".aiassist/global/adr/README.md": "<sha256>",
+    ".aiassist/global/architecture.md": "<sha256>",
+    ".aiassist/global/codegraph.json": "<sha256>",
+    ".aiassist/global/issue-tracker.json": "<sha256>",
+    ".aiassist/global/STANDARDS.md": "<sha256>",
+    ".aiassist/global/checklists/testing.md": "<sha256>",
+    ".aiassist/global/checklists/security.md": "<sha256>",
+    ".aiassist/global/checklists/performance.md": "<sha256>",
+    ".aiassist/global/checklists/accessibility.md": "<sha256>",
+    ".aiassist/global/checklists/observability.md": "<sha256>",
+    ".aiassist/hooks/pre-commit": "<sha256>",
+    ".aiassist/hooks/commit-msg": "<sha256>",
+    ".github/workflows/contract-gate.yml": "<sha256>"
+  }
+}
+```
+
+- 对每个**从模板复制到项目**的目标文件，运行 `shasum -a 256 <file>`（Linux 用 `sha256sum`），记录其**bootstrap 完成时**的 hash——这是该文件的基线。含初始化时配置过的文件（如 issue-tracker 的 provider、CI 的命令）。
+- 附录段（`CLAUDE.md` 内）不单独记录，升级时用哨兵/启发式处理。
+- `workflow_version` 取自 `.claude-plugin/plugin.json` 的 `"version"`。
+
 ### 9. 提交初始化变更
 
 ```bash
@@ -225,6 +261,47 @@ git commit -m "[bootstrap] 初始化双循环工作流基础设施"
 - `.aiassist/hooks/*`
 - `.github/workflows/contract-gate.yml`
 - `CLAUDE.md`
+
+## 升级模式（`.aiassist/` 已存在时）
+
+检测到 `.aiassist/` 已存在，进入升级模式：更新模板派生基础设施、保留项目状态。**自动应用 + 汇总报告**（pristine 刷新、customized 保留）。
+
+### U1. 读取 bootstrap state
+
+- 读 `.aiassist/global/.bootstrap-state.json`（若存在），记录旧版本号。
+- 若不存在（旧项目）→ 标记"无 state，保守模式"。
+
+### U2. 逐个模板派生文件：pristine vs customized
+
+对每个从模板复制到项目的目标文件（清单同全新初始化步骤 2/2.5/7），比较当前 hash 与 state 记录 hash：
+
+- **pristine**（hash 匹配）→ 从 workflow 模板重新复制刷新（含已知修复，如 CI 文件名 `assertion-signoff.md` → `signoff.md`）。计入"已更新"。
+- **customized**（hash 不匹配 / 文件不存在）→ 保留，计入"待手动合并"（附模板变更摘要）。
+- **无 state（旧项目）**→ 全部视为"待手动合并"（保守，不自动覆盖），仅报告模板变更摘要。
+
+### U3. 替换 CLAUDE.md 附录
+
+- 若 `CLAUDE.md` 含 `<!-- loop-workflow:begin -->` 哨兵 → 用新版 `project-claude-appendix.md.template` 内容替换 begin~end 之间。
+- 无哨兵（旧项目）→ 锚定 `## 循环工作流` + `> **如果你是为本项目工作的 AI Agent，先读这一段。**`，替换该段到文件末尾或下一个顶级 `## ` 标题；若附录后检测到用户内容，警告并在附录末尾停止（不截断用户内容）。
+- 找不到标记 → 追加新版附录，警告可能有旧版残留。
+
+### U4. CI 已知问题
+
+- 若 `.github/workflows/contract-gate.yml` 存在且含 `assertion-signoff.md`：
+  - pristine → 刷新模板自动修复为 `signoff.md`。
+  - customized → 报告该修复，建议手动改。
+
+### U5. 汇总报告
+
+向用户输出两部分：
+
+- **已更新**：pristine 刷新清单、附录替换、CI 修复。
+- **待手动合并**：customized 文件 + 模板变更摘要（如 checklists 措辞、门1/review/双真值规则）。
+
+### U6. 更新 state
+
+- 用新版本号 + 刷新后文件的新 hash 更新 `.bootstrap-state.json`。
+- 提示用户提交变更（`git commit -m "[bootstrap] upgrade to vX"`）。
 
 ## commit 标签约定
 

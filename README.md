@@ -77,7 +77,35 @@ AI 写代码的速度早就不缺了。真正难的是：**它交的东西，你
 
 ## 怎么开始用
 
-前提是你本地有本仓库的克隆。把它装进你的项目：
+有三种装法，挑一种顺手的。装完都能用 `/bootstrap-workflow`、`/story` 这套命令。
+
+### 方式一：Claude Code 插件（推荐）
+
+在你的项目会话里直接敲：
+
+```bash
+/plugin marketplace add charonX/workflow    # 添加本仓库为 marketplace（只需一次）
+/plugin install loop-workflow@charonx-workflow
+/reload-plugins
+```
+
+> 升级：`/plugin marketplace update charonx-workflow` 拉取最新目录，再 `/reload-plugins`。
+
+### 方式二：Kimi Code 插件
+
+```bash
+/plugins install https://github.com/charonX/workflow
+```
+
+装完 `/reload` 或新开会话生效。用 `/skill:story`、`/skill:bootstrap-workflow` 这类方式触发。
+
+### 方式三：npm（npx skills）
+
+```bash
+npx skills@latest add charonX/workflow
+```
+
+### 方式四：手动复制（本地有克隆）
 
 ```bash
 cd /path/to/your-project
@@ -88,16 +116,16 @@ cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 cp -R /path/to/workflow/skills/tools/* .claude/skills/
 ```
 
-然后，在项目里开干：
+装好后，在项目里开干：
 
 ```bash
 /bootstrap-workflow    # 初始化项目基础设施（.aiassit/）
 /story                 # 开始第一个 story
 ```
 
-**升级**：skill 更新走插件机制（Marketplace / Kimi / `npx skills`）。项目里的 `.aiassit/` 内容更新，直接重跑 `/bootstrap-workflow`——它会检测到已存在的项目，进入升级模式：自动更新没被改过的模板文件、替换 CLAUDE.md 附录、修 CI 已知问题；被你定制过的文件（比如按项目攒出来的检查清单）会保留，并提示你手动合并。
+**升级**：skill 更新走对应插件的更新命令；项目里的 `.aiassit/` 内容更新，直接重跑 `/bootstrap-workflow`——它检测到已存在的项目会自动进入升级模式（更新没改过的模板文件、替换 CLAUDE.md 附录、修 CI 已知问题；被你定制过的文件会保留，并提示手动合并）。
 
-> 装好后，项目的 `CLAUDE.md` 会追加一份工作流附录，里面有你项目里所有可用 skill 的速查表。
+> 装好后，项目的 `CLAUDE.md` 会追加一份工作流附录，里面是该项目所有可用 skill 的速查表。更详细的安装（含软链、跨平台迁移、保持同步）见 [`docs/install.md`](./docs/install.md)。
 
 ---
 

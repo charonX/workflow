@@ -182,7 +182,7 @@ generate_report() {
     echo "1. Read the updated reference file"
     echo "2. Decide: absorb / skip / later"
     echo "3. If absorbing, update the skill's SKILL.md and SOURCES.md"
-    echo "4. Run \`/sync-refs\` to walk through changes interactively"
+    echo "4. See docs/sync-refs.md for the absorb / skip / later decision flow"
     echo ""
     echo "---"
     echo "Report generated at $(now_iso)"

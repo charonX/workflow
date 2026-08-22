@@ -51,7 +51,7 @@
 - `/skill:bootstrap-workflow` —— 在目标项目中初始化工作流基础设施
 - `/skill:demand-insight`、 `/skill:to-prd`、 `/skill:tech-design` …… 其他阶段 skill
 
-Kimi Code 插件依赖仓库根目录的 `kimi.plugin.json` 清单，它会扫描 `skills/productivity/`、`skills/engineering/` 和 `skills/maintenance/` 下的所有 `SKILL.md`。
+Kimi Code 插件依赖仓库根目录的 `kimi.plugin.json` 清单，它会扫描 `skills/productivity/`、`skills/engineering/` 和 `skills/tools/` 下的所有 `SKILL.md`。
 
 ---
 
@@ -76,12 +76,12 @@ cd /path/to/your-project
 rm -rf .claude/skills/*
 cp -R /path/to/workflow/skills/productivity/* .claude/skills/
 cp -R /path/to/workflow/skills/engineering/* .claude/skills/
-cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
+cp -R /path/to/workflow/skills/tools/* .claude/skills/
 
 # 或软链（仅本地开发）
 ln -s /path/to/workflow/skills/productivity/* .claude/skills/
 ln -s /path/to/workflow/skills/engineering/* .claude/skills/
-ln -s /path/to/workflow/skills/maintenance/* .claude/skills/
+ln -s /path/to/workflow/skills/tools/* .claude/skills/
 ```
 
 ---

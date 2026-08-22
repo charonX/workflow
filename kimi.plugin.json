@@ -21,7 +21,6 @@
   "skills": [
     "./skills/productivity/",
     "./skills/engineering/",
-    "./skills/maintenance/",
     "./skills/tools/"
   ],
   "interface": {

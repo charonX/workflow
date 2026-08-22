@@ -53,8 +53,6 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 │   │   ├── qa-runner/
 │   │   ├── browser-verify/    # 运行时浏览器验证（DevTools MCP）
 │   │   └── tdd/               # 内层 RED -> GREEN 纪律
-│   ├── maintenance/           # 工作流维护 skill
-│   │   └── sync-refs/
 │   └── tools/                 # 独立工具 skill（不绑定循环，按需触发）
 │       ├── improve-codebase-architecture/  # 扫描代码库深化机会 → HTML 报告 → 轮询
 │       ├── wizard/            # 交互式 bash wizard 引导人工步骤
@@ -195,7 +193,6 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 把"只有人能做的步骤"固化成交互式 bash wizard | `/wizard` |
 | 解决进行中的 git merge/rebase 冲突 | `/resolving-merge-conflicts` |
 | 手动审查；无 stage，按 cover 层并行 specialist 审查 PRD/技术方案/REQ/测试/代码，汇总 `review.md` | `/review` |
-| 同步参考项目并吸收上游变更 | `/sync-refs` |
 
 ### 参考 skill（仅作灵感）
 
@@ -238,13 +235,14 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 
 ## 与参考项目保持同步
 
-运行 `/sync-refs`（或 `./scripts/sync-refs.sh`）。它会：
+`sync-refs` 是本仓库**内部**的维护工具（不随 skill 分发——`reference/` 只存在于本仓库，终端项目用不到）。运行 `./scripts/sync-refs.sh` 会：
 
 1. 对所有参考仓库执行 `git pull`
 2. 解析每个 skill 的 `SOURCES.md`，找到它依赖的参考文件
 3. 对每个依赖执行 `git log --since=<last sync>`
 4. 生成 `docs/sync-reports/YYYY-MM-DD.md`，按 skill 分组列出变更
-5. 引导你逐个判断：吸收 / 跳过 / 延后
+
+吸收 / 跳过 / 延后的判断流程、判断原则与改编纪律见 [`docs/sync-refs.md`](./docs/sync-refs.md)。
 
 ## 常用命令
 
@@ -259,7 +257,6 @@ python3 -m json.tool .claude-plugin/plugin.json
 cd /path/to/your-project
 cp -R /path/to/workflow/skills/productivity/* .claude/skills/
 cp -R /path/to/workflow/skills/engineering/* .claude/skills/
-cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 cp -R /path/to/workflow/skills/tools/* .claude/skills/
 ```
 

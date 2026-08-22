@@ -112,7 +112,6 @@ cd /path/to/your-project
 rm -rf .claude/skills/*
 cp -R /path/to/workflow/skills/productivity/* .claude/skills/
 cp -R /path/to/workflow/skills/engineering/* .claude/skills/
-cp -R /path/to/workflow/skills/maintenance/* .claude/skills/
 cp -R /path/to/workflow/skills/tools/* .claude/skills/
 ```
 

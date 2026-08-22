@@ -156,10 +156,10 @@ Skill 文件名、代码中的标识符、注释中的专业术语（如 `REQ-TR
 | 初衷不变，实现路径错了（一挡/二挡都算） | 同 story 下 `archive/` 归档本次尝试，同 story 重做 |
 | 初衷本身错了/痛点不成立 | 不归档，直接删 story |
 
-- **归档范围**：PRD、requirements、断言签核、代码等承诺层产物 + `reason.md`（根因+推翻理由）。UX 原型不归档（一挡思考工具，直接改）。
+- **归档范围（进行中回流，attempt-N）**：PRD、requirements、断言签核、代码等承诺层产物 + `reason.md`（根因+推翻理由）。UX 原型不归档（一挡思考工具，直接改）。与"story 完成后完成清理"是两个动作：回流归档保留在 `archive/` 供本 story 后续 attempt 学习；完成清理发生在 `status: completed` 之后。
 - **根因诊断优先**：回流前先判“初衷在不在”。模型提议，人拍板。
 - **不算回流的情况**（走局部纠错）：QA 验收发现 req-gap（REQ/PRD 漏或错、缺测试 seam、HTML 参照小改）——**默认收敛路径**，`/bug` 就地补全 PRD（含 §10 技术方案）/REQ/测试（REQ 漏 case 走 `/crystallize`），继续修；缺口超出当前 story 范围则显式归类（新建 story / 范围外）；断言自相矛盾 -> 重跑自动签核重审受影响断言（可升级给人）；一挡内单块推翻 -> 该块降级回“移动块”。
-- **已完成 story 的 spec 是历史记录**：后续新 story / 修 bug 时，逻辑真值看代码、意图真值看全局文档（`adr/`、`business-capabilities.md`、`CONTEXT.md`），不把已完成 story 的 prd/requirements 当权威引用；回流判断（bug vs 需求变更、初衷漂移）可查其归档 spec（含初衷）。
+- **已完成 story 完成即删**：`/reflect` 收尾时整个 `.aiassist/stories/<id>/` 目录提交删除（进 git 历史，`git show` 可回溯）。后续新 story / 修 bug 时，逻辑真值看代码 + 测试、意图真值看全局文档（`adr/`、`business-capabilities.md`、`CONTEXT.md`、`engineering-lessons.md`）。已完成 story 不回流，回流判断只发生在进行中 story。
 
 ## Skill 速查
 

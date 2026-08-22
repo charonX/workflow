@@ -46,7 +46,7 @@ sources:
 4. 把 phase 设为 `THINK`,attempt 记为 1。
 5. 调用 `/demand-insight` 进入需求洞察。
 
-> **引用规则（已完成 story）**：新 story 收集上下文时，逻辑真值看代码、意图真值看全局文档（`adr/`、`business-capabilities.md`、`CONTEXT.md`、`STANDARDS.md`）；已完成 story（`workflow-state.yaml` 中 `status: completed`）的 spec 是历史记录，不作为权威引用。回流判断（bug vs 需求变更、初衷漂移）可查已完成 story 的归档 spec（含初衷）。
+> **引用规则（已完成 story）**：新 story 收集上下文时，逻辑真值看代码、意图真值看全局文档（`adr/`、`business-capabilities.md`、`CONTEXT.md`、`STANDARDS.md`）。已完成 story 的 spec **不保留**——`/reflect` 收尾时整个 story 目录提交删除（进 git 历史，`git show` 可回溯）；已完成 story 不回流，回流判断只发生在进行中 story。
 
 ### B. 继续 story
 

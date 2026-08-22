@@ -42,7 +42,7 @@ sources:
 - `.aiassist/global/checklists/performance.md`
 - `.aiassist/global/checklists/accessibility.md`
 - `.aiassist/global/checklists/observability.md`
-- `.aiassist/stories/<id>/workflow-state.yaml` 最终状态（标记 `status: completed` / `completed: true`，原地归档）
+- `.aiassist/stories/<id>/workflow-state.yaml` 最终状态（标记 `status: completed` / `completed: true`，随后整个 story 目录提交删除，进 git 历史）
 
 ## 前置条件
 
@@ -96,15 +96,20 @@ sources:
      - `accessibility.md`：新 a11y 模式
      - `observability.md`：新 telemetry 模式
 
-5. **原地归档并标记完成**：
+5. **完成即清理**（spec 迁出工作区，进 git 历史）：
+   - **上提完整性核对**（替代"归档 spec 兜底"）：删除前对照 story 产物，确认意图/决策已全部上提全局文档，有遗漏先补全再删：
+     - 架构/技术决策 → `adr/`
+     - 能力/实体/REQ→测试映射 → `business-capabilities.md`
+     - 领域术语 → `CONTEXT.md`
+     - 工程经验/模式 → `engineering-lessons.md` / `STANDARDS.md` / `checklists/`
    - 更新 `workflow-state.yaml`：
      - `phase: REFLECT`
-     - `status: completed`（已完成；spec 降级为历史记录）
-     - `completed: true`
+     - `status: completed` / `completed: true`（写后随目录删除，进 git 历史）
      - `completed_at: <date>`
-   - 在 `prd.md` 头部状态行标注"已完结（历史记录）"。
-   - 记录引用语义：**已完成 story 的 spec 是历史记录**——后续新 story / 修 bug 时逻辑真值看代码、意图真值看全局文档（`adr/`、`business-capabilities.md`、`CONTEXT.md`）；回流判断（bug vs 需求变更、初衷漂移）可查本 story 的归档 spec（含初衷）。
-   - 可选：生成 `[accept] story <story-id> accepted` commit。
+   - **用户显式确认删除**（删除是人触发的判断）：在最终验收清单中确认"本 story 目录将提交删除（含 `ux/`、`design_handoff/`、`workflow-state.yaml`，进 git 历史），确认无遗漏（如 design-handoff 产物已取走）"。
+   - **删除**：整个 `.aiassist/stories/<id>/` 目录 `git rm` 并提交（如 `[accept] story <story-id> accepted`），删除提交保留完整证据，需要时 `git show` 回溯。
+   - **引用语义（更新后）**：已完成 story 的 spec **不保留**——逻辑真值看代码 + 测试，意图真值看全局文档（`adr/`、`business-capabilities.md`、`CONTEXT.md`、`engineering-lessons.md`、`STANDARDS.md`）；已完成 story 不回流（回流判断只发生在进行中 story）；测试头 `REQ-TRACE` 为历史标签（`<story-id>/<req-id>`），REQ→测试映射以 `business-capabilities.md` 为准。
+   - **历史清理（存量 completed story，一并清理）**：顺带检查 `.aiassist/stories/` 下所有 `status: completed` 的旧目录，对每个执行同样的"上提完整性核对 → 补全全局文档 → 用户确认 → `git rm`"，工作区立即只留活动 story。
 
 ## 最终验收检查清单
 
@@ -116,6 +121,7 @@ sources:
 - [ ] 实现与已签 REQ 一致（功能层面）。
 - [ ] 视觉/feel 层面：如有偏差，已通过 bug 循环处理或记录为可接受偏差。
 - [ ] 用户确认：我接受当前实现，可以合并/完成。
+- [ ] 用户确认：本 story 目录将提交删除（含 `ux/`、`design_handoff/`、`workflow-state.yaml`，进 git 历史），无遗漏（如 design-handoff 产物已取走）。
 
 ## 健康指标
 

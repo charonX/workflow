@@ -10,7 +10,7 @@ phase: THINK      # THINK / PRD / DESIGN / DOMAIN-MODEL / TECH-DESIGN(仅 comple
 attempt: 1        # 第几次尝试。归档重做时 +1。
 bug-counter: 0    # story 内 bug 计数，/bug 每次修复 +1，用于 commit [bugfix] BUG-NNN。
 created: {{DATE}}
-status: active    # active / completed。由 /reflect 原地归档时置为 completed；已完成 story 的 spec 是历史记录（逻辑看代码、意图看全局文档），回流判断可查。
+status: active    # active / completed。由 /reflect 收尾时置为 completed，随后整个 story 目录提交删除（进 git 历史）；已完成 story 不回流，spec 不保留（逻辑看代码+测试、意图看全局文档）。
 completed_at: ""  # /reflect 标记完成时写入，如 2026-08-17。
 
 # 阶段流转历史。正常前进和回流都记一条。

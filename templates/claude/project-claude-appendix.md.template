@@ -22,7 +22,6 @@
 | `/reflect` | 最终验收确认 + 捕获经验教训并更新全局知识、`adr/`、`checklists/` | 用户 |
 | `/research` | 针对技术/API/库问题做带引用的调研 | 用户 |
 | `/design-handoff` | 从已批准 UX 生成开发交接包 | 用户 |
-| `/sync-refs` | 同步参考项目并吸收上游变更 | 用户 |
 | `/improve-codebase-architecture` | 扫描既有代码库找架构深化机会，产出 HTML 报告并轮询收敛（独立工具，不绑定 story） | 用户 |
 | `/wizard` | 生成交互式 bash wizard 引导人工步骤（凭据/CI secrets/第三方后台，独立工具） | 用户 |
 | `/crystallize` | 把 PRD 稳定块转成 REQ-ID；每个 REQ 至少一个自动化测试；缺口对话确认归类不阻断 | 模型 |
@@ -104,7 +103,7 @@
 
 ### 核心规则
 
-1. **真理向下流（构建期）**：story 内 PRD -> REQ -> 测试 -> 代码，spec 是权威，代码不是真理来源。**story 完成后**：代码是逻辑真值（当前行为），意图真值归全局文档（adr/、business-capabilities.md、CONTEXT.md），已完成 story 的 spec 是历史记录，不作为权威引用。
+1. **真理向下流（构建期）**：story 内 PRD -> REQ -> 测试 -> 代码，spec 是权威，代码不是真理来源。**story 完成后**：代码 + 测试是逻辑真值（当前行为），意图真值归全局文档（adr/、business-capabilities.md、CONTEXT.md、engineering-lessons.md）；已完成 story 的 spec 目录随删除提交进 git 历史，工作区不保留。测试头 `REQ-TRACE` 为历史标签，REQ→测试映射以 `business-capabilities.md` 为准。
 2. **错误向上回**：在受影响的最高层修复；永远不要因为测试或规格错了就直接改代码。
 3. **规格锚点归人**：AI 写测试脚手架，expected 值从 PRD 锚点（§6.3/§7/§10.4）机械推导并标注 `EXPECTED-TRACE`；推导不出的升级给人。
 4. **实现者对测试只读**：任何触及业务测试文件的代码差异都会让本轮作废。
@@ -174,7 +173,6 @@
 rm -rf .claude/skills/*
 cp -R <workflow-path>/skills/productivity/* .claude/skills/
 cp -R <workflow-path>/skills/engineering/* .claude/skills/
-cp -R <workflow-path>/skills/maintenance/* .claude/skills/
 cp -R <workflow-path>/skills/tools/* .claude/skills/
 ```
 

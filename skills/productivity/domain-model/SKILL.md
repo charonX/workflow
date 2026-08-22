@@ -95,7 +95,8 @@ sources:
 
 | 术语 | 定义 | 相关实体 | 使用场景 |
 |------|------|----------|----------|
-| 归档 | 将已完成 story 的产物移入 `archive/` | Story | 回流机制 |
+| 归档（回流） | 进行中 story 回流重做时，把被推翻的承诺层产物移入 `archive/attempt-N/` | Story | 回流机制 |
+| 完成清理 | story 完成后（`status: completed`），`/reflect` 将整个 story 目录提交删除，进 git 历史 | Story | 收尾 |
 | 签核 | 契约锁定：断言 expected 可 trace 到规格锚点；高风险项人确认 | Signoff | 门 1 / 门 2 |
 | 能力 | 系统对外提供的独立业务功能 | Capability | 测试组织 |
 
